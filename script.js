@@ -128,25 +128,25 @@ document.querySelectorAll(".mode-btn").forEach(btn => {
   };
 });
 
-// ===================== 優化發音函數（解決普通話太慢、斷音問題） =====================
+// ===================== 修復發音：等待普通話完整播完再播放粵語，解決截斷不完整 =====================
 function playCnVoice(wordCn) {
-  speechSynthesis.cancel(); // 先停止正在播放的語音，避免重疊
+  // 強制停止所有正在播放的語音，避免重疊截斷
+  speechSynthesis.cancel();
   const mandarin = new SpeechSynthesisUtterance(wordCn);
   mandarin.lang = "zh-CN";
-  mandarin.rate = 1.05; // 加快普通話速度，解決過慢
+  mandarin.rate = 1.02; // 標準速度，不拖沓不急促
   mandarin.pitch = 1;
-  speechSynthesis.speak(mandarin);
-  // 縮短延遲至600ms，讀音流暢不拖沓
-  setTimeout(() => {
+  // 監聽普通話播完事件，再執行粵語
+  mandarin.onend = function () {
     const cantonese = new SpeechSynthesisUtterance(wordCn);
     cantonese.lang = "zh-HK";
     cantonese.rate = 0.95;
     speechSynthesis.speak(cantonese);
-  }, 600);
+  };
+  speechSynthesis.speak(mandarin);
 }
 function playEnVoice(wordEn) {
   speechSynthesis.cancel();
-  // 優化英式發音，清晰度提升，模擬標準英文讀音
   const engVoice = new SpeechSynthesisUtterance(wordEn);
   engVoice.lang = "en-GB";
   engVoice.rate = 0.8;
@@ -217,13 +217,13 @@ function checkMatchAnswer(select, right, tipDom) {
   }
 }
 
-// ===================== 重製拼寫遊戲邏輯（僅顯示正確字母 + 自動拆分橫線） =====================
+// ===================== 拼寫遊戲邏輯：僅正確字母 + 對應長度分隔橫線 =====================
 function initSpellGame() {
   const randomIdx = Math.floor(Math.random() * wordList.length);
   currentWord = wordList[randomIdx];
   spellTargetEn = currentWord.en.toLowerCase();
   spellUserAnswer = [];
-  // 只提取單詞自身字母，不增加干擾字母
+  // 只保留單詞本身字母，無干擾字母
   spellShuffleLetters = spellTargetEn.split("").sort(() => Math.random() - 0.5);
   renderSpellUI();
 }
@@ -233,7 +233,7 @@ function renderSpellUI() {
   document.getElementById("spellTip").innerText = "";
   const targetLength = spellTargetEn.length;
 
-  // 自動生成對應長度的拆分橫線格
+  // 自動生成等分格橫線
   const lineBox = document.getElementById("spellAnswerLine");
   lineBox.innerHTML = "";
   for(let i=0; i<targetLength; i++){
@@ -243,7 +243,7 @@ function renderSpellUI() {
     lineBox.appendChild(cell);
   }
 
-  // 生成剩餘可用字母按鈕，已選過的字母不再顯示
+  // 過濾已選字母，剩餘字母可點擊
   const letterWrap = document.getElementById("spellLetterBox");
   letterWrap.innerHTML = "";
   const remainLetters = spellShuffleLetters.filter(l => !spellUserAnswer.includes(l));
@@ -258,12 +258,12 @@ function renderSpellUI() {
   });
 }
 
-// 拼寫播放按鈕
+// 拼寫頁播放按鈕
 document.getElementById("spellVoiceBtn").onclick = function () {
   playCnVoice(currentWord.cn);
 };
 
-// 頁面載入時綁定拼寫操作按鈕
+// 綁定拼寫操作按鈕
 document.addEventListener("DOMContentLoaded", function(){
   // 刪除上一個
   document.getElementById("spellUndo").onclick = function () {
