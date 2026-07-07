@@ -33,7 +33,6 @@ const wordData = {
   People: [],
   All: []
 };
-// 分類中文顯示名
 const catNameMap = {
   Color: "顏色",
   Nature: "大自然",
@@ -49,17 +48,18 @@ const catNameMap = {
   People: "人物",
   All: "全部"
 };
-// 全域變數
 let currentCat = "";
 let currentMode = "";
 let wordList = [];
 let currentWord = null;
-// 拼寫專用變數
 let spellTargetEn = "";
 let spellUserAnswer = [];
 let spellShuffleLetters = [];
+// 緩存語音列表
+let voiceList = [];
+let voiceReady = false;
 
-// ===================== 2. 頁面切換控制（切換首頁強制重繪分類） =====================
+// ===================== 頁面切換控制 =====================
 function hideAllPage() {
   document.querySelectorAll(".page").forEach(p => p.classList.add("hidden"));
 }
@@ -67,24 +67,14 @@ function showPage(id) {
   hideAllPage();
   const pageDom = document.getElementById(id);
   pageDom.classList.remove("hidden");
-  // 切換到首頁立刻重新渲染分類，解決空白
-  if (id === "page-home") {
-    initCategory();
-  }
+  if (id === "page-home") initCategory();
 }
-// 返回首頁
-function backHome() {
-  showPage("page-home");
-}
-// 返回模式選擇頁
-function backMode() {
-  showPage("page-mode");
-}
+function backHome() { showPage("page-home"); }
+function backMode() { showPage("page-mode"); }
 
-// ===================== 3. 首頁渲染分類按鈕（僅職業可點，其餘灰色禁用） =====================
+// ===================== 首頁分類渲染（雙重渲染防空白） =====================
 function initCategory() {
   const wrap = document.getElementById("categoryWrap");
-  // 防錯：找不到容器直接終止
   if (!wrap) return;
   wrap.innerHTML = "";
   Object.keys(wordData).forEach(key => {
@@ -93,46 +83,35 @@ function initCategory() {
       <div style="font-size:22px; font-weight:bold;">${catNameMap[key]}</div>
       <div style="font-size:14px; opacity:0.8;">${key}</div>
     `;
-    if (key === "Occupation") {
-      btn.onclick = () => selectCategory(key);
-    } else {
-      btn.disabled = true;
-    }
+    btn.disabled = key !== "Occupation";
+    if (!btn.disabled) btn.onclick = () => selectCategory(key);
     wrap.appendChild(btn);
   });
 }
-// 選中分類
 function selectCategory(catKey) {
   currentCat = catKey;
-  if (catKey === "All") {
-    wordList = [];
-    Object.values(wordData).forEach(arr => wordList.push(...arr));
-  } else {
-    wordList = [...wordData[catKey]];
-  }
-  if (wordList.length === 0) {
+  wordList = catKey === "All" ? wordData.flatMap(v => v) : [...wordData[catKey]];
+  if (!wordList.length) {
     alert("當前分類暫無單詞，敬請期待！");
     return;
   }
-  const cnName = catNameMap[currentCat];
-  const enName = currentCat;
   const titleDom = document.getElementById("currentCatName");
-  titleDom.innerHTML = `<div style="font-size:32px; font-weight:bold;">${cnName}</div><div style="font-size:20px; opacity:0.7;">${enName.toLowerCase()}</div>`;
+  const cnName = catNameMap[currentCat];
+  const enName = currentCat.toLowerCase();
+  titleDom.innerHTML = `<div style="font-size:32px; font-weight:bold;">${cnName}</div><div style="font-size:20px; opacity:0.7;">${enName}</div>`;
   showPage("page-mode");
 }
 
-// ===================== 4. 模式選擇綁定（新增拼寫遊戲） =====================
+// ===================== 模式切換綁定 =====================
 document.querySelectorAll(".mode-btn").forEach(btn => {
   btn.onclick = () => {
     currentMode = btn.dataset.mode;
     const cnName = catNameMap[currentCat];
-    const enName = currentCat;
+    const enName = currentCat.toLowerCase();
     const titleDom = document.getElementById("currentCatName");
-    if (currentMode === "en") {
-      titleDom.innerHTML = `<div style="font-size:32px; font-weight:bold;">${enName.toLowerCase()}</div><div style="font-size:20px; opacity:0.7;">${cnName}</div>`;
-    } else {
-      titleDom.innerHTML = `<div style="font-size:32px; font-weight:bold;">${cnName}</div><div style="font-size:20px; opacity:0.7;">${enName.toLowerCase()}</div>`;
-    }
+    titleDom.innerHTML = currentMode === "en"
+      ? `<div style="font-size:32px; font-weight:bold;">${enName}</div><div style="font-size:20px; opacity:0.7;">${cnName}</div>`
+      : `<div style="font-size:32px; font-weight:bold;">${cnName}</div><div style="font-size:20px; opacity:0.7;">${enName}</div>`;
 
     if (currentMode === "cn" || currentMode === "en") {
       nextWord();
@@ -147,30 +126,52 @@ document.querySelectorAll(".mode-btn").forEach(btn => {
   };
 });
 
-// ===================== 5. 發音函數（固定1200ms定時器，普通話完整不截斷） =====================
+// ===================== 語音初始化：優先抓取Google普通話音源 =====================
+function initVoice() {
+  voiceList = speechSynthesis.getVoices();
+  voiceReady = voiceList.length > 0;
+}
+speechSynthesis.onvoiceschanged = () => {
+  voiceList = speechSynthesis.getVoices();
+  voiceReady = true;
+};
+// 獲取最匹配Google普通話語音
+function getBestCnVoice() {
+  // 優先Google 普通話
+  let gVoice = voiceList.find(v => v.name.includes("Google") && v.lang === "zh-CN");
+  if (gVoice) return gVoice;
+  // 備用任意zh-CN
+  return voiceList.find(v => v.lang === "zh-CN") || null;
+}
+
+// ===================== 發音函數：綁定Google中文音源，完整讀取不截斷 =====================
 function playCnVoice(wordCn) {
-  speechSynthesis.cancel(); // 停止所有殘留語音，避免重疊截斷
-  const mandarin = new SpeechSynthesisUtterance(wordCn);
-  mandarin.lang = "zh-CN";
-  mandarin.rate = 1.0;
-  speechSynthesis.speak(mandarin);
-  // 固定延遲後播放粵語，保證普通話完整讀完
-  setTimeout(() => {
-    const cantonese = new SpeechSynthesisUtterance(wordCn);
-    cantonese.lang = "zh-HK";
-    cantonese.rate = 0.95;
-    speechSynthesis.speak(cantonese);
-  }, 1200);
+  speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(wordCn);
+  // 綁定優質Google中文語音
+  const bestVoice = getBestCnVoice();
+  if (bestVoice) utter.voice = bestVoice;
+  utter.lang = "zh-CN";
+  utter.rate = 0.98;
+  utter.pitch = 1;
+  // 完整播完普通話再播粵語
+  utter.onend = () => {
+    const cant = new SpeechSynthesisUtterance(wordCn);
+    cant.lang = "zh-HK";
+    cant.rate = 0.95;
+    speechSynthesis.speak(cant);
+  };
+  speechSynthesis.speak(utter);
 }
 function playEnVoice(wordEn) {
   speechSynthesis.cancel();
-  const eng = new SpeechSynthesisUtterance(wordEn);
-  eng.lang = "en-GB";
-  eng.rate = 0.8;
-  speechSynthesis.speak(eng);
+  const utter = new SpeechSynthesisUtterance(wordEn);
+  utter.lang = "en-GB";
+  utter.rate = 0.8;
+  speechSynthesis.speak(utter);
 }
 
-// ===================== 中文/英文朗讀模式邏輯 =====================
+// ===================== 中文學習頁 =====================
 function nextWord() {
   const randomIdx = Math.floor(Math.random() * wordList.length);
   currentWord = wordList[randomIdx];
@@ -182,16 +183,15 @@ document.getElementById("voiceBtn").onclick = function () {
   currentMode === "cn" ? playCnVoice(currentWord.cn) : playEnVoice(currentWord.en);
 };
 
-// ===================== 6. 中英文配對答題邏輯 =====================
+// ===================== 配對遊戲 =====================
 let matchType = "cn2en";
 function createMatchQ() {
   matchType = Math.random() > 0.5 ? "cn2en" : "en2cn";
   const correctIdx = Math.floor(Math.random() * wordList.length);
   const correct = wordList[correctIdx];
   currentWord = correct;
-  let otherList = wordList.filter((_, i) => i !== correctIdx);
-  otherList = otherList.sort(() => Math.random() - 0.5).slice(0, 2);
-  const options = [correct, ...otherList].sort(() => Math.random() - 0.5);
+  const others = wordList.filter((_, i) => i !== correctIdx).sort(() => Math.random() - 0.5).slice(0, 2);
+  const options = [correct, ...others].sort(() => Math.random() - 0.5);
 
   const qDom = document.getElementById("qWord");
   const optWrap = document.getElementById("optionWrap");
@@ -232,7 +232,7 @@ function checkAnswer(select, right, tipDom) {
   }
 }
 
-// ===================== 7. 拼寫遊戲完整邏輯（僅正確字母、自動橫線） =====================
+// ===================== 拼寫遊戲（僅正確字母、自動對應橫線） =====================
 function initSpellGame() {
   const randomIdx = Math.floor(Math.random() * wordList.length);
   currentWord = wordList[randomIdx];
@@ -244,11 +244,10 @@ function initSpellGame() {
 function renderSpellUI() {
   document.getElementById("spellCnWord").innerText = currentWord.cn;
   document.getElementById("spellTip").innerText = "";
-  const targetLength = spellTargetEn.length;
-
+  const len = spellTargetEn.length;
   const lineBox = document.getElementById("spellAnswerLine");
   lineBox.innerHTML = "";
-  for(let i=0; i<targetLength; i++){
+  for (let i = 0; i < len; i++) {
     const cell = document.createElement("div");
     cell.className = "spell-cell";
     cell.textContent = spellUserAnswer[i] || "";
@@ -256,11 +255,11 @@ function renderSpellUI() {
   }
   const letterWrap = document.getElementById("spellLetterBox");
   letterWrap.innerHTML = "";
-  const remainLetters = spellShuffleLetters.filter(l => !spellUserAnswer.includes(l));
-  remainLetters.forEach(letter => {
+  const remain = spellShuffleLetters.filter(l => !spellUserAnswer.includes(l));
+  remain.forEach(letter => {
     const btn = document.createElement("button");
     btn.textContent = letter;
-    btn.onclick = function() {
+    btn.onclick = () => {
       spellUserAnswer.push(letter);
       renderSpellUI();
     };
@@ -270,9 +269,9 @@ function renderSpellUI() {
 document.getElementById("spellVoiceBtn").onclick = function () {
   playCnVoice(currentWord.cn);
 };
-document.addEventListener("DOMContentLoaded", function(){
+document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("spellUndo").onclick = function () {
-    if (spellUserAnswer.length > 0) {
+    if (spellUserAnswer.length) {
       spellUserAnswer.pop();
       renderSpellUI();
     }
@@ -298,10 +297,9 @@ function nextSpellWord() {
   initSpellGame();
 }
 
-// ===================== 雙重初始化保證：DOM載入+延遲強制渲染分類 =====================
-document.addEventListener("DOMContentLoaded", function(){
+// ===================== 頁面載入初始化 =====================
+document.addEventListener("DOMContentLoaded", function () {
+  initVoice();
   initCategory();
-  setTimeout(()=>{
-    initCategory();
-  },300);
+  setTimeout(() => initCategory(), 300);
 });
