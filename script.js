@@ -62,13 +62,18 @@ let spellShuffleLetters = [];
 let recognition = null;
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-// ===================== 2. 頁面切換控制 =====================
+// ===================== 2. 頁面切換控制（切換首頁強制重繪分類） =====================
 function hideAllPage() {
   document.querySelectorAll(".page").forEach(p => p.classList.add("hidden"));
 }
 function showPage(id) {
   hideAllPage();
-  document.getElementById(id).classList.remove("hidden");
+  const pageDom = document.getElementById(id);
+  pageDom.classList.remove("hidden");
+  // 切換到首頁立刻重新渲染分類，解決空白
+  if (id === "page-home") {
+    initCategory();
+  }
 }
 // 返回首頁
 function backHome() {
@@ -83,6 +88,8 @@ function backMode() {
 // ===================== 3. 首頁渲染分類按鈕（僅職業可點，其餘灰色禁用） =====================
 function initCategory() {
   const wrap = document.getElementById("categoryWrap");
+  // 防錯：找不到容器直接終止
+  if (!wrap) return;
   wrap.innerHTML = "";
   Object.keys(wordData).forEach(key => {
     const btn = document.createElement("button");
@@ -167,7 +174,6 @@ function playEnVoice(wordEn) {
 }
 
 // ===================== 中文/英文朗讀模式邏輯 =====================
-// 隨機下一個單詞
 function nextWord() {
   const randomIdx = Math.floor(Math.random() * wordList.length);
   currentWord = wordList[randomIdx];
@@ -175,7 +181,6 @@ function nextWord() {
   document.getElementById("studyVoiceTip").innerText = "";
   wordDom.innerText = currentMode === "cn" ? currentWord.cn : currentWord.en;
 }
-// 學習頁播放按鈕
 document.getElementById("voiceBtn").onclick = function () {
   if (!currentWord) return;
   currentMode === "cn" ? playCnVoice(currentWord.cn) : playEnVoice(currentWord.en);
@@ -214,7 +219,6 @@ function startVoiceCheck(targetText, tipEl) {
   };
   recognition.start();
 }
-// 學習頁麥克風
 document.getElementById("micBtn").onclick = function () {
   const tip = document.getElementById("studyVoiceTip");
   startVoiceCheck(currentWord.cn, tip);
@@ -257,17 +261,14 @@ function createMatchQ() {
     });
   }
 }
-// 配對頁發音按鈕
 document.getElementById("qVoiceBtn").onclick = function () {
   if (!currentWord) return;
   matchType === "cn2en" ? playCnVoice(currentWord.cn) : playEnVoice(currentWord.en);
 };
-// 配對頁麥克風
 document.getElementById("qMicBtn").onclick = function () {
   const tip = document.getElementById("matchVoiceTip");
   startVoiceCheck(currentWord.cn, tip);
 };
-// 判斷答案
 function checkAnswer(select, right, tipDom) {
   if (select === right) {
     tipDom.style.color = "#00aa00";
@@ -294,7 +295,6 @@ function renderSpellUI() {
   document.getElementById("spellTip").innerText = "";
   const targetLength = spellTargetEn.length;
 
-  // 自動生成對應長度橫線格
   const lineBox = document.getElementById("spellAnswerLine");
   lineBox.innerHTML = "";
   for(let i=0; i<targetLength; i++){
@@ -303,7 +303,6 @@ function renderSpellUI() {
     cell.textContent = spellUserAnswer[i] || "";
     lineBox.appendChild(cell);
   }
-  // 剩餘可點擊字母
   const letterWrap = document.getElementById("spellLetterBox");
   letterWrap.innerHTML = "";
   const remainLetters = spellShuffleLetters.filter(l => !spellUserAnswer.includes(l));
@@ -317,16 +316,13 @@ function renderSpellUI() {
     letterWrap.appendChild(btn);
   });
 }
-// 拼寫頁發音
 document.getElementById("spellVoiceBtn").onclick = function () {
   playCnVoice(currentWord.cn);
 };
-// 拼寫麥克風
 document.getElementById("spellMicBtn").onclick = function () {
   const tip = document.getElementById("spellVoiceTip");
   startVoiceCheck(currentWord.cn, tip);
 };
-// 拼寫操作按鈕綁定
 document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("spellUndo").onclick = function () {
     if (spellUserAnswer.length > 0) {
@@ -355,7 +351,12 @@ function nextSpellWord() {
   initSpellGame();
 }
 
-// ===================== 關鍵修復：DOM載入完成立刻渲染分類，解決空白 =====================
+// ===================== 雙重初始化保證：DOM載入+延遲強制渲染 =====================
 document.addEventListener("DOMContentLoaded", function(){
+  // 第一次渲染
   initCategory();
+  // 延遲300ms再次強制渲染，解決容器延遲載入空白
+  setTimeout(()=>{
+    initCategory();
+  },300);
 });
