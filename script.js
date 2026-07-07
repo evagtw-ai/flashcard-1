@@ -58,9 +58,6 @@ let currentWord = null;
 let spellTargetEn = "";
 let spellUserAnswer = [];
 let spellShuffleLetters = [];
-// 語音識別
-let recognition = null;
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
 // ===================== 2. 頁面切換控制（切換首頁強制重繪分類） =====================
 function hideAllPage() {
@@ -82,7 +79,6 @@ function backHome() {
 // 返回模式選擇頁
 function backMode() {
   showPage("page-mode");
-  if(recognition) recognition.abort();
 }
 
 // ===================== 3. 首頁渲染分類按鈕（僅職業可點，其餘灰色禁用） =====================
@@ -151,13 +147,14 @@ document.querySelectorAll(".mode-btn").forEach(btn => {
   };
 });
 
-// ===================== 5. 發音函數（固定1200ms定時器，普通話舊版邏輯） =====================
+// ===================== 5. 發音函數（固定1200ms定時器，普通話完整不截斷） =====================
 function playCnVoice(wordCn) {
-  speechSynthesis.cancel();
+  speechSynthesis.cancel(); // 停止所有殘留語音，避免重疊截斷
   const mandarin = new SpeechSynthesisUtterance(wordCn);
   mandarin.lang = "zh-CN";
   mandarin.rate = 1.0;
   speechSynthesis.speak(mandarin);
+  // 固定延遲後播放粵語，保證普通話完整讀完
   setTimeout(() => {
     const cantonese = new SpeechSynthesisUtterance(wordCn);
     cantonese.lang = "zh-HK";
@@ -178,50 +175,11 @@ function nextWord() {
   const randomIdx = Math.floor(Math.random() * wordList.length);
   currentWord = wordList[randomIdx];
   const wordDom = document.getElementById("showWord");
-  document.getElementById("studyVoiceTip").innerText = "";
   wordDom.innerText = currentMode === "cn" ? currentWord.cn : currentWord.en;
 }
 document.getElementById("voiceBtn").onclick = function () {
   if (!currentWord) return;
   currentMode === "cn" ? playCnVoice(currentWord.cn) : playEnVoice(currentWord.en);
-};
-
-// ===================== 通用語音識別函數（讀字判斷正確） =====================
-function startVoiceCheck(targetText, tipEl) {
-  tipEl.innerText = "";
-  if (!SpeechRecognition) {
-    tipEl.innerText = "瀏覽器不支援麥克風辨識";
-    tipEl.style.color = "red";
-    return;
-  }
-  if (recognition) recognition.abort();
-  recognition = new SpeechRecognition();
-  recognition.lang = "zh-HK";
-  recognition.continuous = false;
-  recognition.interimResults = false;
-
-  tipEl.innerText = "請大聲讀出詞彙...";
-  tipEl.style.color = "#0066cc";
-
-  recognition.onresult = (e) => {
-    const userRead = e.results[0][0].transcript.trim();
-    if (userRead === targetText) {
-      tipEl.innerText = "答對啦！👏";
-      tipEl.style.color = "#00aa00";
-    } else {
-      tipEl.innerText = `你讀了：${userRead}，再試一次`;
-      tipEl.style.color = "#f03030";
-    }
-  };
-  recognition.onerror = () => {
-    tipEl.innerText = "辨識失敗，請開啟麥克風權限";
-    tipEl.style.color = "red";
-  };
-  recognition.start();
-}
-document.getElementById("micBtn").onclick = function () {
-  const tip = document.getElementById("studyVoiceTip");
-  startVoiceCheck(currentWord.cn, tip);
 };
 
 // ===================== 6. 中英文配對答題邏輯 =====================
@@ -238,9 +196,7 @@ function createMatchQ() {
   const qDom = document.getElementById("qWord");
   const optWrap = document.getElementById("optionWrap");
   const tipDom = document.getElementById("matchTip");
-  const voiceTip = document.getElementById("matchVoiceTip");
   tipDom.innerText = "";
-  voiceTip.innerText = "";
   optWrap.innerHTML = "";
 
   if (matchType === "cn2en") {
@@ -265,10 +221,6 @@ document.getElementById("qVoiceBtn").onclick = function () {
   if (!currentWord) return;
   matchType === "cn2en" ? playCnVoice(currentWord.cn) : playEnVoice(currentWord.en);
 };
-document.getElementById("qMicBtn").onclick = function () {
-  const tip = document.getElementById("matchVoiceTip");
-  startVoiceCheck(currentWord.cn, tip);
-};
 function checkAnswer(select, right, tipDom) {
   if (select === right) {
     tipDom.style.color = "#00aa00";
@@ -288,7 +240,6 @@ function initSpellGame() {
   spellUserAnswer = [];
   spellShuffleLetters = spellTargetEn.split("").sort(() => Math.random() - 0.5);
   renderSpellUI();
-  document.getElementById("spellVoiceTip").innerText = "";
 }
 function renderSpellUI() {
   document.getElementById("spellCnWord").innerText = currentWord.cn;
@@ -319,10 +270,6 @@ function renderSpellUI() {
 document.getElementById("spellVoiceBtn").onclick = function () {
   playCnVoice(currentWord.cn);
 };
-document.getElementById("spellMicBtn").onclick = function () {
-  const tip = document.getElementById("spellVoiceTip");
-  startVoiceCheck(currentWord.cn, tip);
-};
 document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("spellUndo").onclick = function () {
     if (spellUserAnswer.length > 0) {
@@ -351,11 +298,9 @@ function nextSpellWord() {
   initSpellGame();
 }
 
-// ===================== 雙重初始化保證：DOM載入+延遲強制渲染 =====================
+// ===================== 雙重初始化保證：DOM載入+延遲強制渲染分類 =====================
 document.addEventListener("DOMContentLoaded", function(){
-  // 第一次渲染
   initCategory();
-  // 延遲300ms再次強制渲染，解決容器延遲載入空白
   setTimeout(()=>{
     initCategory();
   },300);
