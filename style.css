@@ -33,14 +33,14 @@ h2, h3 {
   font-size: clamp(20px, 4vw, 32px);
 }
 
-/* 分类按钮布局 */
+/* 分類按鈕（上下大字小字） */
 .category-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 14px;
 }
 .category-list button {
-  padding: 20px 8px; /* 加大上下內邊距，容納雙行文字 */
+  padding: 20px 8px;
   border: none;
   border-radius: 12px;
   background: #409eff;
@@ -48,12 +48,17 @@ h2, h3 {
   cursor: pointer;
   transition: 0.2s;
 }
-.category-list button:hover {
+.category-list button:hover:not(:disabled) {
   background: #2677d9;
   transform: scale(1.03);
 }
+.category-list button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
 
-/* 模式按钮 */
+/* 模式切換按鈕 */
 .mode-btns {
   display: flex;
   flex-wrap: wrap;
@@ -73,33 +78,36 @@ h2, h3 {
   background: #28a8a8;
 }
 
-/* 单词展示区域 */
+/* 朗讀頁單詞區 */
 .word-box {
   text-align: center;
   padding: 40px 10px;
   background: #fff;
   border-radius: 16px;
   box-shadow: 0 2px 12px #ddd;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
 }
 .word-text {
   font-size: clamp(40px, 10vw, 80px);
-  margin-bottom: 30px;
   color: #111;
 }
+
+/* 播放喇叭按鈕優化：無背景、僅圖標、縮小 */
 .voice-btn {
-  padding: 14px 32px;
+  background: transparent;
   border: none;
-  border-radius: 50px;
-  background: #ff7d7d;
-  color: white;
-  font-size: clamp(16px, 3vw, 22px);
+  font-size: clamp(26px, 5vw, 38px);
   cursor: pointer;
+  padding: 4px;
 }
 .voice-btn:hover {
-  background: #e65c5c;
+  opacity: 0.6;
 }
 
-/* 操作按钮 */
+/* 通用操作按鈕 */
 .operate-btns {
   display: flex;
   gap: 15px;
@@ -122,16 +130,19 @@ h2, h3 {
   background: #3f9e13;
 }
 
-/* 配对答题样式 */
+/* 配對遊戲樣式 */
 .q-box {
   text-align: center;
   padding: 30px 10px;
   background: #fff;
   border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
 }
 .q-word {
   font-size: clamp(36px, 8vw, 64px);
-  margin-bottom: 20px;
 }
 .option-list {
   display: flex;
@@ -154,4 +165,82 @@ h2, h3 {
   font-size: 20px;
   font-weight: bold;
   height: 30px;
+}
+
+/* ========== 拼寫遊戲專用樣式 ========== */
+/* 中文詞卡區 */
+.spell-card-box {
+  text-align: center;
+  padding: 30px 10px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px #eee;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.spell-cn-text {
+  font-size: clamp(42px, 10vw, 72px);
+  font-weight: bold;
+}
+
+/* 作答橫線區 */
+.spell-input-line {
+  min-height: 70px;
+  border-bottom: 4px solid #2266cc;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 12px;
+  padding: 10px 0;
+  font-size: 36px;
+  letter-spacing: 8px;
+}
+
+/* 亂序字母按鈕群 */
+.spell-letter-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+.spell-letter-group button {
+  width: 56px;
+  height: 56px;
+  font-size: 26px;
+  border: 2px solid #36cbcb;
+  background: #ffffff;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.spell-letter-group button:hover {
+  background: #e6fafa;
+}
+
+/* 拼寫控制按鈕 */
+.spell-control-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+.spell-control-btns button {
+  padding: 12px 22px;
+  border: none;
+  border-radius: 10px;
+  font-size: 18px;
+  color: white;
+  cursor: pointer;
+}
+#spellUndo { background: #ff9500; }
+#spellClearAll { background: #ff3b30; }
+#spellCheckAnswer { background: #34c759; }
+
+/* 拼寫提示文字 */
+.spell-tip {
+  text-align: center;
+  font-size: 22px;
+  font-weight: bold;
+  min-height: 30px;
 }
