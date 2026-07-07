@@ -244,3 +244,20 @@ h2, h3 {
   font-weight: bold;
   min-height: 30px;
 }
+/* 拆分單格作答橫線 */
+.spell-input-line {
+  min-height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 16px;
+  padding: 10px 0;
+  font-size: 36px;
+  letter-spacing: 0;
+}
+.spell-input-line .spell-cell {
+  width: 40px;
+  text-align: center;
+  border-bottom: 4px solid #2266cc;
+  min-height: 40px;
+}
