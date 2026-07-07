@@ -1,92 +1,3 @@
-/* 音頻按鈕並排 */
-.audio-btns {
-  display: flex;
-  gap: 16px;
-  justify-content: center;
-  align-items: center;
-}
-.mic-btn {
-  font-size: clamp(24px, 5vw, 36px);
-}
-/* 語音識別提示文字 */
-.voice-tip {
-  font-size: 20px;
-  text-align: center;
-  min-height: 26px;
-  font-weight: 500;
-}
-/* 播放喇叭按鈕優化：無背景、僅圖標 */
-.voice-btn {
-  background: transparent;
-  border: none;
-  font-size: clamp(26px, 5vw, 38px);
-  cursor: pointer;
-  padding: 4px;
-}
-.voice-btn:hover {
-  opacity: 0.6;
-}
-/* 拆分單格作答橫線 */
-.spell-input-line {
-  min-height: 70px;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  gap: 16px;
-  padding: 10px 0;
-  font-size: 36px;
-  letter-spacing: 0;
-}
-.spell-input-line .spell-cell {
-  width: 40px;
-  text-align: center;
-  border-bottom: 4px solid #2266cc;
-  min-height: 40px;
-}
-/* 模式按鈕 */
-.mode-btns {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  justify-content: center;
-}
-.mode-btn {
-  padding: 18px 30px;
-  border: none;
-  border-radius: 10px;
-  font-size: clamp(18px, 3vw, 24px);
-  background: #36cbcb;
-  color: #fff;
-  cursor: pointer;
-}
-.mode-btn:hover {
-  background: #28a8a8;
-}
-/* 分類按鈕 */
-.category-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 14px;
-}
-.category-list button {
-  padding: 20px 8px;
-  border: none;
-  border-radius: 12px;
-  background: #409eff;
-  color: white;
-  cursor: pointer;
-  transition: 0.2s;
-}
-.category-list button:hover:not(:disabled) {
-  background: #2677d9;
-  transform: scale(1.03);
-}
-.category-list button:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-  transform: none;
-}
-/* 頁面通用 */
 * {
   margin: 0;
   padding: 0;
@@ -121,6 +32,50 @@ h2 {
   color: #333;
   font-size: clamp(20px, 4vw, 32px);
 }
+/* 分類按鈕 */
+.category-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 14px;
+}
+.category-list button {
+  padding: 20px 8px;
+  border: none;
+  border-radius: 12px;
+  background: #409eff;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.category-list button:hover:not(:disabled) {
+  background: #2677d9;
+  transform: scale(1.03);
+}
+.category-list button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+/* 模式按鈕 */
+.mode-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+}
+.mode-btn {
+  padding: 18px 30px;
+  border: none;
+  border-radius: 10px;
+  font-size: clamp(18px, 3vw, 24px);
+  background: #36cbcb;
+  color: #fff;
+  cursor: pointer;
+}
+.mode-btn:hover {
+  background: #28a8a8;
+}
+/* 朗讀頁 */
 .word-box {
   text-align: center;
   padding: 40px 10px;
@@ -136,6 +91,18 @@ h2 {
   font-size: clamp(40px, 10vw, 80px);
   color: #111;
 }
+/* 播放喇叭按鈕 */
+.voice-btn {
+  background: transparent;
+  border: none;
+  font-size: clamp(26px, 5vw, 38px);
+  cursor: pointer;
+  padding: 4px;
+}
+.voice-btn:hover {
+  opacity: 0.6;
+}
+/* 操作按鈕 */
 .operate-btns {
   display: flex;
   gap: 15px;
@@ -157,6 +124,7 @@ h2 {
 .operate-btns button:first-child:hover {
   background: #3f9e13;
 }
+/* 配對遊戲 */
 .q-box {
   text-align: center;
   padding: 30px 10px;
@@ -192,6 +160,7 @@ h2 {
   font-weight: bold;
   min-height: 30px;
 }
+/* 拼寫遊戲 */
 .spell-card-box {
   text-align: center;
   padding: 30px 10px;
@@ -206,6 +175,23 @@ h2 {
 .spell-cn-text {
   font-size: clamp(42px, 10vw, 72px);
   font-weight: bold;
+}
+/* 拆分單格作答橫線 */
+.spell-input-line {
+  min-height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 16px;
+  padding: 10px 0;
+  font-size: 36px;
+  letter-spacing: 0;
+}
+.spell-input-line .spell-cell {
+  width: 40px;
+  text-align: center;
+  border-bottom: 4px solid #2266cc;
+  min-height: 40px;
 }
 .spell-letter-group {
   display: flex;
