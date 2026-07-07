@@ -32,12 +32,8 @@
   <div id="page-study" class="page hidden">
     <div class="word-box">
       <p class="word-text" id="showWord"></p>
-      <div class="audio-btns">
-        <button class="voice-btn" id="voiceBtn">🔊</button>
-        <button class="voice-btn mic-btn" id="micBtn">🎤</button>
-      </div>
+      <button class="voice-btn" id="voiceBtn">🔊</button>
     </div>
-    <p class="voice-tip" id="studyVoiceTip"></p>
     <div class="operate-btns">
       <button onclick="nextWord()">下一個Next</button>
       <button class="back-btn" onclick="backMode()">返回Back</button>
@@ -48,12 +44,8 @@
   <div id="page-match" class="page hidden">
     <div class="q-box">
       <p class="q-word" id="qWord"></p>
-      <div class="audio-btns">
-        <button class="voice-btn" id="qVoiceBtn">🔊</button>
-        <button class="voice-btn mic-btn" id="qMicBtn">🎤</button>
-      </div>
+      <button class="voice-btn" id="qVoiceBtn">🔊</button>
     </div>
-    <p class="voice-tip" id="matchVoiceTip"></p>
     <div class="option-list" id="optionWrap"></div>
     <p class="tip" id="matchTip"></p>
     <button class="back-btn" onclick="backMode()">返回Back</button>
@@ -64,10 +56,7 @@
     <!-- 中文詞卡 + 播放按鈕 -->
     <div class="spell-card-box">
       <p class="spell-cn-text" id="spellCnWord"></p>
-      <div class="audio-btns">
-        <button class="voice-btn" id="spellVoiceBtn">🔊</button>
-        <button class="voice-btn mic-btn" id="spellMicBtn">🎤</button>
-      </div>
+      <button class="voice-btn" id="spellVoiceBtn">🔊</button>
     </div>
 
     <!-- 下方橫線作答區 -->
@@ -76,15 +65,13 @@
     <!-- 亂序字母選擇區 -->
     <div class="spell-letter-group" id="spellLetterBox"></div>
 
-   <!-- 操作按鈕：取消前一個 / 清空全部 -->
+   <!-- 操作按鈕：取消前一個 / 清空全部（帶emoji） -->
 <div class="spell-control-btns">
   <button id="spellUndo">↩️ 刪除</button>
   <button id="spellClearAll">🗑️ 清空</button>
   <button id="spellCheckAnswer">✅ 確認</button>
 </div>
 
-    <!-- 語音識別提示 -->
-    <p class="voice-tip" id="spellVoiceTip"></p>
     <!-- 提示文字 -->
     <p class="spell-tip" id="spellTip"></p>
 
