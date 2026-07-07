@@ -55,6 +55,9 @@ let currentWord = null;
 let spellTargetEn = "";
 let spellUserAnswer = [];
 let spellShuffleLetters = [];
+// 緩存語音列表
+let voiceList = [];
+let voiceReady = false;
 
 // ===================== 頁面切換控制 =====================
 function hideAllPage() {
@@ -123,13 +126,42 @@ document.querySelectorAll(".mode-btn").forEach(btn => {
   };
 });
 
-// ===================== 發音函數：僅播放粵語，移除普通話 =====================
+// ===================== 語音初始化：優先抓取Google普通話音源 =====================
+function initVoice() {
+  voiceList = speechSynthesis.getVoices();
+  voiceReady = voiceList.length > 0;
+}
+speechSynthesis.onvoiceschanged = () => {
+  voiceList = speechSynthesis.getVoices();
+  voiceReady = true;
+};
+// 獲取最匹配Google普通話語音
+function getBestCnVoice() {
+  // 優先Google 普通話
+  let gVoice = voiceList.find(v => v.name.includes("Google") && v.lang === "zh-CN");
+  if (gVoice) return gVoice;
+  // 備用任意zh-CN
+  return voiceList.find(v => v.lang === "zh-CN") || null;
+}
+
+// ===================== 發音函數：綁定Google中文音源，完整讀取不截斷 =====================
 function playCnVoice(wordCn) {
   speechSynthesis.cancel();
-  const cant = new SpeechSynthesisUtterance(wordCn);
-  cant.lang = "zh-HK";
-  cant.rate = 0.95;
-  speechSynthesis.speak(cant);
+  const utter = new SpeechSynthesisUtterance(wordCn);
+  // 綁定優質Google中文語音
+  const bestVoice = getBestCnVoice();
+  if (bestVoice) utter.voice = bestVoice;
+  utter.lang = "zh-CN";
+  utter.rate = 0.98;
+  utter.pitch = 1;
+  // 完整播完普通話再播粵語
+  utter.onend = () => {
+    const cant = new SpeechSynthesisUtterance(wordCn);
+    cant.lang = "zh-HK";
+    cant.rate = 0.95;
+    speechSynthesis.speak(cant);
+  };
+  speechSynthesis.speak(utter);
 }
 function playEnVoice(wordEn) {
   speechSynthesis.cancel();
@@ -267,6 +299,7 @@ function nextSpellWord() {
 
 // ===================== 頁面載入初始化 =====================
 document.addEventListener("DOMContentLoaded", function () {
+  initVoice();
   initCategory();
   setTimeout(() => initCategory(), 300);
 });
