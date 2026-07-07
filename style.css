@@ -244,6 +244,34 @@ h2, h3 {
   font-weight: bold;
   min-height: 30px;
 }
+/* 音頻按鈕並排 */
+.audio-btns {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+}
+.mic-btn {
+  font-size: clamp(24px, 5vw, 36px);
+}
+/* 語音識別提示文字 */
+.voice-tip {
+  font-size: 20px;
+  text-align: center;
+  min-height: 26px;
+  font-weight: 500;
+}
+/* 播放喇叭按鈕優化：無背景、僅圖標 */
+.voice-btn {
+  background: transparent;
+  border: none;
+  font-size: clamp(26px, 5vw, 38px);
+  cursor: pointer;
+  padding: 4px;
+}
+.voice-btn:hover {
+  opacity: 0.6;
+}
 /* 拆分單格作答橫線 */
 .spell-input-line {
   min-height: 70px;
