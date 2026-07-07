@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <!-- 移动端适配核心 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>考小常見字卡</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+  <!-- 首页分类选择 -->
+  <div id="page-home" class="page">
+    <h1>認字樂園</h1>
+    <h3>類型</h3>
+    <div class="category-list" id="categoryWrap"></div>
+  </div>
+
+  <!-- 模式选择页 -->
+  <div id="page-mode" class="page hidden">
+    <h2 id="currentCatName"></h2>
+    <div class="mode-btns">
+      <button class="mode-btn" data-mode="cn">中文</button>
+      <button class="mode-btn" data-mode="en">English</button>
+      <button class="mode-btn" data-mode="match">配對遊戲</button>
+    </div>
+    <button class="back-btn" onclick="backHome()">返回類型</button>
+  </div>
+
+  <!-- 学习展示页（中文/英文朗读） -->
+  <div id="page-study" class="page hidden">
+    <div class="word-box">
+      <p class="word-text" id="showWord"></p>
+      <button class="voice-btn" id="voiceBtn">🔊 播放</button>
+    </div>
+    <div class="operate-btns">
+      <button onclick="nextWord()">下一个</button>
+      <button class="back-btn" onclick="backMode()">返回</button>
+    </div>
+  </div>
+
+  <!-- 配对答题页 -->
+  <div id="page-match" class="page hidden">
+    <div class="q-box">
+      <p class="q-word" id="qWord"></p>
+      <button class="voice-btn" id="qVoiceBtn">🔊 播放</button>
+    </div>
+    <div class="option-list" id="optionWrap"></div>
+    <p class="tip" id="matchTip"></p>
+    <button class="back-btn" onclick="backMode()">返回</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
