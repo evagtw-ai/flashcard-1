@@ -40,12 +40,11 @@ h2, h3 {
   gap: 14px;
 }
 .category-list button {
-  padding: 16px 8px;
+  padding: 20px 8px; /* 加大上下內邊距，容納雙行文字 */
   border: none;
   border-radius: 12px;
   background: #409eff;
   color: white;
-  font-size: clamp(16px, 3vw, 22px);
   cursor: pointer;
   transition: 0.2s;
 }
