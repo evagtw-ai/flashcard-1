@@ -1,362 +1,101 @@
-// ===================== 1. 詞彙分類全部數據（英文強制轉小寫） =====================
-const wordData = {
-  Occupation: [
-    { cn: "飛機師", en: "pilot" },
-    { cn: "郵差", en: "postman" },
-    { cn: "護士", en: "nurse" },
-    { cn: "醫生", en: "doctor" },
-    { cn: "老師", en: "teacher" },
-    { cn: "太空人", en: "astronaut" },
-    { cn: "警察", en: "policeman" },
-    { cn: "消防員", en: "fireman" },
-    { cn: "農夫", en: "farmer" },
-    { cn: "廚師", en: "chef" },
-    { cn: "畫家", en: "artist" },
-    { cn: "歌手", en: "singer" },
-    { cn: "演員", en: "actor" },
-    { cn: "漁夫", en: "fisherman" },
-    { cn: "建築工人", en: "builder" },
-    { cn: "工程師", en: "engineer" },
-    { cn: "司機", en: "driver" },
-    { cn: "學生", en: "student" }
-  ],
-  Color: [],
-  Nature: [],
-  Clothing: [],
-  Object: [],
-  Vegetable: [],
-  Place: [],
-  Animal: [],
-  Transportation: [],
-  Stationary: [],
-  Fruit: [],
-  People: [],
-  All: []
-};
-// 分類中文顯示名
-const catNameMap = {
-  Color: "顏色",
-  Nature: "大自然",
-  Clothing: "衣服",
-  Object: "物件",
-  Vegetable: "蔬菜",
-  Place: "地方",
-  Occupation: "職業",
-  Animal: "動物",
-  Transportation: "交通",
-  Stationary: "文具",
-  Fruit: "水果",
-  People: "人物",
-  All: "全部"
-};
-// 全域變數
-let currentCat = "";
-let currentMode = "";
-let wordList = [];
-let currentWord = null;
-// 拼寫專用變數
-let spellTargetEn = "";
-let spellUserAnswer = [];
-let spellShuffleLetters = [];
-// 語音識別
-let recognition = null;
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <!-- 移动端适配核心 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>幼升小常見詞彙</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+  <!-- 首页分类选择 -->
+  <div id="page-home" class="page">
+    <h1>常見詞彙</h1>
+    <div class="category-list" id="categoryWrap"></div>
+  </div>
 
-// ===================== 2. 頁面切換控制（切換首頁強制重繪分類） =====================
-function hideAllPage() {
-  document.querySelectorAll(".page").forEach(p => p.classList.add("hidden"));
-}
-function showPage(id) {
-  hideAllPage();
-  const pageDom = document.getElementById(id);
-  pageDom.classList.remove("hidden");
-  // 切換到首頁立刻重新渲染分類，解決空白
-  if (id === "page-home") {
-    initCategory();
-  }
-}
-// 返回首頁
-function backHome() {
-  showPage("page-home");
-}
-// 返回模式選擇頁
-function backMode() {
-  showPage("page-mode");
-  if(recognition) recognition.abort();
-}
+  <!-- 模式选择页 -->
+  <div id="page-mode" class="page hidden">
+    <h2 id="currentCatName"></h2>
+    <div class="mode-btns">
+      <button class="mode-btn" data-mode="cn">中文</button>
+      <button class="mode-btn" data-mode="en">English</button>
+      <button class="mode-btn" data-mode="match">配對遊戲</button>
+      <!-- 新增拼寫遊戲按鈕 -->
+      <button class="mode-btn" data-mode="spell">拼寫遊戲</button>
+    </div>
+    <button class="back-btn" onclick="backHome()">返回Back</button>
+  </div>
 
-// ===================== 3. 首頁渲染分類按鈕（僅職業可點，其餘灰色禁用） =====================
-function initCategory() {
-  const wrap = document.getElementById("categoryWrap");
-  // 防錯：找不到容器直接終止
-  if (!wrap) return;
-  wrap.innerHTML = "";
-  Object.keys(wordData).forEach(key => {
-    const btn = document.createElement("button");
-    btn.innerHTML = `
-      <div style="font-size:22px; font-weight:bold;">${catNameMap[key]}</div>
-      <div style="font-size:14px; opacity:0.8;">${key}</div>
-    `;
-    if (key === "Occupation") {
-      btn.onclick = () => selectCategory(key);
-    } else {
-      btn.disabled = true;
-    }
-    wrap.appendChild(btn);
-  });
-}
-// 選中分類
-function selectCategory(catKey) {
-  currentCat = catKey;
-  if (catKey === "All") {
-    wordList = [];
-    Object.values(wordData).forEach(arr => wordList.push(...arr));
-  } else {
-    wordList = [...wordData[catKey]];
-  }
-  if (wordList.length === 0) {
-    alert("當前分類暫無單詞，敬請期待！");
-    return;
-  }
-  const cnName = catNameMap[currentCat];
-  const enName = currentCat;
-  const titleDom = document.getElementById("currentCatName");
-  titleDom.innerHTML = `<div style="font-size:32px; font-weight:bold;">${cnName}</div><div style="font-size:20px; opacity:0.7;">${enName.toLowerCase()}</div>`;
-  showPage("page-mode");
-}
+  <!-- 中文/英文朗讀頁 -->
+  <div id="page-study" class="page hidden">
+    <div class="word-box">
+      <p class="word-text" id="showWord"></p>
+      <div class="audio-btns">
+        <button class="voice-btn" id="voiceBtn">🔊</button>
+        <button class="voice-btn mic-btn" id="micBtn">🎤</button>
+      </div>
+    </div>
+    <p class="voice-tip" id="studyVoiceTip"></p>
+    <div class="operate-btns">
+      <button onclick="nextWord()">下一個Next</button>
+      <button class="back-btn" onclick="backMode()">返回Back</button>
+    </div>
+  </div>
 
-// ===================== 4. 模式選擇綁定（新增拼寫遊戲） =====================
-document.querySelectorAll(".mode-btn").forEach(btn => {
-  btn.onclick = () => {
-    currentMode = btn.dataset.mode;
-    const cnName = catNameMap[currentCat];
-    const enName = currentCat;
-    const titleDom = document.getElementById("currentCatName");
-    if (currentMode === "en") {
-      titleDom.innerHTML = `<div style="font-size:32px; font-weight:bold;">${enName.toLowerCase()}</div><div style="font-size:20px; opacity:0.7;">${cnName}</div>`;
-    } else {
-      titleDom.innerHTML = `<div style="font-size:32px; font-weight:bold;">${cnName}</div><div style="font-size:20px; opacity:0.7;">${enName.toLowerCase()}</div>`;
-    }
+  <!-- 配對遊戲頁 -->
+  <div id="page-match" class="page hidden">
+    <div class="q-box">
+      <p class="q-word" id="qWord"></p>
+      <div class="audio-btns">
+        <button class="voice-btn" id="qVoiceBtn">🔊</button>
+        <button class="voice-btn mic-btn" id="qMicBtn">🎤</button>
+      </div>
+    </div>
+    <p class="voice-tip" id="matchVoiceTip"></p>
+    <div class="option-list" id="optionWrap"></div>
+    <p class="tip" id="matchTip"></p>
+    <button class="back-btn" onclick="backMode()">返回Back</button>
+  </div>
 
-    if (currentMode === "cn" || currentMode === "en") {
-      nextWord();
-      showPage("page-study");
-    } else if (currentMode === "match") {
-      createMatchQ();
-      showPage("page-match");
-    } else if (currentMode === "spell") {
-      initSpellGame();
-      showPage("page-spell");
-    }
-  };
-});
+  <!-- 全新：拼寫遊戲頁面 -->
+  <div id="page-spell" class="page hidden">
+    <!-- 中文詞卡 + 播放按鈕 -->
+    <div class="spell-card-box">
+      <p class="spell-cn-text" id="spellCnWord"></p>
+      <div class="audio-btns">
+        <button class="voice-btn" id="spellVoiceBtn">🔊</button>
+        <button class="voice-btn mic-btn" id="spellMicBtn">🎤</button>
+      </div>
+    </div>
 
-// ===================== 5. 發音函數（固定1200ms定時器，普通話舊版邏輯） =====================
-function playCnVoice(wordCn) {
-  speechSynthesis.cancel();
-  const mandarin = new SpeechSynthesisUtterance(wordCn);
-  mandarin.lang = "zh-CN";
-  mandarin.rate = 1.0;
-  speechSynthesis.speak(mandarin);
-  setTimeout(() => {
-    const cantonese = new SpeechSynthesisUtterance(wordCn);
-    cantonese.lang = "zh-HK";
-    cantonese.rate = 0.95;
-    speechSynthesis.speak(cantonese);
-  }, 1200);
-}
-function playEnVoice(wordEn) {
-  speechSynthesis.cancel();
-  const eng = new SpeechSynthesisUtterance(wordEn);
-  eng.lang = "en-GB";
-  eng.rate = 0.8;
-  speechSynthesis.speak(eng);
-}
+    <!-- 下方橫線作答區 -->
+    <div class="spell-input-line" id="spellAnswerLine"></div>
 
-// ===================== 中文/英文朗讀模式邏輯 =====================
-function nextWord() {
-  const randomIdx = Math.floor(Math.random() * wordList.length);
-  currentWord = wordList[randomIdx];
-  const wordDom = document.getElementById("showWord");
-  document.getElementById("studyVoiceTip").innerText = "";
-  wordDom.innerText = currentMode === "cn" ? currentWord.cn : currentWord.en;
-}
-document.getElementById("voiceBtn").onclick = function () {
-  if (!currentWord) return;
-  currentMode === "cn" ? playCnVoice(currentWord.cn) : playEnVoice(currentWord.en);
-};
+    <!-- 亂序字母選擇區 -->
+    <div class="spell-letter-group" id="spellLetterBox"></div>
 
-// ===================== 通用語音識別函數（讀字判斷正確） =====================
-function startVoiceCheck(targetText, tipEl) {
-  tipEl.innerText = "";
-  if (!SpeechRecognition) {
-    tipEl.innerText = "瀏覽器不支援麥克風辨識";
-    tipEl.style.color = "red";
-    return;
-  }
-  if (recognition) recognition.abort();
-  recognition = new SpeechRecognition();
-  recognition.lang = "zh-HK";
-  recognition.continuous = false;
-  recognition.interimResults = false;
+   <!-- 操作按鈕：取消前一個 / 清空全部 -->
+<div class="spell-control-btns">
+  <button id="spellUndo">↩️ 刪除</button>
+  <button id="spellClearAll">🗑️ 清空</button>
+  <button id="spellCheckAnswer">✅ 確認</button>
+</div>
 
-  tipEl.innerText = "請大聲讀出詞彙...";
-  tipEl.style.color = "#0066cc";
+    <!-- 語音識別提示 -->
+    <p class="voice-tip" id="spellVoiceTip"></p>
+    <!-- 提示文字 -->
+    <p class="spell-tip" id="spellTip"></p>
 
-  recognition.onresult = (e) => {
-    const userRead = e.results[0][0].transcript.trim();
-    if (userRead === targetText) {
-      tipEl.innerText = "答對啦！👏";
-      tipEl.style.color = "#00aa00";
-    } else {
-      tipEl.innerText = `你讀了：${userRead}，再試一次`;
-      tipEl.style.color = "#f03030";
-    }
-  };
-  recognition.onerror = () => {
-    tipEl.innerText = "辨識失敗，請開啟麥克風權限";
-    tipEl.style.color = "red";
-  };
-  recognition.start();
-}
-document.getElementById("micBtn").onclick = function () {
-  const tip = document.getElementById("studyVoiceTip");
-  startVoiceCheck(currentWord.cn, tip);
-};
+    <!-- 切換單詞 / 返回 -->
+    <div class="operate-btns">
+      <button onclick="nextSpellWord()">下一個Next</button>
+      <button class="back-btn" onclick="backMode()">返回Back</button>
+    </div>
+  </div>
+</div>
 
-// ===================== 6. 中英文配對答題邏輯 =====================
-let matchType = "cn2en";
-function createMatchQ() {
-  matchType = Math.random() > 0.5 ? "cn2en" : "en2cn";
-  const correctIdx = Math.floor(Math.random() * wordList.length);
-  const correct = wordList[correctIdx];
-  currentWord = correct;
-  let otherList = wordList.filter((_, i) => i !== correctIdx);
-  otherList = otherList.sort(() => Math.random() - 0.5).slice(0, 2);
-  const options = [correct, ...otherList].sort(() => Math.random() - 0.5);
-
-  const qDom = document.getElementById("qWord");
-  const optWrap = document.getElementById("optionWrap");
-  const tipDom = document.getElementById("matchTip");
-  const voiceTip = document.getElementById("matchVoiceTip");
-  tipDom.innerText = "";
-  voiceTip.innerText = "";
-  optWrap.innerHTML = "";
-
-  if (matchType === "cn2en") {
-    qDom.innerText = correct.cn;
-    options.forEach(item => {
-      const btn = document.createElement("button");
-      btn.innerText = item.en;
-      btn.onclick = () => checkAnswer(item.en, correct.en, tipDom);
-      optWrap.appendChild(btn);
-    });
-  } else {
-    qDom.innerText = correct.en;
-    options.forEach(item => {
-      const btn = document.createElement("button");
-      btn.innerText = item.cn;
-      btn.onclick = () => checkAnswer(item.cn, correct.cn, tipDom);
-      optWrap.appendChild(btn);
-    });
-  }
-}
-document.getElementById("qVoiceBtn").onclick = function () {
-  if (!currentWord) return;
-  matchType === "cn2en" ? playCnVoice(currentWord.cn) : playEnVoice(currentWord.en);
-};
-document.getElementById("qMicBtn").onclick = function () {
-  const tip = document.getElementById("matchVoiceTip");
-  startVoiceCheck(currentWord.cn, tip);
-};
-function checkAnswer(select, right, tipDom) {
-  if (select === right) {
-    tipDom.style.color = "#00aa00";
-    tipDom.innerText = "答對啦！";
-    setTimeout(() => createMatchQ(), 1200);
-  } else {
-    tipDom.style.color = "#f03030";
-    tipDom.innerText = "答錯咯，再試試！";
-  }
-}
-
-// ===================== 7. 拼寫遊戲完整邏輯（僅正確字母、自動橫線） =====================
-function initSpellGame() {
-  const randomIdx = Math.floor(Math.random() * wordList.length);
-  currentWord = wordList[randomIdx];
-  spellTargetEn = currentWord.en.toLowerCase();
-  spellUserAnswer = [];
-  spellShuffleLetters = spellTargetEn.split("").sort(() => Math.random() - 0.5);
-  renderSpellUI();
-  document.getElementById("spellVoiceTip").innerText = "";
-}
-function renderSpellUI() {
-  document.getElementById("spellCnWord").innerText = currentWord.cn;
-  document.getElementById("spellTip").innerText = "";
-  const targetLength = spellTargetEn.length;
-
-  const lineBox = document.getElementById("spellAnswerLine");
-  lineBox.innerHTML = "";
-  for(let i=0; i<targetLength; i++){
-    const cell = document.createElement("div");
-    cell.className = "spell-cell";
-    cell.textContent = spellUserAnswer[i] || "";
-    lineBox.appendChild(cell);
-  }
-  const letterWrap = document.getElementById("spellLetterBox");
-  letterWrap.innerHTML = "";
-  const remainLetters = spellShuffleLetters.filter(l => !spellUserAnswer.includes(l));
-  remainLetters.forEach(letter => {
-    const btn = document.createElement("button");
-    btn.textContent = letter;
-    btn.onclick = function() {
-      spellUserAnswer.push(letter);
-      renderSpellUI();
-    };
-    letterWrap.appendChild(btn);
-  });
-}
-document.getElementById("spellVoiceBtn").onclick = function () {
-  playCnVoice(currentWord.cn);
-};
-document.getElementById("spellMicBtn").onclick = function () {
-  const tip = document.getElementById("spellVoiceTip");
-  startVoiceCheck(currentWord.cn, tip);
-};
-document.addEventListener("DOMContentLoaded", function(){
-  document.getElementById("spellUndo").onclick = function () {
-    if (spellUserAnswer.length > 0) {
-      spellUserAnswer.pop();
-      renderSpellUI();
-    }
-  };
-  document.getElementById("spellClearAll").onclick = function () {
-    spellUserAnswer = [];
-    renderSpellUI();
-  };
-  document.getElementById("spellCheckAnswer").onclick = function () {
-    const userStr = spellUserAnswer.join("");
-    const tipDom = document.getElementById("spellTip");
-    if (userStr === spellTargetEn) {
-      tipDom.style.color = "#00aa00";
-      tipDom.innerText = "拼寫正確！👏";
-      setTimeout(() => initSpellGame(), 1500);
-    } else {
-      tipDom.style.color = "#f03030";
-      tipDom.innerText = "拼寫錯誤，再嘗試一次";
-    }
-  };
-});
-function nextSpellWord() {
-  initSpellGame();
-}
-
-// ===================== 雙重初始化保證：DOM載入+延遲強制渲染 =====================
-document.addEventListener("DOMContentLoaded", function(){
-  // 第一次渲染
-  initCategory();
-  // 延遲300ms再次強制渲染，解決容器延遲載入空白
-  setTimeout(()=>{
-    initCategory();
-  },300);
-});
+<script src="script.js"></script>
+</body>
+</html>
