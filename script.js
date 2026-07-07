@@ -1,4 +1,4 @@
-// ===================== 1. 詞彙數據（英文全部改為小寫，僅開放職業分類） =====================
+// ===================== 1. 詞彙數據 英文全小寫 =====================
 const wordData = {
   Occupation: [
     { cn: "飛機師", en: "pilot" },
@@ -33,7 +33,6 @@ const wordData = {
   People: [],
   All: []
 };
-// 分類繁體對照
 const catNameMap = {
   Color: "顏色",
   Nature: "大自然",
@@ -50,18 +49,15 @@ const catNameMap = {
   All: "全部"
 };
 
-// 全域變數
 let currentCat = "";
 let currentMode = "";
 let wordList = [];
 let currentWord = null;
+let spellTargetEn = "";
+let spellUserAnswer = [];
+let spellShuffleLetters = [];
 
-// 拼寫遊戲專用變數
-let spellTargetEn = ""; // 目標正確英文單詞（小寫）
-let spellUserAnswer = []; // 使用者選取的字母陣列
-let spellShuffleLetters = []; // 亂序字母池（小寫）
-
-// ===================== 頁面切換控制 =====================
+// 頁面切換
 function hideAllPage() {
   document.querySelectorAll(".page").forEach(p => p.classList.add("hidden"));
 }
@@ -72,7 +68,7 @@ function showPage(pageId) {
 function backHome() { showPage("page-home"); }
 function backMode() { showPage("page-mode"); }
 
-// ===================== 首頁分類按鈕渲染（雙行大字小字，僅職業可點） =====================
+// 首頁分類按鈕
 function initCategory() {
   const wrap = document.getElementById("categoryWrap");
   wrap.innerHTML = "";
@@ -91,7 +87,6 @@ function initCategory() {
   });
 }
 
-// 選取分類
 function selectCategory(catKey) {
   currentCat = catKey;
   if (catKey === "All") {
@@ -107,7 +102,7 @@ function selectCategory(catKey) {
   showPage("page-mode");
 }
 
-// ===================== 模式按鈕綁定 & 標題動態切換 =====================
+// 模式切換
 document.querySelectorAll(".mode-btn").forEach(btn => {
   btn.onclick = () => {
     currentMode = btn.dataset.mode;
@@ -127,20 +122,18 @@ document.querySelectorAll(".mode-btn").forEach(btn => {
       createMatchQ();
       showPage("page-match");
     } else if (currentMode === "spell") {
-      initSpellGame();
+      initSpellGame(); // 切換拼寫必執行初始化
       showPage("page-spell");
     }
   };
 });
 
-// ===================== 通用發音函數（退回舊版中文發音邏輯） =====================
+// 通用發音（舊版中文邏輯：普通話→粵語）
 function playCnVoice(wordCn) {
-  // 普通話
   const mandarin = new SpeechSynthesisUtterance(wordCn);
   mandarin.lang = "zh-CN";
   mandarin.rate = 0.9;
   speechSynthesis.speak(mandarin);
-  // 1.2秒後播放粵語，無嵌套英文延遲
   setTimeout(() => {
     const cantonese = new SpeechSynthesisUtterance(wordCn);
     cantonese.lang = "zh-HK";
@@ -155,24 +148,19 @@ function playEnVoice(wordEn) {
   speechSynthesis.speak(engVoice);
 }
 
-// ===================== 中文/英文朗讀模式 =====================
+// 中文/英文朗讀
 function nextWord() {
   const randomIdx = Math.floor(Math.random() * wordList.length);
   currentWord = wordList[randomIdx];
   const wordDom = document.getElementById("showWord");
   wordDom.innerText = currentMode === "cn" ? currentWord.cn : currentWord.en;
 }
-// 朗讀頁播放按鈕
 document.getElementById("voiceBtn").onclick = function () {
   if (!currentWord) return;
-  if (currentMode === "cn") {
-    playCnVoice(currentWord.cn);
-  } else {
-    playEnVoice(currentWord.en);
-  }
+  currentMode === "cn" ? playCnVoice(currentWord.cn) : playEnVoice(currentWord.en);
 };
 
-// ===================== 配對遊戲邏輯（選項英文小寫） =====================
+// 配對遊戲
 let matchType = "cn2en";
 function createMatchQ() {
   matchType = Math.random() > 0.5 ? "cn2en" : "en2cn";
@@ -208,14 +196,9 @@ function createMatchQ() {
     });
   }
 }
-// 配對頁播放按鈕
 document.getElementById("qVoiceBtn").onclick = function () {
   if (!currentWord) return;
-  if (matchType === "cn2en") {
-    playCnVoice(currentWord.cn);
-  } else {
-    playEnVoice(currentWord.en);
-  }
+  matchType === "cn2en" ? playCnVoice(currentWord.cn) : playEnVoice(currentWord.en);
 };
 function checkMatchAnswer(select, right, tipDom) {
   if (select === right) {
@@ -228,11 +211,11 @@ function checkMatchAnswer(select, right, tipDom) {
   }
 }
 
-// ===================== 拼寫遊戲完整邏輯（字母全部小寫，修復按鈕點擊） =====================
+// ===================== 拼寫遊戲核心（徹底修復點擊無反應） =====================
 function initSpellGame() {
   const randomIdx = Math.floor(Math.random() * wordList.length);
   currentWord = wordList[randomIdx];
-  spellTargetEn = currentWord.en.toLowerCase(); // 強制小寫
+  spellTargetEn = currentWord.en.toLowerCase();
   spellUserAnswer = [];
 
   const correctLetters = spellTargetEn.split("");
@@ -245,7 +228,6 @@ function initSpellGame() {
   renderSpellUI();
 }
 
-// 加固渲染函數，字母小寫 + 綁定點擊事件
 function renderSpellUI() {
   document.getElementById("spellCnWord").innerText = currentWord.cn;
   document.getElementById("spellTip").innerText = "";
@@ -254,59 +236,59 @@ function renderSpellUI() {
   const lineBox = document.getElementById("spellAnswerLine");
   lineBox.innerHTML = spellUserAnswer.map(l => `<span>${l}</span>`).join("");
 
-  // 字母按鈕（全部小寫）
+  // 清空舊按鈕，逐個新建並強制綁定點擊
   const letterWrap = document.getElementById("spellLetterBox");
   letterWrap.innerHTML = "";
   spellShuffleLetters.forEach(letter => {
     const btn = document.createElement("button");
     btn.textContent = letter;
-    btn.addEventListener("click", function() {
+    // 強制綁定點擊，不會丟失
+    btn.onclick = function() {
       spellUserAnswer.push(letter);
       renderSpellUI();
-    });
+    };
     letterWrap.appendChild(btn);
   });
 }
 
-// 拼寫頁播放按鈕：只播中文
+// 拼寫播放按鈕
 document.getElementById("spellVoiceBtn").onclick = function () {
   playCnVoice(currentWord.cn);
 };
 
-// 刪除上一個字母
-document.getElementById("spellUndo").addEventListener("click", function () {
-  if (spellUserAnswer.length > 0) {
-    spellUserAnswer.pop();
+// 刪除、清空、確認 全局綁定（頁面載入就綁定，不依賴渲染）
+document.addEventListener("DOMContentLoaded", function(){
+  // 刪除上一個
+  document.getElementById("spellUndo").onclick = function () {
+    if (spellUserAnswer.length > 0) {
+      spellUserAnswer.pop();
+      renderSpellUI();
+    }
+  };
+  // 清空全部
+  document.getElementById("spellClearAll").onclick = function () {
+    spellUserAnswer = [];
     renderSpellUI();
-  }
+  };
+  // 確認答案
+  document.getElementById("spellCheckAnswer").onclick = function () {
+    const userStr = spellUserAnswer.join("");
+    const tipDom = document.getElementById("spellTip");
+    if (userStr === spellTargetEn) {
+      tipDom.style.color = "#00aa00";
+      tipDom.innerText = "拼寫正確！👏";
+      setTimeout(() => initSpellGame(), 1500);
+    } else {
+      tipDom.style.color = "#f03030";
+      tipDom.innerText = "拼寫錯誤，再嘗試一次";
+    }
+  };
 });
 
-// 清空全部
-document.getElementById("spellClearAll").addEventListener("click", function () {
-  spellUserAnswer = [];
-  renderSpellUI();
-});
-
-// 確認答案
-document.getElementById("spellCheckAnswer").addEventListener("click", function () {
-  const userStr = spellUserAnswer.join("");
-  const tipDom = document.getElementById("spellTip");
-  if (userStr === spellTargetEn) {
-    tipDom.style.color = "#00aa00";
-    tipDom.innerText = "拼寫正確！👏";
-    setTimeout(() => initSpellGame(), 1500);
-  } else {
-    tipDom.style.color = "#f03030";
-    tipDom.innerText = "拼寫錯誤，再嘗試一次";
-  }
-});
-
-// 下一單詞
 function nextSpellWord() {
   initSpellGame();
 }
 
-// ===================== 頁面初始化 =====================
 window.onload = function () {
   initCategory();
 };
