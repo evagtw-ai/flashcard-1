@@ -4,15 +4,14 @@
   <meta charset="UTF-8">
   <!-- 移动端适配核心 -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>考小常見字卡</title>
+  <title>靠小常見詞彙</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="container">
   <!-- 首页分类选择 -->
   <div id="page-home" class="page">
-    <h1>認字樂園</h1>
-    <h3>類型</h3>
+    <h1>常見詞彙</h1>
     <div class="category-list" id="categoryWrap"></div>
   </div>
 
@@ -23,31 +22,64 @@
       <button class="mode-btn" data-mode="cn">中文</button>
       <button class="mode-btn" data-mode="en">English</button>
       <button class="mode-btn" data-mode="match">配對遊戲</button>
+      <!-- 新增拼寫遊戲按鈕 -->
+      <button class="mode-btn" data-mode="spell">拼寫遊戲</button>
     </div>
-    <button class="back-btn" onclick="backHome()">返回類型</button>
+    <button class="back-btn" onclick="backHome()">返回Back</button>
   </div>
 
-  <!-- 学习展示页（中文/英文朗读） -->
+  <!-- 中文/英文朗讀頁 -->
   <div id="page-study" class="page hidden">
     <div class="word-box">
       <p class="word-text" id="showWord"></p>
-      <button class="voice-btn" id="voiceBtn">🔊 播放</button>
+      <button class="voice-btn" id="voiceBtn">🔊</button>
     </div>
     <div class="operate-btns">
-      <button onclick="nextWord()">下一个</button>
-      <button class="back-btn" onclick="backMode()">返回</button>
+      <button onclick="nextWord()">下一個Next</button>
+      <button class="back-btn" onclick="backMode()">返回Back</button>
     </div>
   </div>
 
-  <!-- 配对答题页 -->
+  <!-- 配對遊戲頁 -->
   <div id="page-match" class="page hidden">
     <div class="q-box">
       <p class="q-word" id="qWord"></p>
-      <button class="voice-btn" id="qVoiceBtn">🔊 播放</button>
+      <button class="voice-btn" id="qVoiceBtn">🔊</button>
     </div>
     <div class="option-list" id="optionWrap"></div>
     <p class="tip" id="matchTip"></p>
-    <button class="back-btn" onclick="backMode()">返回</button>
+    <button class="back-btn" onclick="backMode()">返回Back</button>
+  </div>
+
+  <!-- 全新：拼寫遊戲頁面 -->
+  <div id="page-spell" class="page hidden">
+    <!-- 中文詞卡 + 播放按鈕 -->
+    <div class="spell-card-box">
+      <p class="spell-cn-text" id="spellCnWord"></p>
+      <button class="voice-btn" id="spellVoiceBtn">🔊</button>
+    </div>
+
+    <!-- 下方橫線作答區 -->
+    <div class="spell-input-line" id="spellAnswerLine"></div>
+
+    <!-- 亂序字母選擇區 -->
+    <div class="spell-letter-group" id="spellLetterBox"></div>
+
+   <!-- 操作按鈕：取消前一個 / 清空全部 -->
+<div class="spell-control-btns">
+  <button id="spellUndo">↩️ 刪除</button>
+  <button id="spellClearAll">🗑️ 清空</button>
+  <button id="spellCheckAnswer">✅ 確認</button>
+</div>
+
+    <!-- 提示文字 -->
+    <p class="spell-tip" id="spellTip"></p>
+
+    <!-- 切換單詞 / 返回 -->
+    <div class="operate-btns">
+      <button onclick="nextSpellWord()">下一個Next</button>
+      <button class="back-btn" onclick="backMode()">返回Back</button>
+    </div>
   </div>
 </div>
 
