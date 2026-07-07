@@ -144,43 +144,41 @@ document.querySelectorAll(".mode-btn").forEach(btn => {
   };
 });
 
-// ===================== 5. 中文/英文朗讀模式邏輯（完全使用你提供的普通話發音代碼） =====================
+// ===================== 5. 發音函數（固定1200ms定時器，普通話舊版邏輯） =====================
+function playCnVoice(wordCn) {
+  speechSynthesis.cancel();
+  const mandarin = new SpeechSynthesisUtterance(wordCn);
+  mandarin.lang = "zh-CN";
+  mandarin.rate = 1.0;
+  speechSynthesis.speak(mandarin);
+  setTimeout(() => {
+    const cantonese = new SpeechSynthesisUtterance(wordCn);
+    cantonese.lang = "zh-HK";
+    cantonese.rate = 0.95;
+    speechSynthesis.speak(cantonese);
+  }, 1200);
+}
+function playEnVoice(wordEn) {
+  speechSynthesis.cancel();
+  const eng = new SpeechSynthesisUtterance(wordEn);
+  eng.lang = "en-GB";
+  eng.rate = 0.8;
+  speechSynthesis.speak(eng);
+}
+
+// ===================== 中文/英文朗讀模式邏輯 =====================
 // 隨機下一個單詞
 function nextWord() {
   const randomIdx = Math.floor(Math.random() * wordList.length);
   currentWord = wordList[randomIdx];
   const wordDom = document.getElementById("showWord");
   document.getElementById("studyVoiceTip").innerText = "";
-  if (currentMode === "cn") {
-    wordDom.innerText = currentWord.cn;
-  } else {
-    wordDom.innerText = currentWord.en;
-  }
+  wordDom.innerText = currentMode === "cn" ? currentWord.cn : currentWord.en;
 }
-// 發音按鈕點擊事件（原普通話定時器版本，無onend回調）
+// 學習頁播放按鈕
 document.getElementById("voiceBtn").onclick = function () {
   if (!currentWord) return;
-  speechSynthesis.cancel();
-  if (currentMode === "cn") {
-    // 普通話朗讀
-    const mandarin = new SpeechSynthesisUtterance(currentWord.cn);
-    mandarin.lang = "zh-CN";
-    mandarin.rate = 1.0;
-    speechSynthesis.speak(mandarin);
-    // 延時後播放粵語
-    setTimeout(() => {
-      const cantonese = new SpeechSynthesisUtterance(currentWord.cn);
-      cantonese.lang = "zh-HK";
-      cantonese.rate = 0.95;
-      speechSynthesis.speak(cantonese);
-    }, 1200);
-  } else {
-    // 英文英式發音優化
-    const eng = new SpeechSynthesisUtterance(currentWord.en);
-    eng.lang = "en-GB";
-    eng.rate = 0.8;
-    speechSynthesis.speak(eng);
-  }
+  currentMode === "cn" ? playCnVoice(currentWord.cn) : playEnVoice(currentWord.en);
 };
 
 // ===================== 通用語音識別函數（讀字判斷正確） =====================
@@ -259,25 +257,10 @@ function createMatchQ() {
     });
   }
 }
-// 配對頁發音按鈕（沿用固定1200ms定時器邏輯）
+// 配對頁發音按鈕
 document.getElementById("qVoiceBtn").onclick = function () {
   if (!currentWord) return;
-  speechSynthesis.cancel();
-  if (matchType === "cn2en") {
-    const md = new SpeechSynthesisUtterance(currentWord.cn);
-    md.lang = "zh-CN";
-    speechSynthesis.speak(md);
-    setTimeout(() => {
-      const ct = new SpeechSynthesisUtterance(currentWord.cn);
-      ct.lang = "zh-HK";
-      speechSynthesis.speak(ct);
-    }, 1200);
-  } else {
-    const en = new SpeechSynthesisUtterance(currentWord.en);
-    en.lang = "en-GB";
-    en.rate = 0.8;
-    speechSynthesis.speak(en);
-  }
+  matchType === "cn2en" ? playCnVoice(currentWord.cn) : playEnVoice(currentWord.en);
 };
 // 配對頁麥克風
 document.getElementById("qMicBtn").onclick = function () {
@@ -334,19 +317,9 @@ function renderSpellUI() {
     letterWrap.appendChild(btn);
   });
 }
-// 拼寫頁發音（同樣使用固定1200ms定時器）
+// 拼寫頁發音
 document.getElementById("spellVoiceBtn").onclick = function () {
-  speechSynthesis.cancel();
-  const mandarin = new SpeechSynthesisUtterance(currentWord.cn);
-  mandarin.lang = "zh-CN";
-  mandarin.rate = 1.0;
-  speechSynthesis.speak(mandarin);
-  setTimeout(() => {
-    const cantonese = new SpeechSynthesisUtterance(currentWord.cn);
-    cantonese.lang = "zh-HK";
-    cantonese.rate = 0.95;
-    speechSynthesis.speak(cantonese);
-  }, 1200);
+  playCnVoice(currentWord.cn);
 };
 // 拼寫麥克風
 document.getElementById("spellMicBtn").onclick = function () {
@@ -382,7 +355,7 @@ function nextSpellWord() {
   initSpellGame();
 }
 
-// ===================== 頁面初始化 =====================
-window.onload = function () {
+// ===================== 關鍵修復：DOM載入完成立刻渲染分類，解決空白 =====================
+document.addEventListener("DOMContentLoaded", function(){
   initCategory();
-};
+});
