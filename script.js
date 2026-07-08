@@ -104,12 +104,37 @@ let spellTargetEn = "";
 let spellUserAnswer = [];
 let spellShuffleLetters = [];
 let currentSentenceIndex = 0;
+let audioPlaying = false; // 語音播放鎖定
+const NEXT_COOLDOWN = 300; // 下一個按鈕防抖冷卻
+let nextBtnLock = false;
 
-// 各模塊已學習索引紀錄（實現不重複隨機）
-let wordUsedIndex = [];     // 單詞朗讀已讀
-let matchUsedIndex = [];    // 配對遊戲已讀
-let spellUsedIndex = [];    // 拼寫遊戲已讀
-let sentenceUsedIndex = []; // 句子認讀已讀
+// 各模塊已學習索引紀錄
+let wordUsedIndex = [];
+let matchUsedIndex = [];
+let spellUsedIndex = [];
+let sentenceUsedIndex = [];
+
+// 本地緩存讀取學習記錄
+function loadStorage() {
+  const data = localStorage.getItem("studyRecord");
+  if (data) {
+    const obj = JSON.parse(data);
+    wordUsedIndex = obj.word || [];
+    matchUsedIndex = obj.match || [];
+    spellUsedIndex = obj.spell || [];
+    sentenceUsedIndex = obj.sentence || [];
+  }
+}
+// 保存學習記錄到本地
+function saveStorage() {
+  const saveObj = {
+    word: wordUsedIndex,
+    match: matchUsedIndex,
+    spell: spellUsedIndex,
+    sentence: sentenceUsedIndex
+  };
+  localStorage.setItem("studyRecord", JSON.stringify(saveObj));
+}
 
 // 自訂完成彈窗封裝函數
 function showFinishModal(resetCallback) {
@@ -126,48 +151,26 @@ function showFinishModal(resetCallback) {
   modal.style.zIndex = "9999";
 
   const box = document.createElement("div");
-  box.style.background = "#fff";
-  box.style.padding = "40px 30px";
-  box.style.borderRadius = "16px";
-  box.style.textAlign = "center";
-  box.style.minWidth = "300px";
-  box.style.maxWidth = "90%";
+  box.className = "modal-box";
 
   const text = document.createElement("p");
-  text.style.fontSize = "26px";
-  text.style.marginBottom = "30px";
-  text.style.color = "#222";
-  text.innerText = "太棒了！已全部學習完成！";
+  text.className = "modal-text";
+  text.innerText = "⭐太棒了！已全部學習完成！⭐";
 
   const btnWrap = document.createElement("div");
-  btnWrap.style.display = "flex";
-  btnWrap.style.gap = "20px";
-  btnWrap.style.justifyContent = "center";
-  btnWrap.style.flexWrap = "wrap";
+  btnWrap.className = "modal-btn-wrap";
 
   const btnAgain = document.createElement("button");
+  btnAgain.className = "modal-again";
   btnAgain.innerText = "再學一次";
-  btnAgain.style.padding = "12px 24px";
-  btnAgain.style.border = "none";
-  btnAgain.style.borderRadius = "8px";
-  btnAgain.style.background = "#34c759";
-  btnAgain.style.color = "#fff";
-  btnAgain.style.fontSize = "18px";
-  btnAgain.style.cursor = "pointer";
   btnAgain.onclick = () => {
     document.body.removeChild(modal);
     resetCallback(true);
   };
 
   const btnBack = document.createElement("button");
+  btnBack.className = "modal-back";
   btnBack.innerText = "返回上一級";
-  btnBack.style.padding = "12px 24px";
-  btnBack.style.border = "none";
-  btnBack.style.borderRadius = "8px";
-  btnBack.style.background = "#999";
-  btnBack.style.color = "#fff";
-  btnBack.style.fontSize = "18px";
-  btnBack.style.cursor = "pointer";
   btnBack.onclick = () => {
     document.body.removeChild(modal);
     resetCallback(false);
@@ -181,8 +184,17 @@ function showFinishModal(resetCallback) {
   document.body.appendChild(modal);
 }
 
-// ===================== 頁面切換控制 =====================
+// 停止所有語音
+function stopAllAudio() {
+  window.speechSynthesis.cancel();
+  audioPlaying = false;
+  const voiceBtnList = document.querySelectorAll(".voice-btn");
+  voiceBtnList.forEach(btn => btn.disabled = false);
+}
+
+// 頁面切換控制
 function hideAllPage() {
+  stopAllAudio();
   document.querySelectorAll(".page").forEach(p => p.classList.add("hidden"));
 }
 function showPage(id) {
@@ -194,7 +206,7 @@ function showPage(id) {
 function backHome() { showPage("page-home"); }
 function backMode() { showPage("page-mode"); }
 
-// ===================== 首頁分類渲染 =====================
+// 首頁分類渲染
 function initCategory() {
   const wrap = document.getElementById("categoryWrap");
   if (!wrap) return;
@@ -230,6 +242,7 @@ function selectCategory(catKey) {
   matchUsedIndex = [];
   spellUsedIndex = [];
   sentenceUsedIndex = [];
+  saveStorage();
   const cnName = catNameMap[currentCat];
   const enName = currentCat;
   const titleDom = document.getElementById("currentCatName");
@@ -237,7 +250,7 @@ function selectCategory(catKey) {
   showPage("page-mode");
 }
 
-// ===================== 模式切換綁定 =====================
+// 模式切換綁定
 document.querySelectorAll(".mode-btn").forEach(btn => {
   btn.onclick = () => {
     currentMode = btn.dataset.mode;
@@ -266,29 +279,49 @@ document.querySelectorAll(".mode-btn").forEach(btn => {
   };
 });
 
-// ===================== 發音：只粵語，無普通話 =====================
+// 發音：只粵語，無普通話，播放鎖定
 function playCnVoice(text) {
+  if (audioPlaying) return;
   speechSynthesis.cancel();
   const cantonese = new SpeechSynthesisUtterance(text);
   cantonese.lang = "zh-HK";
   cantonese.rate = 0.95;
+  audioPlaying = true;
+  const voiceBtnList = document.querySelectorAll(".voice-btn");
+  voiceBtnList.forEach(btn => btn.disabled = true);
+  cantonese.onend = () => {
+    audioPlaying = false;
+    voiceBtnList.forEach(btn => btn.disabled = false);
+  };
   speechSynthesis.speak(cantonese);
 }
 function playEnVoice(text) {
+  if (audioPlaying) return;
   speechSynthesis.cancel();
   const eng = new SpeechSynthesisUtterance(text);
   eng.lang = "en-GB";
   eng.rate = 0.8;
+  audioPlaying = true;
+  const voiceBtnList = document.querySelectorAll(".voice-btn");
+  voiceBtnList.forEach(btn => btn.disabled = true);
+  eng.onend = () => {
+    audioPlaying = false;
+    voiceBtnList.forEach(btn => btn.disabled = false);
+  };
   speechSynthesis.speak(eng);
 }
 
-// ===================== 單詞朗讀｜不重複隨機 =====================
+// 單詞朗讀｜不重複隨機
 function nextWord() {
+  if (nextBtnLock) return;
+  nextBtnLock = true;
+  setTimeout(() => nextBtnLock = false, NEXT_COOLDOWN);
   const total = wordList.length;
   if (wordUsedIndex.length >= total) {
     showFinishModal(function (again) {
       if (again) {
         wordUsedIndex = [];
+        saveStorage();
         nextWord();
       } else {
         showPage("page-mode");
@@ -301,23 +334,36 @@ function nextWord() {
     randomIdx = Math.floor(Math.random() * total);
   } while (wordUsedIndex.includes(randomIdx));
   wordUsedIndex.push(randomIdx);
+  saveStorage();
   currentWord = wordList[randomIdx];
   const wordDom = document.getElementById("showWord");
   wordDom.innerText = currentMode === "cn" ? currentWord.cn : currentWord.en;
+  // 顯示進度
+  let progressDom = document.querySelector(".progress-text");
+  if (!progressDom) {
+    progressDom = document.createElement("p");
+    progressDom.className = "progress-text";
+    document.querySelector("#page-study .word-box").prepend(progressDom);
+  }
+  progressDom.innerText = `已學習 ${wordUsedIndex.length}/${total}`;
 }
 document.getElementById("voiceBtn").onclick = function () {
   if (!currentWord) return;
   currentMode === "cn" ? playCnVoice(currentWord.cn) : playEnVoice(currentWord.en);
 };
 
-// ===================== 配對遊戲｜不重複隨機 =====================
+// 配對遊戲｜不重複隨機
 let matchType = "cn2en";
 function createMatchQ() {
+  if (nextBtnLock) return;
+  nextBtnLock = true;
+  setTimeout(() => nextBtnLock = false, NEXT_COOLDOWN);
   const total = wordList.length;
   if (matchUsedIndex.length >= total) {
     showFinishModal(function (again) {
       if (again) {
         matchUsedIndex = [];
+        saveStorage();
         createMatchQ();
       } else {
         showPage("page-mode");
@@ -330,6 +376,7 @@ function createMatchQ() {
     correctIdx = Math.floor(Math.random() * total);
   } while (matchUsedIndex.includes(correctIdx));
   matchUsedIndex.push(correctIdx);
+  saveStorage();
 
   matchType = Math.random() > 0.5 ? "cn2en" : "en2cn";
   const correct = wordList[correctIdx];
@@ -343,6 +390,14 @@ function createMatchQ() {
   const tipDom = document.getElementById("matchTip");
   tipDom.innerText = "";
   optWrap.innerHTML = "";
+  // 進度
+  let progressDom = document.querySelector("#page-match .progress-text");
+  if (!progressDom) {
+    progressDom = document.createElement("p");
+    progressDom.className = "progress-text";
+    document.querySelector("#page-match .q-box").prepend(progressDom);
+  }
+  progressDom.innerText = `已學習 ${matchUsedIndex.length}/${total}`;
 
   if (matchType === "cn2en") {
     qDom.innerText = correct.cn;
@@ -377,13 +432,17 @@ function checkAnswer(select, right, tipDom) {
   }
 }
 
-// ===================== 拼寫遊戲｜不重複隨機 =====================
+// 拼寫遊戲｜不重複隨機
 function initSpellGame() {
+  if (nextBtnLock) return;
+  nextBtnLock = true;
+  setTimeout(() => nextBtnLock = false, NEXT_COOLDOWN);
   const total = wordList.length;
   if (spellUsedIndex.length >= total) {
     showFinishModal(function (again) {
       if (again) {
         spellUsedIndex = [];
+        saveStorage();
         initSpellGame();
       } else {
         showPage("page-mode");
@@ -396,12 +455,21 @@ function initSpellGame() {
     randomIdx = Math.floor(Math.random() * total);
   } while (spellUsedIndex.includes(randomIdx));
   spellUsedIndex.push(randomIdx);
+  saveStorage();
 
   currentWord = wordList[randomIdx];
   spellTargetEn = currentWord.en.toLowerCase();
   spellUserAnswer = [];
   spellShuffleLetters = spellTargetEn.split("").sort(() => Math.random() - 0.5);
   renderSpellUI();
+  // 進度
+  let progressDom = document.querySelector("#page-spell .progress-text");
+  if (!progressDom) {
+    progressDom = document.createElement("p");
+    progressDom.className = "progress-text";
+    document.querySelector("#page-spell .spell-card-box").prepend(progressDom);
+  }
+  progressDom.innerText = `已學習 ${spellUsedIndex.length}/${total}`;
 }
 function renderSpellUI() {
   document.getElementById("spellCnWord").innerText = currentWord.cn;
@@ -459,13 +527,17 @@ function nextSpellWord() {
   initSpellGame();
 }
 
-// ===================== 句子認讀｜不重複隨機 =====================
+// 句子認讀｜不重複隨機
 function nextSentence() {
+  if (nextBtnLock) return;
+  nextBtnLock = true;
+  setTimeout(() => nextBtnLock = false, NEXT_COOLDOWN);
   const total = sentenceCnList.length;
   if (sentenceUsedIndex.length >= total) {
     showFinishModal(function (again) {
       if (again) {
         sentenceUsedIndex = [];
+        saveStorage();
         nextSentence();
       } else {
         showPage("page-mode");
@@ -478,6 +550,7 @@ function nextSentence() {
     randomIdx = Math.floor(Math.random() * total);
   } while (sentenceUsedIndex.includes(randomIdx));
   sentenceUsedIndex.push(randomIdx);
+  saveStorage();
   currentSentenceIndex = randomIdx;
   const sentenceDom = document.getElementById("showSentence");
   if(currentMode === "en"){
@@ -485,6 +558,14 @@ function nextSentence() {
   }else{
     sentenceDom.innerText = sentenceCnList[currentSentenceIndex];
   }
+  // 進度
+  let progressDom = document.querySelector("#page-sentence .progress-text");
+  if (!progressDom) {
+    progressDom = document.createElement("p");
+    progressDom.className = "progress-text";
+    document.querySelector("#page-sentence .word-box").prepend(progressDom);
+  }
+  progressDom.innerText = `已學習 ${sentenceUsedIndex.length}/${total}`;
 }
 document.getElementById("sentenceVoiceBtn").onclick = function () {
   if(currentMode === "en"){
@@ -494,8 +575,9 @@ document.getElementById("sentenceVoiceBtn").onclick = function () {
   }
 };
 
-// ===================== 頁面初始化 =====================
+// 頁面初始化
 document.addEventListener("DOMContentLoaded", function () {
+  loadStorage();
   initCategory();
   setTimeout(() => initCategory(), 300);
 });
