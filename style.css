@@ -3,11 +3,16 @@
   padding: 0;
   box-sizing: border-box;
   font-family: "Microsoft Yahei", sans-serif;
+  /* 禁止文字選取 */
+  user-select: none;
+  -webkit-user-select: none;
 }
 body {
   background: #f0f8ff;
   min-height: 100vh;
   padding: 15px;
+  /* 禁止移動端滑動彈動 */
+  overscroll-behavior: none;
 }
 .container {
   max-width: 1200px;
@@ -19,7 +24,6 @@ body {
   gap: 25px;
   padding: 20px 10px;
   min-height: calc(100vh - 30px);
-  /* 所有頁面整體內容垂直居中 */
   justify-content: center;
 }
 .hidden {
@@ -34,6 +38,12 @@ h2 {
   text-align: center;
   color: #333;
   font-size: clamp(20px, 4vw, 32px);
+}
+/* 進度文字 */
+.progress-text {
+  text-align: center;
+  font-size: 18px;
+  color: #666;
 }
 /* 首頁分類按鈕居中排列 */
 .category-list {
@@ -51,9 +61,14 @@ h2 {
   cursor: pointer;
   width: 100%;
   max-width: 160px;
+  transition: all 0.15s ease;
 }
 .category-list button:hover:not(:disabled) {
   background: #2677d9;
+  transform: scale(0.97);
+}
+.category-list button:active:not(:disabled) {
+  transform: scale(0.94);
 }
 .category-list button:disabled {
   opacity: 0.45;
@@ -74,6 +89,14 @@ h2 {
   background: #36cbcb;
   color: #fff;
   cursor: pointer;
+  transition: all 0.15s ease;
+}
+.mode-btn:hover {
+  transform: scale(0.97);
+  background: #2ab8b8;
+}
+.mode-btn:active {
+  transform: scale(0.94);
 }
 /* 閱讀卡片：文字區塊水平垂直居中 */
 .word-box, .q-box, .spell-card-box {
@@ -90,16 +113,25 @@ h2 {
   gap: 30px;
   width: 100%;
 }
-.word-text, .q-word, .spell-cn-text {
+.word-text, .q-word, .spell-cn-text, #showSentence {
   font-size: clamp(36px, 9vw, 66px);
   color: #111;
-  line-height: 1.6;
+  line-height: 1.8;
+  word-break: break-all;
 }
 .voice-btn {
   background: transparent;
   border: none;
   font-size: clamp(26px, 5vw, 38px);
   cursor: pointer;
+  transition: all 0.15s ease;
+}
+.voice-btn:active {
+  transform: scale(0.88);
+}
+.voice-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
 }
 .operate-btns {
   display: flex;
@@ -113,14 +145,21 @@ h2 {
   border: none;
   border-radius: 10px;
   cursor: pointer;
+  transition: all 0.15s ease;
 }
 .operate-btns button:first-child {
   background: #52c41a;
   color: #fff;
 }
+.operate-btns button:first-child:active {
+  transform: scale(0.94);
+}
 .back-btn {
   background: #999;
   color: white;
+}
+.back-btn:active {
+  transform: scale(0.94);
 }
 .option-list {
   display: flex;
@@ -136,6 +175,11 @@ h2 {
   border-radius: 10px;
   width: 100%;
   max-width: 400px;
+  transition: all 0.15s ease;
+}
+.option-list button:active {
+  transform: scale(0.97);
+  background: #f0f8ff;
 }
 .tip, .spell-tip {
   text-align: center;
@@ -172,6 +216,11 @@ h2 {
   border: 2px solid #36cbcb;
   background: #fff;
   border-radius: 10px;
+  transition: all 0.15s ease;
+}
+.spell-letter-group button:active {
+  transform: scale(0.88);
+  background: #e8fbfb;
 }
 .spell-control-btns {
   display: flex;
@@ -179,6 +228,44 @@ h2 {
   gap: 12px;
   justify-content: center;
 }
-#spellUndo { background: #ff9500; color:#fff; border:none; padding:12px 22px; border-radius:10px; font-size:18px; }
-#spellClearAll { background: #ff3b30; color:#fff; border:none; padding:12px 22px; border-radius:10px; font-size:18px; }
-#spellCheckAnswer { background: #34c759; color:#fff; border:none; padding:12px 22px; border-radius:10px; font-size:18px; }
+#spellUndo { background: #ff9500; color:#fff; border:none; padding:12px 22px; border-radius:10px; font-size:18px; transition:0.15s; }
+#spellUndo:active { transform: scale(0.94); }
+#spellClearAll { background: #ff3b30; color:#fff; border:none; padding:12px 22px; border-radius:10px; font-size:18px; transition:0.15s; }
+#spellClearAll:active { transform: scale(0.94); }
+#spellCheckAnswer { background: #34c759; color:#fff; border:none; padding:12px 22px; border-radius:10px; font-size:18px; transition:0.15s; }
+#spellCheckAnswer:active { transform: scale(0.94); }
+/* 自定義完成彈窗美化 */
+.modal-box {
+  background: #fffef0;
+  padding: 40px 30px;
+  border-radius: 20px;
+  text-align: center;
+  min-width: 300px;
+  max-width: 90%;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  animation: popIn 0.2s ease-out;
+}
+@keyframes popIn {
+  0% { transform: scale(0.8); opacity:0; }
+  100% { transform: scale(1); opacity:1; }
+}
+.modal-text {
+  font-size: 28px;
+  margin-bottom: 30px;
+  color: #2266cc;
+  font-weight: bold;
+}
+.modal-btn-wrap {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.modal-again {
+  padding:12px 24px; border:none; border-radius:8px; background:#34c759; color:#fff; font-size:18px; cursor:pointer; transition:0.15s;
+}
+.modal-again:active { transform: scale(0.94); }
+.modal-back {
+  padding:12px 24px; border:none; border-radius:8px; background:#999; color:#fff; font-size:18px; cursor:pointer; transition:0.15s;
+}
+.modal-back:active { transform: scale(0.94); }
