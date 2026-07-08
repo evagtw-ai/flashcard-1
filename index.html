@@ -18,7 +18,6 @@
   <div id="page-mode" class="page hidden">
     <h2 id="currentCatName"></h2>
     <div class="mode-btns">
-      <!-- 順序學習改名：學習模式，專用class mode-order -->
       <button class="mode-btn mode-order" data-mode="orderStudy">學習模式</button>
       <button class="mode-btn" data-mode="cn">中文</button>
       <button class="mode-btn" data-mode="en">English</button>
@@ -84,15 +83,22 @@
     </div>
   </div>
 
-  <!-- 學習模式頁：左右中英文並排 -->
+  <!-- 學習模式頁：左右兩張獨立卡片 -->
   <div id="page-orderStudy" class="page hidden">
-    <div class="word-box order-box">
-      <div class="order-row">
-        <div class="order-cn" id="orderCnText"></div>
-        <div class="order-en" id="orderEnText"></div>
+    <p class="progress-text"></p>
+    <div class="order-card-wrap">
+      <!-- 左側中文獨立卡片 -->
+      <div class="order-card cn-card">
+        <p class="card-label">中文</p>
+        <p class="order-cn" id="orderCnText"></p>
       </div>
-      <button class="voice-btn" id="orderVoiceBtn">🔊</button>
+      <!-- 右側英文獨立卡片 -->
+      <div class="order-card en-card">
+        <p class="card-label">English</p>
+        <p class="order-en" id="orderEnText"></p>
+      </div>
     </div>
+    <button class="voice-btn" id="orderVoiceBtn">🔊 播放讀音</button>
     <div class="operate-btns">
       <button onclick="prevOrderWord()">上一個</button>
       <button onclick="nextOrderWord()">下一個</button>
