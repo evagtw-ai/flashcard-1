@@ -49,13 +49,13 @@ const catNameMap = {
   All: "全部"
 };
 
-// 最新句子庫（你提供版本 + 修正英文語法錯誤）
+// 最新句子庫
 const sentenceCnList = [
   "老師教學生知識。",
   "醫生醫治病人。",
   "護士會幫病人打針。",
   "警察會維持治安。",
-  "這是一位消防員，他會救火又救人。",
+  "這是一位消防員啊，他會救火又救人。",
   "郵差送信到我家。",
   "司機在馬路上駕駛汽車。",
   "廚師在廚房烹飪食物。",
@@ -111,7 +111,7 @@ let matchUsedIndex = [];    // 配對遊戲已讀
 let spellUsedIndex = [];    // 拼寫遊戲已讀
 let sentenceUsedIndex = []; // 句子認讀已讀
 
-// ===================== 頁面切換控制 =====================
+// 頁面切換控制
 function hideAllPage() {
   document.querySelectorAll(".page").forEach(p => p.classList.add("hidden"));
 }
@@ -124,7 +124,7 @@ function showPage(id) {
 function backHome() { showPage("page-home"); }
 function backMode() { showPage("page-mode"); }
 
-// ===================== 首頁分類渲染 =====================
+// 首頁分類渲染
 function initCategory() {
   const wrap = document.getElementById("categoryWrap");
   if (!wrap) return;
@@ -167,7 +167,7 @@ function selectCategory(catKey) {
   showPage("page-mode");
 }
 
-// ===================== 模式切換綁定 =====================
+// 模式切換綁定
 document.querySelectorAll(".mode-btn").forEach(btn => {
   btn.onclick = () => {
     currentMode = btn.dataset.mode;
@@ -196,7 +196,7 @@ document.querySelectorAll(".mode-btn").forEach(btn => {
   };
 });
 
-// ===================== 發音函數（只粵語，無普通話） =====================
+// 發音：只粵語，無普通話
 function playCnVoice(text) {
   speechSynthesis.cancel();
   const cantonese = new SpeechSynthesisUtterance(text);
@@ -212,12 +212,11 @@ function playEnVoice(text) {
   speechSynthesis.speak(eng);
 }
 
-// ===================== 1. 單詞朗讀｜不重複隨機 =====================
+// 單詞朗讀｜不重複隨機
 function nextWord() {
   const total = wordList.length;
-  // 全部學完判斷
   if (wordUsedIndex.length >= total) {
-    const again = confirm("本類詞彙已全部學習完畢！\n是否重新再學一次？");
+    const again = confirm("太棒了！已全部學習完成！\n確定=再學一次  /  取消=返回上一級");
     if (again) {
       wordUsedIndex = [];
     } else {
@@ -225,7 +224,6 @@ function nextWord() {
       return;
     }
   }
-  // 抽取未使用索引
   let randomIdx;
   do {
     randomIdx = Math.floor(Math.random() * total);
@@ -240,12 +238,12 @@ document.getElementById("voiceBtn").onclick = function () {
   currentMode === "cn" ? playCnVoice(currentWord.cn) : playEnVoice(currentWord.en);
 };
 
-// ===================== 2. 配對遊戲｜不重複隨機 =====================
+// 配對遊戲｜不重複隨機
 let matchType = "cn2en";
 function createMatchQ() {
   const total = wordList.length;
   if (matchUsedIndex.length >= total) {
-    const again = confirm("本類詞彙配對已全部完成！\n是否重新再學一次？");
+    const again = confirm("太棒了！已全部學習完成！\n確定=再學一次  /  取消=返回上一級");
     if (again) {
       matchUsedIndex = [];
     } else {
@@ -305,11 +303,11 @@ function checkAnswer(select, right, tipDom) {
   }
 }
 
-// ===================== 3. 拼寫遊戲｜不重複隨機 =====================
+// 拼寫遊戲｜不重複隨機
 function initSpellGame() {
   const total = wordList.length;
   if (spellUsedIndex.length >= total) {
-    const again = confirm("本類詞彙拼寫已全部完成！\n是否重新再學一次？");
+    const again = confirm("太棒了！已全部學習完成！\n確定=再學一次  /  取消=返回上一級");
     if (again) {
       spellUsedIndex = [];
     } else {
@@ -385,11 +383,11 @@ function nextSpellWord() {
   initSpellGame();
 }
 
-// ===================== 4. 句子認讀｜不重複隨機 =====================
+// 句子認讀｜不重複隨機
 function nextSentence() {
   const total = sentenceCnList.length;
   if (sentenceUsedIndex.length >= total) {
-    const again = confirm("所有句子已全部學習完畢！\n是否重新再學一次？");
+    const again = confirm("太棒了！已全部學習完成！\n確定=再學一次  /  取消=返回上一級");
     if (again) {
       sentenceUsedIndex = [];
     } else {
@@ -408,7 +406,7 @@ function nextSentence() {
     sentenceDom.innerText = sentenceEnList[currentSentenceIndex];
   }else{
     sentenceDom.innerText = sentenceCnList[currentSentenceIndex];
-}
+  }
 }
 document.getElementById("sentenceVoiceBtn").onclick = function () {
   if(currentMode === "en"){
@@ -418,7 +416,7 @@ document.getElementById("sentenceVoiceBtn").onclick = function () {
   }
 };
 
-// ===================== 頁面初始化 =====================
+// 頁面初始化
 document.addEventListener("DOMContentLoaded", function () {
   initCategory();
   setTimeout(() => initCategory(), 300);
