@@ -18,8 +18,8 @@
   <div id="page-mode" class="page hidden">
     <h2 id="currentCatName"></h2>
     <div class="mode-btns">
-      <!-- 順序學習放最上方，新增專用 class 用於區分顏色 -->
-      <button class="mode-btn mode-order" data-mode="sentence">順序學習</button>
+      <!-- 順序學習改名：學習模式，專用class mode-order -->
+      <button class="mode-btn mode-order" data-mode="orderStudy">學習模式</button>
       <button class="mode-btn" data-mode="cn">中文</button>
       <button class="mode-btn" data-mode="en">English</button>
       <button class="mode-btn" data-mode="match">配對遊戲</button>
@@ -29,7 +29,7 @@
     <button class="back-btn" onclick="backHome()">返回Back</button>
   </div>
 
-  <!-- 中文/英文朗讀頁 -->
+  <!-- 中文/英文單獨朗讀頁 -->
   <div id="page-study" class="page hidden">
     <div class="word-box">
       <p class="word-text" id="showWord"></p>
@@ -72,7 +72,7 @@
     </div>
   </div>
 
-  <!-- 新增：句子認讀頁面 -->
+  <!-- 句子認讀頁 -->
   <div id="page-sentence" class="page hidden">
     <div class="word-box">
       <p class="word-text" id="showSentence"></p>
@@ -84,10 +84,13 @@
     </div>
   </div>
 
-  <!-- 新增：順序學習頁面 -->
+  <!-- 學習模式頁：左右中英文並排 -->
   <div id="page-orderStudy" class="page hidden">
-    <div class="word-box">
-      <p class="word-text" id="orderWordText"></p>
+    <div class="word-box order-box">
+      <div class="order-row">
+        <div class="order-cn" id="orderCnText"></div>
+        <div class="order-en" id="orderEnText"></div>
+      </div>
       <button class="voice-btn" id="orderVoiceBtn">🔊</button>
     </div>
     <div class="operate-btns">
