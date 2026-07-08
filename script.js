@@ -338,7 +338,10 @@ function selectCategory(catKey) {
   saveStorage();
   const cnName = catNameMap[currentCat];
   const titleDom = document.getElementById("currentCatName");
-  titleDom.innerHTML = `<div style="font-size:32px; font-weight:bold;">${cnName}</div>`;
+titleDom.innerHTML = `
+  <div style="font-size:32px; font-weight:bold;">${cnName}</div>
+  <div style="font-size:20px; opacity:0.7;">${currentCat.toLowerCase()}</div>
+`;
   showPage("page-mode");
 }
 
