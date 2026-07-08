@@ -1,341 +1,110 @@
-// 詞彙庫：新增 Place 地點分類，格式與 Occupation 完全一致
-const wordData = {
-  Occupation: [
-    { cn: "飛機師", en: "pilot" },
-    { cn: "郵差", en: "postman" },
-    { cn: "護士", en: "nurse" },
-    { cn: "醫生", en: "doctor" },
-    { cn: "老師", en: "teacher" },
-    { cn: "太空人", en: "astronaut" },
-    { cn: "警察", en: "policeman" },
-    { cn: "消防員", en: "fireman" },
-    { cn: "農夫", en: "farmer" },
-    { cn: "廚師", en: "chef" },
-    { cn: "畫家", en: "artist" },
-    { cn: "歌手", en: "singer" },
-    { cn: "演員", en: "actor" },
-    { cn: "漁夫", en: "fisherman" },
-    { cn: "建築工人", en: "builder" },
-    { cn: "工程師", en: "engineer" },
-    { cn: "司機", en: "driver" },
-    { cn: "學生", en: "student" }
-  ],
-  Place: [
-    { cn: "圖書館", en: "library" },
-    { cn: "機場", en: "airport" },
-    { cn: "學校", en: "school" },
-    { cn: "超級市場", en: "supermarket" },
-    { cn: "巴士站", en: "bus stop" },
-    { cn: "火車站", en: "train station" },
-    { cn: "公園", en: "park" },
-    { cn: "花園", en: "garden" },
-    { cn: "銀行", en: "bank" },
-    { cn: "泳池", en: "swimming pool" },
-    { cn: "街道", en: "street" },
-    { cn: "睡房", en: "bedroom" },
-    { cn: "客廳", en: "living room" },
-    { cn: "廚房", en: "kitchen" },
-    { cn: "家裡", en: "home" },
-    { cn: "浴室", en: "bathroom" },
-    { cn: "博物館", en: "museum" },
-    { cn: "電影院", en: "cinema" },
-    { cn: "麵包店", en: "bakery" },
-    { cn: "服裝店", en: "clothes shop" },
-    { cn: "玩具店", en: "toy shop" },
-    { cn: "警察局", en: "police station" },
-    { cn: "郵局", en: "post office" },
-    { cn: "消防局", en: "fire station" },
-    { cn: "書店", en: "book shop" },
-    { cn: "醫院", en: "hospital" },
-    { cn: "酒店", en: "hotel" },
-    { cn: "商場", en: "shopping mall" },
-    { cn: "遊樂場", en: "playground" },
-    { cn: "餐廳", en: "restaurant" }
-  ],
-  Color: [],
-  Nature: [],
-  Clothing: [],
-  Object: [],
-  Vegetable: [],
-  Place: [],
-  Animal: [],
-  Transportation: [],
-  Stationary: [],
-  Fruit: [],
-  People: [],
-  All: []
-};
-const catNameMap = {
-  Color: "顏色",
-  Nature: "大自然",
-  Clothing: "衣服",
-  Object: "物件",
-  Vegetable: "蔬菜",
-  Place: "地點",
-  Occupation: "職業",
-  Animal: "動物",
-  Transportation: "交通",
-  Stationary: "文具",
-  Fruit: "水果",
-  People: "人物",
-  All: "全部"
-};
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>幼升小常見詞彙</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+  <!-- 首頁分類選擇 -->
+  <div id="page-home" class="page">
+    <h1>常見詞彙</h1>
+    <div class="category-list" id="categoryWrap"></div>
+  </div>
 
-// 句子庫：原有職業句子 + 新增地點配套簡易句子（Cambridge Starters 5歲適用）
-const sentenceCnList = [
-  // 職業句子
-  "老師教學生知識。",
-  "醫生醫治病人。",
-  "護士會幫病人打針。",
-  "警察會維持治安。",
-  "這是一位消防員，他會救火又救人。",
-  "郵差送信到我家。",
-  "司機在馬路上駕駛汽車。",
-  "廚師在廚房烹飪食物。",
-  "侍應生在餐廳招待客人。",
-  "理髮師在理髮店修剪頭髮。",
-  "清潔工人在街道上清洗地板。",
-  "飛機師會駕駛飛機。",
-  "太空人在火星探索生物。",
-  "農夫在田地裡種植蔬菜。",
-  "畫家用畫筆繪畫風景。",
-  "歌手在舞台上開心唱歌。",
-  "演員表演跳舞。",
-  "漁夫坐船出海釣魚。",
-  "建築工人搭建高樓。",
-  "工程師設計堅固的橋樑。",
-  // 新增地點句子
-  "爸爸在客廳看電視。",
-  "媽媽在廚房洗菜。",
-  "哥哥在浴室洗澡。",
-  "姐姐在書房做功課。",
-  "妹妹在睡房睡覺。",
-  "弟弟在餐廳吃飯。",
-  "星期日，我和媽媽去超級市場買東西。",
-  "哥哥在公園裡踢足球。",
-  "圖書館要保持安靜。",
-  "我們去商場購物。",
-  "我在遊樂場玩滑梯。",
-  "這家麵包店有好吃蛋糕。",
-  "醫院可以幫助生病的人。",
-  "我和朋友去電影院看卡通。",
-  "郵局可以寄信件。",
-  "玩具店有很多可愛玩具。",
-  "酒店適合外出旅行住。",
-  "花園裡有美麗花朵。",
-  "學校是我們學習的地方。",
-  "巴士站等車要排隊。"
-];
-const sentenceEnList = [
-  // 職業英文句
-  "The teacher teaches students to read and write.",
-  "The doctor helps sick people.",
-  "The nurse works in the hospital.",
-  "The policeman catches bad people.",
-  "The fireman puts out fires and saves people.",
-  "The postman brings letters to my home.",
-  "The driver drives a car on the road.",
-  "The chef cooks food in the kitchen.",
-  "The waiter helps guests in the restaurant.",
-  "The barber cuts hair in the barbershop.",
-  "The cleaner cleans the street floor.",
-  "The pilot flies a plane high up.",
-  "The astronaut explores Mars.",
-  "The farmer grows vegetables in fields.",
-  "The artist draws scenery with a brush.",
-  "The singer sings happily on stage.",
-  "The actor dances on stage.",
-  "The fisherman goes fishing by boat.",
-  "The builder builds tall buildings.",
-  "The engineer makes strong bridges.",
-  // 地點英文句（Starters 簡單句式，5歲適合）
-  "Dad watches TV in the living room.",
-  "Mum washes vegetables in the kitchen.",
-  "Brother takes a bath in the bathroom.",
-  "Sister does homework in the study.",
-  "Little sister sleeps in the bedroom.",
-  "Little brother eats food in the restaurant.",
-  "On Sunday, Mum and I go shopping at the supermarket.",
-  "Brother plays football in the park.",
-  "We must be quiet in the library.",
-  "We go shopping at the shopping mall.",
-  "I play slide in the playground.",
-  "This bakery has yummy cakes.",
-  "Hospitals help sick people.",
-  "My friend and I watch cartoons at the cinema.",
-  "We send letters at the post office.",
-  "There are many cute toys in the toy shop.",
-  "Hotels are good for trips.",
-  "There are pretty flowers in the garden.",
-  "School is the place for us to learn.",
-  "We queue up at the bus stop."
-];
+  <!-- 模式選擇頁 -->
+  <div id="page-mode" class="page hidden">
+    <h2 id="currentCatName"></h2>
+    <div class="mode-btns">
+      <button class="mode-btn mode-order" data-mode="orderStudy">學習模式</button>
+      <button class="mode-btn" data-mode="cn">中文</button>
+      <button class="mode-btn" data-mode="en">English</button>
+      <button class="mode-btn" data-mode="match">配對遊戲</button>
+      <button class="mode-btn" data-mode="spell">拼寫遊戲</button>
+      <button class="mode-btn" data-mode="sentence">句子認讀</button>
+    </div>
+    <button class="back-btn" onclick="backHome()">返回Back</button>
+  </div>
 
-// 全域變數
-let currentCat = "";
-let currentMode = "";
-let wordList = [];
-let currentWord = null;
-let spellTargetEn = "";
-let spellUserAnswer = [];
-let spellShuffleLetters = [];
-let currentSentenceIndex = 0;
-let audioPlaying = false;
-const NEXT_COOLDOWN = 300;
-let nextBtnLock = false;
+  <!-- 中文/英文單獨朗讀頁 -->
+  <div id="page-study" class="page hidden">
+    <div class="word-box">
+      <p class="word-text" id="showWord"></p>
+      <button class="voice-btn" id="voiceBtn">🔊</button>
+    </div>
+    <div class="operate-btns">
+      <button onclick="nextWord()">下一個Next</button>
+      <button class="back-btn" onclick="backMode()">返回Back</button>
+    </div>
+  </div>
 
-// 順序學習專用索引
-let orderIndex = 0;
+  <!-- 配對遊戲頁 -->
+  <div id="page-match" class="page hidden">
+    <div class="q-box">
+      <p class="q-word" id="qWord"></p>
+      <button class="voice-btn" id="qVoiceBtn">🔊</button>
+    </div>
+    <div class="option-list" id="optionWrap"></div>
+    <p class="tip" id="matchTip"></p>
+    <button class="back-btn" onclick="backMode()">返回Back</button>
+  </div>
 
-// 各模塊已學習記錄
-let wordUsedIndex = [];
-let matchUsedIndex = [];
-let spellUsedIndex = [];
-let sentenceUsedIndex = [];
+  <!-- 拼寫遊戲頁 -->
+  <div id="page-spell" class="page hidden">
+    <div class="spell-card-box">
+      <p class="spell-cn-text" id="spellCnWord"></p>
+      <button class="voice-btn" id="spellVoiceBtn">🔊</button>
+    </div>
+    <div class="spell-input-line" id="spellAnswerLine"></div>
+    <div class="spell-letter-group" id="spellLetterBox"></div>
+    <div class="spell-control-btns">
+      <button id="spellUndo">↩️ 刪除</button>
+      <button id="spellClearAll">🗑️ 清空</button>
+      <button id="spellCheckAnswer">✅ 確認</button>
+    </div>
+    <p class="spell-tip" id="spellTip"></p>
+    <div class="operate-btns">
+      <button onclick="nextSpellWord()">下一個Next</button>
+      <button class="back-btn" onclick="backMode()">返回Back</button>
+    </div>
+  </div>
 
-// 本地緩存
-function loadStorage() {
-  const data = localStorage.getItem("studyRecord");
-  if (data) {
-    const obj = JSON.parse(data);
-    wordUsedIndex = obj.word || [];
-    matchUsedIndex = obj.match || [];
-    spellUsedIndex = obj.spell || [];
-    sentenceUsedIndex = obj.sentence || [];
-  }
-}
-function saveStorage() {
-  const saveObj = {
-    word: wordUsedIndex,
-    match: matchUsedIndex,
-    spell: spellUsedIndex,
-    sentence: sentenceUsedIndex
-  };
-  localStorage.setItem("studyRecord", JSON.stringify(saveObj));
-}
+  <!-- 句子認讀頁 -->
+  <div id="page-sentence" class="page hidden">
+    <div class="word-box">
+      <p class="word-text" id="showSentence"></p>
+      <button class="voice-btn" id="sentenceVoiceBtn">🔊</button>
+    </div>
+    <div class="operate-btns">
+      <button onclick="nextSentence()">下一個Next</button>
+      <button class="back-btn" onclick="backMode()">返回Back</button>
+    </div>
+  </div>
 
-// 自訂完成彈窗
-function showFinishModal(resetCallback) {
-  const modal = document.createElement("div");
-  modal.style.position = "fixed";
-  modal.style.left = "0";
-  modal.style.top = "0";
-  modal.style.width = "100vw";
-  modal.style.height = "100vh";
-  modal.style.background = "rgba(0,0,0,0.5)";
-  modal.style.display = "flex";
-  modal.style.justifyContent = "center";
-  modal.style.alignItems = "center";
-  modal.style.zIndex = "9999";
+  <!-- 學習模式頁：左右兩張獨立卡片（移除標籤文字） -->
+  <div id="page-orderStudy" class="page hidden">
+    <p class="progress-text"></p>
+    <div class="order-card-wrap">
+      <!-- 左側中文獨立卡片 -->
+      <div class="order-card cn-card">
+        <p class="order-cn" id="orderCnText"></p>
+      </div>
+      <!-- 右側英文獨立卡片 -->
+      <div class="order-card en-card">
+        <p class="order-en" id="orderEnText"></p>
+      </div>
+    </div>
+    <button class="voice-btn" id="orderVoiceBtn">🔊 播放讀音</button>
+    <div class="operate-btns">
+      <button onclick="prevOrderWord()">上一個</button>
+      <button onclick="nextOrderWord()">下一個</button>
+      <button class="back-btn" onclick="backMode()">返回Back</button>
+    </div>
+  </div>
+</div>
 
-  const box = document.createElement("div");
-  box.className = "modal-box";
-
-  const text = document.createElement("p");
-  text.className = "modal-text";
-  text.innerText = "⭐太棒了！已全部學習完成！⭐";
-
-  const btnWrap = document.createElement("div");
-  btnWrap.className = "modal-btn-wrap";
-
-  const btnAgain = document.createElement("button");
-  btnAgain.className = "modal-again";
-  btnAgain.innerText = "再學一次";
-  btnAgain.onclick = () => {
-    document.body.removeChild(modal);
-    resetCallback(true);
-  };
-
-  const btnBack = document.createElement("button");
-  btnBack.className = "modal-back";
-  btnBack.innerText = "返回上一級";
-  btnBack.onclick = () => {
-    document.body.removeChild(modal);
-    resetCallback(false);
-  };
-
-  btnWrap.appendChild(btnAgain);
-  btnWrap.appendChild(btnBack);
-  box.appendChild(text);
-  box.appendChild(btnWrap);
-  modal.appendChild(box);
-  document.body.appendChild(modal);
-}
-
-// 停止所有語音
-function stopAllAudio() {
-  window.speechSynthesis.cancel();
-  audioPlaying = false;
-  const voiceBtnList = document.querySelectorAll(".voice-btn");
-  voiceBtnList.forEach(btn => btn.disabled = false);
-}
-
-// 頁面切換
-function hideAllPage() {
-  stopAllAudio();
-  document.querySelectorAll(".page").forEach(p => p.classList.add("hidden"));
-}
-function showPage(id) {
-  hideAllPage();
-  const pageDom = document.getElementById(id);
-  pageDom.classList.remove("hidden");
-  if (id === "page-home") initCategory();
-}
-function backHome() { showPage("page-home"); }
-function backMode() { showPage("page-mode"); }
-
-// 首頁分類渲染（Place 地點按鈕自動生成，顏色同 Occupation）
-function initCategory() {
-  const wrap = document.getElementById("categoryWrap");
-  if (!wrap) return;
-  wrap.innerHTML = "";
-  Object.keys(wordData).forEach(key => {
-    const btn = document.createElement("button");
-    btn.innerHTML = `
-      <div style="font-size:22px; font-weight:bold;">${catNameMap[key]}</div>
-      <div style="font-size:14px; opacity:0.8;">${key}</div>
-    `;
-    // 只有 Occupation、Place 開放可點擊，其餘分類禁用
-    if (key === "Occupation" || key === "Place") {
-      btn.onclick = () => selectCategory(key);
-    } else {
-      btn.disabled = true;
-    }
-    wrap.appendChild(btn);
-  });
-}
-function selectCategory(catKey) {
-  currentCat = catKey;
-  if (catKey === "All") {
-    wordList = [];
-    Object.values(wordData).forEach(arr => wordList.push(...arr));
-  } else {
-    wordList = [...wordData[catKey]];
-  }
-  if (wordList.length === 0) {
-    alert("當前分類暫無單詞，敬請期待！");
-    return;
-  }
-  // 切換分類重置所有學習記錄 + 順序索引歸零
-  wordUsedIndex = [];
-  matchUsedIndex = [];
-  spellUsedIndex = [];
-  sentenceUsedIndex = [];
-  orderIndex = 0;
-  saveStorage();
-  const cnName = catNameMap[currentCat];
-  const enName = currentCat;
-  const titleDom = document.getElementById("currentCatName");
-  titleDom.innerHTML = `<div style="font-size:32px; font-weight:bold;">${cnName}</div><div style="font-size:20px; opacity:0.7;">${enName.toLowerCase()}</div>`;
-  showPage("page-mode");
-}
-
-// 模式切換綁定
-document.querySelectorAll(".mode-btn").forEach(btn => {
-  btn.onclick = () => {
-    currentMode = btn.dataset.mode;
-    const cnName = catNameMap[currentCat];
-    const enName = currentCat;
-    const titleDom = document.getElementById("currentCatName");
-    if (currentMode === "en") {
-      titleDom.innerHTML = `<div style="font
+<script src="script.js"></script>
+</body>
+</html>
