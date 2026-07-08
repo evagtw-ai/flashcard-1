@@ -270,6 +270,7 @@ h2 {
 }
 .modal-back:active { transform: scale(0.94); }
 
+
 /* ========== 學習模式 左右獨立卡片樣式 ========== */
 #page-orderStudy {
   flex: 1;
@@ -285,14 +286,14 @@ h2 {
   flex: 1;
   min-width: 260px;
   max-width: 48%;
-  padding: 60px 20px;
+  padding: 80px 20px; /* 加大上下內邊距，文字居中更美觀 */
   border-radius: 16px;
   box-shadow: 0 2px 12px #ddd;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 24px;
+  /* 刪除 label 專用 gap，只保留文字自身間距 */
 }
 .cn-card {
   background: #ffffff;
@@ -302,11 +303,7 @@ h2 {
   background: #f7fdff;
   border: 3px solid #36cbcb;
 }
-.card-label {
-  font-size: 22px;
-  color: #666;
-  font-weight: bold;
-}
+/* 刪除 .card-label 樣式，不再顯示標題文字 */
 .order-cn {
   font-size: clamp(36px, 9vw, 66px);
   color: #111;
