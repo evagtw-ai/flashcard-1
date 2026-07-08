@@ -49,7 +49,7 @@ const catNameMap = {
   All: "全部"
 };
 
-// 句子庫：前11句完全保留你原文，新增19句合計30句
+// 最新句子庫（你提供版本 + 修正英文語法錯誤）
 const sentenceCnList = [
   "老師教學生知識。",
   "醫生醫治病人。",
@@ -62,41 +62,37 @@ const sentenceCnList = [
   "侍應生在餐廳招待病人。",
   "理髮師在理髮店修剪頭髮。",
   "清潔工人在街道上清洗地板。",
-  "飛機師駕駛飛機飛上高空。",
+  "飛機師會駕駛飛機。",
   "太空人在火星探索生物。",
   "農夫在田地裡種植蔬菜。",
   "畫家用畫筆繪畫風景。",
   "歌手在舞台上開心唱歌。",
   "演員表演跳舞。",
   "漁夫坐船出海釣魚。",
-  "建築工人搭建高大房屋。",
-  "工程師設計堅固的橋樑。",
-  "學生在課室認真學習。",
-  "老師教導小朋友寫字讀書。",
-  "廚師做出美味的差點。",
+  "建築工人搭建高樓。",
+  "工程師設計堅固的橋樑。"
 ];
 const sentenceEnList = [
-"The teacher helps students music.",
+  "The teacher teaches students to read and write.",
   "The doctor helps sick people.",
   "The nurse works in the hospital.",
-  "The policeman cathes bad people.",
+  "The policeman catches bad people.",
   "The fireman puts out fires and saves people.",
   "The postman brings letters to my home.",
   "The driver drives a car on the road.",
   "The chef cooks food in the kitchen.",
+  "The waiter helps guests in the restaurant.",
+  "The barber cuts hair in the barbershop.",
   "The cleaner cleans the street floor.",
   "The pilot flies a plane high up.",
-  "The astronaut flies to space.",
-  "The farmer grows fruit and vegetables.",
-  "The artist draws nice pictures.",
-  "The singer sings nice songs.",
-  "The actor tells fun stories.",
-  "The fisherman catches fish at sea.",
-  "The builder builds tall houses.",
-  "The engineer makes safe bridges.",
-  "The student learns with the teacher.",
-  "The teacher teaches kids to read and write.",
-  "The doctor looks after little kids.",
+  "The astronaut explores Mars.",
+  "The farmer grows vegetables in fields.",
+  "The artist draws scenery with a brush.",
+  "The singer sings happily on stage.",
+  "The actor dances on stage.",
+  "The fisherman goes fishing by boat.",
+  "The builder builds tall buildings.",
+  "The engineer makes strong bridges."
 ];
 
 // 全域變數
@@ -109,7 +105,13 @@ let spellUserAnswer = [];
 let spellShuffleLetters = [];
 let currentSentenceIndex = 0;
 
-// 頁面切換
+// 各模塊已學習索引紀錄（實現不重複隨機）
+let wordUsedIndex = [];     // 單詞朗讀已讀
+let matchUsedIndex = [];    // 配對遊戲已讀
+let spellUsedIndex = [];    // 拼寫遊戲已讀
+let sentenceUsedIndex = []; // 句子認讀已讀
+
+// ===================== 頁面切換控制 =====================
 function hideAllPage() {
   document.querySelectorAll(".page").forEach(p => p.classList.add("hidden"));
 }
@@ -122,7 +124,7 @@ function showPage(id) {
 function backHome() { showPage("page-home"); }
 function backMode() { showPage("page-mode"); }
 
-// 首頁分類渲染
+// ===================== 首頁分類渲染 =====================
 function initCategory() {
   const wrap = document.getElementById("categoryWrap");
   if (!wrap) return;
@@ -153,6 +155,11 @@ function selectCategory(catKey) {
     alert("當前分類暫無單詞，敬請期待！");
     return;
   }
+  // 切換分類重置所有學習記錄
+  wordUsedIndex = [];
+  matchUsedIndex = [];
+  spellUsedIndex = [];
+  sentenceUsedIndex = [];
   const cnName = catNameMap[currentCat];
   const enName = currentCat;
   const titleDom = document.getElementById("currentCatName");
@@ -160,7 +167,7 @@ function selectCategory(catKey) {
   showPage("page-mode");
 }
 
-// 模式切換綁定
+// ===================== 模式切換綁定 =====================
 document.querySelectorAll(".mode-btn").forEach(btn => {
   btn.onclick = () => {
     currentMode = btn.dataset.mode;
@@ -172,6 +179,7 @@ document.querySelectorAll(".mode-btn").forEach(btn => {
     } else {
       titleDom.innerHTML = `<div style="font-size:32px; font-weight:bold;">${cnName}</div><div style="font-size:20px; opacity:0.7;">${enName.toLowerCase()}</div>`;
     }
+
     if (currentMode === "cn" || currentMode === "en") {
       nextWord();
       showPage("page-study");
@@ -188,7 +196,7 @@ document.querySelectorAll(".mode-btn").forEach(btn => {
   };
 });
 
-// 發音：只粵語，無普通話
+// ===================== 發音函數（只粵語，無普通話） =====================
 function playCnVoice(text) {
   speechSynthesis.cancel();
   const cantonese = new SpeechSynthesisUtterance(text);
@@ -204,9 +212,25 @@ function playEnVoice(text) {
   speechSynthesis.speak(eng);
 }
 
-// 單詞朗讀
+// ===================== 1. 單詞朗讀｜不重複隨機 =====================
 function nextWord() {
-  const randomIdx = Math.floor(Math.random() * wordList.length);
+  const total = wordList.length;
+  // 全部學完判斷
+  if (wordUsedIndex.length >= total) {
+    const again = confirm("本類詞彙已全部學習完畢！\n是否重新再學一次？");
+    if (again) {
+      wordUsedIndex = [];
+    } else {
+      showPage("page-mode");
+      return;
+    }
+  }
+  // 抽取未使用索引
+  let randomIdx;
+  do {
+    randomIdx = Math.floor(Math.random() * total);
+  } while (wordUsedIndex.includes(randomIdx));
+  wordUsedIndex.push(randomIdx);
   currentWord = wordList[randomIdx];
   const wordDom = document.getElementById("showWord");
   wordDom.innerText = currentMode === "cn" ? currentWord.cn : currentWord.en;
@@ -216,21 +240,38 @@ document.getElementById("voiceBtn").onclick = function () {
   currentMode === "cn" ? playCnVoice(currentWord.cn) : playEnVoice(currentWord.en);
 };
 
-// 配對遊戲
+// ===================== 2. 配對遊戲｜不重複隨機 =====================
 let matchType = "cn2en";
 function createMatchQ() {
+  const total = wordList.length;
+  if (matchUsedIndex.length >= total) {
+    const again = confirm("本類詞彙配對已全部完成！\n是否重新再學一次？");
+    if (again) {
+      matchUsedIndex = [];
+    } else {
+      showPage("page-mode");
+      return;
+    }
+  }
+  let correctIdx;
+  do {
+    correctIdx = Math.floor(Math.random() * total);
+  } while (matchUsedIndex.includes(correctIdx));
+  matchUsedIndex.push(correctIdx);
+
   matchType = Math.random() > 0.5 ? "cn2en" : "en2cn";
-  const correctIdx = Math.floor(Math.random() * wordList.length);
   const correct = wordList[correctIdx];
   currentWord = correct;
   let otherList = wordList.filter((_, i) => i !== correctIdx);
   otherList = otherList.sort(() => Math.random() - 0.5).slice(0, 2);
   const options = [correct, ...otherList].sort(() => Math.random() - 0.5);
+
   const qDom = document.getElementById("qWord");
   const optWrap = document.getElementById("optionWrap");
   const tipDom = document.getElementById("matchTip");
   tipDom.innerText = "";
   optWrap.innerHTML = "";
+
   if (matchType === "cn2en") {
     qDom.innerText = correct.cn;
     options.forEach(item => {
@@ -264,9 +305,24 @@ function checkAnswer(select, right, tipDom) {
   }
 }
 
-// 拼寫遊戲
+// ===================== 3. 拼寫遊戲｜不重複隨機 =====================
 function initSpellGame() {
-  const randomIdx = Math.floor(Math.random() * wordList.length);
+  const total = wordList.length;
+  if (spellUsedIndex.length >= total) {
+    const again = confirm("本類詞彙拼寫已全部完成！\n是否重新再學一次？");
+    if (again) {
+      spellUsedIndex = [];
+    } else {
+      showPage("page-mode");
+      return;
+    }
+  }
+  let randomIdx;
+  do {
+    randomIdx = Math.floor(Math.random() * total);
+  } while (spellUsedIndex.includes(randomIdx));
+  spellUsedIndex.push(randomIdx);
+
   currentWord = wordList[randomIdx];
   spellTargetEn = currentWord.en.toLowerCase();
   spellUserAnswer = [];
@@ -329,15 +385,30 @@ function nextSpellWord() {
   initSpellGame();
 }
 
-// 句子認讀功能
+// ===================== 4. 句子認讀｜不重複隨機 =====================
 function nextSentence() {
-  currentSentenceIndex = Math.floor(Math.random() * sentenceCnList.length);
+  const total = sentenceCnList.length;
+  if (sentenceUsedIndex.length >= total) {
+    const again = confirm("所有句子已全部學習完畢！\n是否重新再學一次？");
+    if (again) {
+      sentenceUsedIndex = [];
+    } else {
+      showPage("page-mode");
+      return;
+    }
+  }
+  let randomIdx;
+  do {
+    randomIdx = Math.floor(Math.random() * total);
+  } while (sentenceUsedIndex.includes(randomIdx));
+  sentenceUsedIndex.push(randomIdx);
+  currentSentenceIndex = randomIdx;
   const sentenceDom = document.getElementById("showSentence");
   if(currentMode === "en"){
     sentenceDom.innerText = sentenceEnList[currentSentenceIndex];
   }else{
     sentenceDom.innerText = sentenceCnList[currentSentenceIndex];
-  }
+}
 }
 document.getElementById("sentenceVoiceBtn").onclick = function () {
   if(currentMode === "en"){
@@ -347,7 +418,7 @@ document.getElementById("sentenceVoiceBtn").onclick = function () {
   }
 };
 
-// 頁面初始化
+// ===================== 頁面初始化 =====================
 document.addEventListener("DOMContentLoaded", function () {
   initCategory();
   setTimeout(() => initCategory(), 300);
