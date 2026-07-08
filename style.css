@@ -3,7 +3,6 @@
   padding: 0;
   box-sizing: border-box;
   font-family: "Microsoft Yahei", sans-serif;
-  /* 禁止文字選取 */
   user-select: none;
   -webkit-user-select: none;
 }
@@ -11,7 +10,6 @@ body {
   background: #f0f8ff;
   min-height: 100vh;
   padding: 15px;
-  /* 禁止移動端滑動彈動 */
   overscroll-behavior: none;
 }
 .container {
@@ -39,13 +37,11 @@ h2 {
   color: #333;
   font-size: clamp(20px, 4vw, 32px);
 }
-/* 進度文字 */
 .progress-text {
   text-align: center;
   font-size: 18px;
   color: #666;
 }
-/* 首頁分類按鈕居中排列 */
 .category-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -74,7 +70,6 @@ h2 {
   opacity: 0.45;
   cursor: not-allowed;
 }
-/* 模式頁按鈕居中 */
 .mode-btns {
   display: flex;
   flex-wrap: wrap;
@@ -98,7 +93,13 @@ h2 {
 .mode-btn:active {
   transform: scale(0.94);
 }
-/* 閱讀卡片：文字區塊水平垂直居中 */
+/* 學習模式專用藍色按鈕 */
+.mode-order {
+  background: #409eff !important;
+}
+.mode-order:hover {
+  background: #2677d9 !important;
+}
 .word-box, .q-box, .spell-card-box {
   flex: 1;
   display: flex;
@@ -113,7 +114,7 @@ h2 {
   gap: 30px;
   width: 100%;
 }
-.word-text, .q-word, .spell-cn-text, #showSentence {
+.word-text, .q-word, .spell-cn-text {
   font-size: clamp(36px, 9vw, 66px);
   color: #111;
   line-height: 1.8;
@@ -187,7 +188,6 @@ h2 {
   font-weight: bold;
   min-height: 30px;
 }
-/* 拼寫模塊居中 */
 .spell-input-line {
   min-height: 70px;
   display: flex;
@@ -227,36 +227,6 @@ h2 {
   flex-wrap: wrap;
   gap: 12px;
   justify-content: center;
-}
-/* 學習模式專用按鈕 藍色 */
-.mode-order {
-  background: #409eff !important;
-}
-.mode-order:hover {
-  background: #2677d9 !important;
-}
-
-/* 學習模式頁 左右分欄布局 */
-.order-box {
-  width: 100%;
-}
-.order-row {
-  display: flex;
-  width: 100%;
-  justify-content: space-around;
-  align-items: center;
-  gap: 30px;
-  flex-wrap: wrap;
-}
-.order-cn {
-  font-size: clamp(36px, 9vw, 66px);
-  color: #111;
-  font-weight: bold;
-}
-.order-en {
-  font-size: clamp(36px, 9vw, 66px);
-  color: #2266cc;
-  font-weight: bold;
 }
 #spellUndo { background: #ff9500; color:#fff; border:none; padding:12px 22px; border-radius:10px; font-size:18px; transition:0.15s; }
 #spellUndo:active { transform: scale(0.94); }
@@ -299,3 +269,51 @@ h2 {
   padding:12px 24px; border:none; border-radius:8px; background:#999; color:#fff; font-size:18px; cursor:pointer; transition:0.15s;
 }
 .modal-back:active { transform: scale(0.94); }
+
+/* ========== 學習模式 左右獨立卡片樣式 ========== */
+#page-orderStudy {
+  flex: 1;
+}
+.order-card-wrap {
+  display: flex;
+  width: 100%;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.order-card {
+  flex: 1;
+  min-width: 260px;
+  max-width: 48%;
+  padding: 60px 20px;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px #ddd;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+}
+.cn-card {
+  background: #ffffff;
+  border: 3px solid #409eff;
+}
+.en-card {
+  background: #f7fdff;
+  border: 3px solid #36cbcb;
+}
+.card-label {
+  font-size: 22px;
+  color: #666;
+  font-weight: bold;
+}
+.order-cn {
+  font-size: clamp(36px, 9vw, 66px);
+  color: #111;
+  font-weight: bold;
+}
+.order-en {
+  font-size: clamp(36px, 9vw, 66px);
+  color: #2266cc;
+  font-weight: bold;
+}
