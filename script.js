@@ -49,7 +49,7 @@ const catNameMap = {
   All: "全部"
 };
 
-// 最新句子庫（修正消防員句子）
+// 句子庫
 const sentenceCnList = [
   "老師教學生知識。",
   "醫生醫治病人。",
@@ -108,16 +108,16 @@ let audioPlaying = false;
 const NEXT_COOLDOWN = 300;
 let nextBtnLock = false;
 
-// 順序學習專用變數
+// 順序學習專用索引
 let orderIndex = 0;
 
-// 各模塊已學習索引紀錄
+// 各模塊已學習記錄
 let wordUsedIndex = [];
 let matchUsedIndex = [];
 let spellUsedIndex = [];
 let sentenceUsedIndex = [];
 
-// 本地緩存讀取學習記錄
+// 本地緩存
 function loadStorage() {
   const data = localStorage.getItem("studyRecord");
   if (data) {
@@ -128,7 +128,6 @@ function loadStorage() {
     sentenceUsedIndex = obj.sentence || [];
   }
 }
-// 保存學習記錄到本地
 function saveStorage() {
   const saveObj = {
     word: wordUsedIndex,
@@ -139,7 +138,7 @@ function saveStorage() {
   localStorage.setItem("studyRecord", JSON.stringify(saveObj));
 }
 
-// 自訂完成彈窗封裝函數
+// 自訂完成彈窗
 function showFinishModal(resetCallback) {
   const modal = document.createElement("div");
   modal.style.position = "fixed";
@@ -195,7 +194,7 @@ function stopAllAudio() {
   voiceBtnList.forEach(btn => btn.disabled = false);
 }
 
-// 頁面切換控制
+// 頁面切換
 function hideAllPage() {
   stopAllAudio();
   document.querySelectorAll(".page").forEach(p => p.classList.add("hidden"));
@@ -209,7 +208,7 @@ function showPage(id) {
 function backHome() { showPage("page-home"); }
 function backMode() { showPage("page-mode"); }
 
-// 首頁分類渲染
+// 分類渲染
 function initCategory() {
   const wrap = document.getElementById("categoryWrap");
   if (!wrap) return;
@@ -240,7 +239,6 @@ function selectCategory(catKey) {
     alert("當前分類暫無單詞，敬請期待！");
     return;
   }
-  // 切換分類重置所有學習記錄 + 順序索引歸零
   wordUsedIndex = [];
   matchUsedIndex = [];
   spellUsedIndex = [];
@@ -286,7 +284,7 @@ document.querySelectorAll(".mode-btn").forEach(btn => {
   };
 });
 
-// 發音：只粵語，無普通話，播放鎖定
+// 語音播放
 function playCnVoice(text) {
   if (audioPlaying) return;
   speechSynthesis.cancel();
@@ -318,10 +316,9 @@ function playEnVoice(text) {
   speechSynthesis.speak(eng);
 }
 
-// ========== 新增：順序學習模塊（不隨機，固定順序） ==========
+// ========== 學習模式（順序展示，左右中英文同時顯示） ==========
 function renderOrderWord() {
   const total = wordList.length;
-  // 進度文字
   let progressDom = document.querySelector("#page-orderStudy .progress-text");
   if (!progressDom) {
     progressDom = document.createElement("p");
@@ -330,14 +327,10 @@ function renderOrderWord() {
   }
   progressDom.innerText = `當前第 ${orderIndex + 1}/${total}`;
 
-  const wordDom = document.getElementById("orderWordText");
-  if(currentMode === "en"){
-    wordDom.innerText = wordList[orderIndex].en;
-  }else{
-    wordDom.innerText = wordList[orderIndex].cn;
-  }
+  const item = wordList[orderIndex];
+  document.getElementById("orderCnText").innerText = item.cn;
+  document.getElementById("orderEnText").innerText = item.en;
 }
-// 上一個
 function prevOrderWord() {
   if (orderIndex <= 0) {
     alert("已經是第一個單詞！");
@@ -346,7 +339,7 @@ function prevOrderWord() {
   orderIndex--;
   renderOrderWord();
 }
-// 下一個
+function nextSentence() {}
 function nextOrderWord() {
   const total = wordList.length;
   if (orderIndex >= total - 1) {
@@ -363,14 +356,24 @@ function nextOrderWord() {
   orderIndex++;
   renderOrderWord();
 }
-// 順序學習喇叭
-document.getElementById("orderVoiceBtn").onclick = function () {
+// 學習模式喇叭：先讀中文，再讀英文
+document.getElementById("orderVoiceBtn").onclick = async function () {
+  if (audioPlaying) return;
   const item = wordList[orderIndex];
-  currentMode === "cn" ? playCnVoice(item.cn) : playEnVoice(item.en);
+  playCnVoice(item.cn);
+  const waitEnd = () => new Promise(res => {
+    const timer = setInterval(() => {
+      if (!audioPlaying) {
+        clearInterval(timer);
+        res();
+      }
+    }, 100);
+  });
+  await waitEnd();
+  playEnVoice(item.en);
 };
 
-// ========== 原有挑戰模塊（隨機不重複） ==========
-// 單詞朗讀｜隨機挑戰
+// ========== 單詞隨機挑戰 ==========
 function nextWord() {
   if (nextBtnLock) return;
   nextBtnLock = true;
@@ -397,7 +400,6 @@ function nextWord() {
   currentWord = wordList[randomIdx];
   const wordDom = document.getElementById("showWord");
   wordDom.innerText = currentMode === "cn" ? currentWord.cn : currentWord.en;
-  // 顯示進度
   let progressDom = document.querySelector("#page-study .progress-text");
   if (!progressDom) {
     progressDom = document.createElement("p");
@@ -411,7 +413,7 @@ document.getElementById("voiceBtn").onclick = function () {
   currentMode === "cn" ? playCnVoice(currentWord.cn) : playEnVoice(currentWord.en);
 };
 
-// 配對遊戲｜隨機挑戰
+// ========== 配對遊戲 ==========
 let matchType = "cn2en";
 function createMatchQ() {
   if (nextBtnLock) return;
@@ -443,12 +445,12 @@ function createMatchQ() {
   let otherList = wordList.filter((_, i) => i !== correctIdx);
   otherList = otherList.sort(() => Math.random() - 0.5).slice(0, 2);
   const options = [correct, ...otherList].sort(() => Math.random() - 0.5);
+
   const qDom = document.getElementById("qWord");
   const optWrap = document.getElementById("optionWrap");
   const tipDom = document.getElementById("matchTip");
   tipDom.innerText = "";
   optWrap.innerHTML = "";
-  // 進度
   let progressDom = document.querySelector("#page-match .progress-text");
   if (!progressDom) {
     progressDom = document.createElement("p");
@@ -490,7 +492,7 @@ function checkAnswer(select, right, tipDom) {
   }
 }
 
-// 拼寫遊戲｜隨機挑戰
+// ========== 拼寫遊戲 ==========
 function initSpellGame() {
   if (nextBtnLock) return;
   nextBtnLock = true;
@@ -520,7 +522,6 @@ function initSpellGame() {
   spellUserAnswer = [];
   spellShuffleLetters = spellTargetEn.split("").sort(() => Math.random() - 0.5);
   renderSpellUI();
-  // 進度
   let progressDom = document.querySelector("#page-spell .progress-text");
   if (!progressDom) {
     progressDom = document.createElement("p");
@@ -585,7 +586,7 @@ function nextSpellWord() {
   initSpellGame();
 }
 
-// 句子認讀｜隨機挑戰
+// ========== 句子認讀 ==========
 function nextSentence() {
   if (nextBtnLock) return;
   nextBtnLock = true;
