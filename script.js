@@ -1,5 +1,8 @@
-// 詞彙庫
+// ==============================================
+// 【詞彙庫分類區塊】可獨立增刪分類
+// ==============================================
 const wordData = {
+  // 模塊1：職業 Occupation
   Occupation: [
     { cn: "飛機師", en: "pilot" },
     { cn: "郵差", en: "postman" },
@@ -20,12 +23,45 @@ const wordData = {
     { cn: "司機", en: "driver" },
     { cn: "學生", en: "student" }
   ],
+  // 模塊2：地點 Place（本次新增完整詞庫）
+  Place: [
+    { cn: "圖書館", en: "library" },
+    { cn: "機場", en: "airport" },
+    { cn: "學校", en: "school" },
+    { cn: "超級市場", en: "supermarket" },
+    { cn: "巴士站", en: "bus stop" },
+    { cn: "火車站", en: "train station" },
+    { cn: "公園", en: "park" },
+    { cn: "花園", en: "garden" },
+    { cn: "銀行", en: "bank" },
+    { cn: "泳池", en: "swimming pool" },
+    { cn: "街道", en: "street" },
+    { cn: "睡房", en: "bedroom" },
+    { cn: "客廳", en: "living room" },
+    { cn: "廚房", en: "kitchen" },
+    { cn: "家裡", en: "home" },
+    { cn: "浴室", en: "bathroom" },
+    { cn: "博物館", en: "museum" },
+    { cn: "電影院", en: "cinema" },
+    { cn: "麵包店", en: "bakery" },
+    { cn: "服裝店", en: "clothes shop" },
+    { cn: "玩具店", en: "toy shop" },
+    { cn: "警察局", en: "police station" },
+    { cn: "郵局", en: "post office" },
+    { cn: "消防局", en: "fire station" },
+    { cn: "書店", en: "book shop" },
+    { cn: "醫院", en: "hospital" },
+    { cn: "酒店", en: "hotel" },
+    { cn: "商場", en: "shopping mall" },
+    { cn: "遊樂場", en: "playground" },
+    { cn: "餐廳", en: "restaurant" }
+  ],
+  // 後續新增分類放這裡，例如 Color / Animal / Fruit 等
   Color: [],
   Nature: [],
   Clothing: [],
   Object: [],
   Vegetable: [],
-  Place: [],
   Animal: [],
   Transportation: [],
   Stationary: [],
@@ -33,13 +69,15 @@ const wordData = {
   People: [],
   All: []
 };
+
+// 分類名稱映射
 const catNameMap = {
   Color: "顏色",
   Nature: "大自然",
   Clothing: "衣服",
   Object: "物件",
   Vegetable: "蔬菜",
-  Place: "地方",
+  Place: "地點",
   Occupation: "職業",
   Animal: "動物",
   Transportation: "交通",
@@ -49,8 +87,11 @@ const catNameMap = {
   All: "全部"
 };
 
-// 句子庫
+// ==============================================
+// 【句子庫分類區塊】按詞彙分類隔離
+// ==============================================
 const sentenceCnList = [
+  // 職業專用句子
   "老師教學生知識。",
   "醫生醫治病人。",
   "護士會幫病人打針。",
@@ -59,7 +100,7 @@ const sentenceCnList = [
   "郵差送信到我家。",
   "司機在馬路上駕駛汽車。",
   "廚師在廚房烹飪食物。",
-  "侍應生在餐廳招待病人。",
+  "侍應生在餐廳招待客人。",
   "理髮師在理髮店修剪頭髮。",
   "清潔工人在街道上清洗地板。",
   "飛機師會駕駛飛機。",
@@ -70,9 +111,31 @@ const sentenceCnList = [
   "演員表演跳舞。",
   "漁夫坐船出海釣魚。",
   "建築工人搭建高樓。",
-  "工程師設計堅固的橋樑。"
+  "工程師設計堅固的橋樑。",
+  // 地點 Place 專用句子（5歲 Cambridge Starters）
+  "爸爸在客廳看電視。",
+  "媽媽在廚房洗菜。",
+  "哥哥在浴室洗澡。",
+  "姐姐在書房做功課。",
+  "妹妹在睡房睡覺。",
+  "弟弟在餐廳吃飯。",
+  "星期日，我和媽媽去超級市場買東西。",
+  "哥哥在公園裡踢足球。",
+  "圖書館要保持安靜。",
+  "我們去商場購物。",
+  "我在遊樂場玩滑梯。",
+  "這家麵包店有好吃蛋糕。",
+  "醫院可以幫助生病的人。",
+  "我和朋友去電影院看卡通。",
+  "郵局可以寄信件。",
+  "玩具店有很多可愛玩具。",
+  "酒店適合外出旅行住。",
+  "花園裡有美麗花朵。",
+  "學校是我們學習的地方。",
+  "巴士站等車要排隊。"
 ];
 const sentenceEnList = [
+  // 職業英文句
   "The teacher teaches students to read and write.",
   "The doctor helps sick people.",
   "The nurse works in the hospital.",
@@ -92,10 +155,33 @@ const sentenceEnList = [
   "The actor dances on stage.",
   "The fisherman goes fishing by boat.",
   "The builder builds tall buildings.",
-  "The engineer makes strong bridges."
+  "The engineer makes strong bridges.",
+  // 地點英文句
+  "Dad watches TV in the living room.",
+  "Mum washes vegetables in the kitchen.",
+  "Brother takes a bath in the bathroom.",
+  "Sister does homework in the study.",
+  "Little sister sleeps in the bedroom.",
+  "Little brother eats food in the restaurant.",
+  "On Sunday, Mum and I go shopping at the supermarket.",
+  "Brother plays football in the park.",
+  "We must be quiet in the library.",
+  "We go shopping at the shopping mall.",
+  "I play slide in the playground.",
+  "This bakery has yummy cakes.",
+  "Hospitals help sick people.",
+  "My friend and I watch cartoons at the cinema.",
+  "We send letters at the post office.",
+  "There are many cute toys in the toy shop.",
+  "Hotels are good for trips.",
+  "There are pretty flowers in the garden.",
+  "School is the place for us to learn.",
+  "We queue up at the bus stop."
 ];
 
-// 全域變數
+// ==============================================
+// 全域通用變數（不動分類詞彙，獨立區塊）
+// ==============================================
 let currentCat = "";
 let currentMode = "";
 let wordList = [];
@@ -107,17 +193,18 @@ let currentSentenceIndex = 0;
 let audioPlaying = false;
 const NEXT_COOLDOWN = 300;
 let nextBtnLock = false;
-
-// 順序學習專用索引
 let orderIndex = 0;
 
-// 各模塊已學習記錄
+// 各模塊學習記錄
 let wordUsedIndex = [];
 let matchUsedIndex = [];
 let spellUsedIndex = [];
 let sentenceUsedIndex = [];
 
-// 本地緩存
+// ==============================================
+// 通用工具函數（獨立區塊，不與詞庫混雜）
+// ==============================================
+// 本地緩存讀寫
 function loadStorage() {
   const data = localStorage.getItem("studyRecord");
   if (data) {
@@ -138,7 +225,7 @@ function saveStorage() {
   localStorage.setItem("studyRecord", JSON.stringify(saveObj));
 }
 
-// 自訂完成彈窗
+// 自定義完成彈窗
 function showFinishModal(resetCallback) {
   const modal = document.createElement("div");
   modal.style.position = "fixed";
@@ -194,7 +281,7 @@ function stopAllAudio() {
   voiceBtnList.forEach(btn => btn.disabled = false);
 }
 
-// 頁面切換
+// 頁面切換控制
 function hideAllPage() {
   stopAllAudio();
   document.querySelectorAll(".page").forEach(p => p.classList.add("hidden"));
@@ -208,7 +295,10 @@ function showPage(id) {
 function backHome() { showPage("page-home"); }
 function backMode() { showPage("page-mode"); }
 
-// 分類渲染
+// ==============================================
+// 渲染/交互業務函數（分功能隔離，不摻雜詞庫）
+// ==============================================
+// 首頁分類按鈕渲染
 function initCategory() {
   const wrap = document.getElementById("categoryWrap");
   if (!wrap) return;
@@ -219,7 +309,8 @@ function initCategory() {
       <div style="font-size:22px; font-weight:bold;">${catNameMap[key]}</div>
       <div style="font-size:14px; opacity:0.8;">${key}</div>
     `;
-    if (key === "Occupation") {
+    // 開放可點擊分類：Occupation / Place，後續新增分類在此補充
+    if (["Occupation", "Place"].includes(key)) {
       btn.onclick = () => selectCategory(key);
     } else {
       btn.disabled = true;
@@ -246,9 +337,8 @@ function selectCategory(catKey) {
   orderIndex = 0;
   saveStorage();
   const cnName = catNameMap[currentCat];
-  const enName = currentCat;
   const titleDom = document.getElementById("currentCatName");
-  titleDom.innerHTML = `<div style="font-size:32px; font-weight:bold;">${cnName}</div><div style="font-size:20px; opacity:0.7;">${enName.toLowerCase()}</div>`;
+  titleDom.innerHTML = `<div style="font-size:32px; font-weight:bold;">${cnName}</div>`;
   showPage("page-mode");
 }
 
@@ -257,13 +347,8 @@ document.querySelectorAll(".mode-btn").forEach(btn => {
   btn.onclick = () => {
     currentMode = btn.dataset.mode;
     const cnName = catNameMap[currentCat];
-    const enName = currentCat;
     const titleDom = document.getElementById("currentCatName");
-    if (currentMode === "en") {
-      titleDom.innerHTML = `<div style="font-size:32px; font-weight:bold;">${enName.toLowerCase()}</div><div style="font-size:20px; opacity:0.7;">${cnName}</div>`;
-    } else {
-      titleDom.innerHTML = `<div style="font-size:32px; font-weight:bold;">${cnName}</div><div style="font-size:20px; opacity:0.7;">${enName.toLowerCase()}</div>`;
-    }
+    titleDom.innerHTML = `<div style="font-size:32px; font-weight:bold;">${cnName}</div>`;
 
     if (currentMode === "cn" || currentMode === "en") {
       nextWord();
@@ -316,7 +401,7 @@ function playEnVoice(text) {
   speechSynthesis.speak(eng);
 }
 
-// ========== 學習模式（順序展示，左右中英文同時顯示） ==========
+// 1. 順序學習（左右雙卡片）
 function renderOrderWord() {
   const total = wordList.length;
   let progressDom = document.querySelector("#page-orderStudy .progress-text");
@@ -326,7 +411,6 @@ function renderOrderWord() {
     document.querySelector("#page-orderStudy .word-box").prepend(progressDom);
   }
   progressDom.innerText = `當前第 ${orderIndex + 1}/${total}`;
-
   const item = wordList[orderIndex];
   document.getElementById("orderCnText").innerText = item.cn;
   document.getElementById("orderEnText").innerText = item.en;
@@ -339,7 +423,6 @@ function prevOrderWord() {
   orderIndex--;
   renderOrderWord();
 }
-function nextSentence() {}
 function nextOrderWord() {
   const total = wordList.length;
   if (orderIndex >= total - 1) {
@@ -356,24 +439,20 @@ function nextOrderWord() {
   orderIndex++;
   renderOrderWord();
 }
-// 學習模式喇叭：先讀中文，再讀英文
 document.getElementById("orderVoiceBtn").onclick = async function () {
   if (audioPlaying) return;
   const item = wordList[orderIndex];
   playCnVoice(item.cn);
   const waitEnd = () => new Promise(res => {
     const timer = setInterval(() => {
-      if (!audioPlaying) {
-        clearInterval(timer);
-        res();
-      }
+      if (!audioPlaying) { clearInterval(timer); res(); }
     }, 100);
   });
   await waitEnd();
   playEnVoice(item.en);
 };
 
-// ========== 單詞隨機挑戰 ==========
+// 2. 單詞隨機挑戰
 function nextWord() {
   if (nextBtnLock) return;
   nextBtnLock = true;
@@ -381,20 +460,14 @@ function nextWord() {
   const total = wordList.length;
   if (wordUsedIndex.length >= total) {
     showFinishModal(function (again) {
-      if (again) {
-        wordUsedIndex = [];
-        saveStorage();
-        nextWord();
-      } else {
-        showPage("page-mode");
-      }
+      if (again) { wordUsedIndex = []; saveStorage(); nextWord(); }
+      else { showPage("page-mode"); }
     });
     return;
   }
   let randomIdx;
-  do {
-    randomIdx = Math.floor(Math.random() * total);
-  } while (wordUsedIndex.includes(randomIdx));
+  do { randomIdx = Math.floor(Math.random() * total); }
+  while (wordUsedIndex.includes(randomIdx));
   wordUsedIndex.push(randomIdx);
   saveStorage();
   currentWord = wordList[randomIdx];
@@ -413,7 +486,7 @@ document.getElementById("voiceBtn").onclick = function () {
   currentMode === "cn" ? playCnVoice(currentWord.cn) : playEnVoice(currentWord.en);
 };
 
-// ========== 配對遊戲 ==========
+// 3. 配對遊戲
 let matchType = "cn2en";
 function createMatchQ() {
   if (nextBtnLock) return;
@@ -422,30 +495,22 @@ function createMatchQ() {
   const total = wordList.length;
   if (matchUsedIndex.length >= total) {
     showFinishModal(function (again) {
-      if (again) {
-        matchUsedIndex = [];
-        saveStorage();
-        createMatchQ();
-      } else {
-        showPage("page-mode");
-      }
+      if (again) { matchUsedIndex = []; saveStorage(); createMatchQ(); }
+      else { showPage("page-mode"); }
     });
     return;
   }
   let correctIdx;
-  do {
-    correctIdx = Math.floor(Math.random() * total);
-  } while (matchUsedIndex.includes(correctIdx));
+  do { correctIdx = Math.floor(Math.random() * total); }
+  while (matchUsedIndex.includes(correctIdx));
   matchUsedIndex.push(correctIdx);
   saveStorage();
-
   matchType = Math.random() > 0.5 ? "cn2en" : "en2cn";
   const correct = wordList[correctIdx];
   currentWord = correct;
   let otherList = wordList.filter((_, i) => i !== correctIdx);
   otherList = otherList.sort(() => Math.random() - 0.5).slice(0, 2);
   const options = [correct, ...otherList].sort(() => Math.random() - 0.5);
-
   const qDom = document.getElementById("qWord");
   const optWrap = document.getElementById("optionWrap");
   const tipDom = document.getElementById("matchTip");
@@ -458,7 +523,6 @@ function createMatchQ() {
     document.querySelector("#page-match .q-box").prepend(progressDom);
   }
   progressDom.innerText = `已學習 ${matchUsedIndex.length}/${total}`;
-
   if (matchType === "cn2en") {
     qDom.innerText = correct.cn;
     options.forEach(item => {
@@ -492,7 +556,7 @@ function checkAnswer(select, right, tipDom) {
   }
 }
 
-// ========== 拼寫遊戲 ==========
+// 4. 拼寫遊戲
 function initSpellGame() {
   if (nextBtnLock) return;
   nextBtnLock = true;
@@ -500,23 +564,16 @@ function initSpellGame() {
   const total = wordList.length;
   if (spellUsedIndex.length >= total) {
     showFinishModal(function (again) {
-      if (again) {
-        spellUsedIndex = [];
-        saveStorage();
-        initSpellGame();
-      } else {
-        showPage("page-mode");
-      }
+      if (again) { spellUsedIndex = []; saveStorage(); initSpellGame(); }
+      else { showPage("page-mode"); }
     });
     return;
   }
   let randomIdx;
-  do {
-    randomIdx = Math.floor(Math.random() * total);
-  } while (spellUsedIndex.includes(randomIdx));
+  do { randomIdx = Math.floor(Math.random() * total); }
+  while (spellUsedIndex.includes(randomIdx));
   spellUsedIndex.push(randomIdx);
   saveStorage();
-
   currentWord = wordList[randomIdx];
   spellTargetEn = currentWord.en.toLowerCase();
   spellUserAnswer = [];
@@ -555,20 +612,12 @@ function renderSpellUI() {
     letterWrap.appendChild(btn);
   });
 }
-document.getElementById("spellVoiceBtn").onclick = function () {
-  playCnVoice(currentWord.cn);
-};
+document.getElementById("spellVoiceBtn").onclick = function () { playCnVoice(currentWord.cn); };
 document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("spellUndo").onclick = function () {
-    if (spellUserAnswer.length > 0) {
-      spellUserAnswer.pop();
-      renderSpellUI();
-    }
+    if (spellUserAnswer.length > 0) { spellUserAnswer.pop(); renderSpellUI(); }
   };
-  document.getElementById("spellClearAll").onclick = function () {
-    spellUserAnswer = [];
-    renderSpellUI();
-  };
+  document.getElementById("spellClearAll").onclick = function () { spellUserAnswer = []; renderSpellUI(); };
   document.getElementById("spellCheckAnswer").onclick = function () {
     const userStr = spellUserAnswer.join("");
     const tipDom = document.getElementById("spellTip");
@@ -582,11 +631,9 @@ document.addEventListener("DOMContentLoaded", function(){
     }
   };
 });
-function nextSpellWord() {
-  initSpellGame();
-}
+function nextSpellWord() { initSpellGame(); }
 
-// ========== 句子認讀 ==========
+// 5. 句子認讀
 function nextSentence() {
   if (nextBtnLock) return;
   nextBtnLock = true;
@@ -594,20 +641,14 @@ function nextSentence() {
   const total = sentenceCnList.length;
   if (sentenceUsedIndex.length >= total) {
     showFinishModal(function (again) {
-      if (again) {
-        sentenceUsedIndex = [];
-        saveStorage();
-        nextSentence();
-      } else {
-        showPage("page-mode");
-      }
+      if (again) { sentenceUsedIndex = []; saveStorage(); nextSentence(); }
+      else { showPage("page-mode"); }
     });
     return;
   }
   let randomIdx;
-  do {
-    randomIdx = Math.floor(Math.random() * total);
-  } while (sentenceUsedIndex.includes(randomIdx));
+  do { randomIdx = Math.floor(Math.random() * total); }
+  while (sentenceUsedIndex.includes(randomIdx));
   sentenceUsedIndex.push(randomIdx);
   saveStorage();
   currentSentenceIndex = randomIdx;
