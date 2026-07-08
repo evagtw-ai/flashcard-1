@@ -83,27 +83,24 @@
     </div>
   </div>
 
-  <!-- 學習模式頁：左右兩張獨立卡片 -->
-  <div id="page-orderStudy" class="page hidden">
-    <p class="progress-text"></p>
-    <div class="order-card-wrap">
-      <!-- 左側中文獨立卡片 -->
-      <div class="order-card cn-card">
-        <p class="card-label">中文</p>
-        <p class="order-cn" id="orderCnText"></p>
-      </div>
-      <!-- 右側英文獨立卡片 -->
-      <div class="order-card en-card">
-        <p class="card-label">English</p>
-        <p class="order-en" id="orderEnText"></p>
-      </div>
+ <!-- 學習模式頁：左右兩張獨立卡片（移除標籤文字） -->
+<div id="page-orderStudy" class="page hidden">
+  <p class="progress-text"></p>
+  <div class="order-card-wrap">
+    <!-- 左側中文獨立卡片 -->
+    <div class="order-card cn-card">
+      <p class="order-cn" id="orderCnText"></p>
     </div>
-    <button class="voice-btn" id="orderVoiceBtn">🔊 播放讀音</button>
-    <div class="operate-btns">
-      <button onclick="prevOrderWord()">上一個</button>
-      <button onclick="nextOrderWord()">下一個</button>
-      <button class="back-btn" onclick="backMode()">返回Back</button>
+    <!-- 右側英文獨立卡片 -->
+    <div class="order-card en-card">
+      <p class="order-en" id="orderEnText"></p>
     </div>
+  </div>
+  <button class="voice-btn" id="orderVoiceBtn">🔊 播放讀音</button>
+  <div class="operate-btns">
+    <button onclick="prevOrderWord()">上一個</button>
+    <button onclick="nextOrderWord()">下一個</button>
+    <button class="back-btn" onclick="backMode()">返回Back</button>
   </div>
 </div>
 
