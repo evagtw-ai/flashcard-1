@@ -228,12 +228,35 @@ h2 {
   gap: 12px;
   justify-content: center;
 }
-/* 順序學習專用按鈕 獨特紫色區分 */
+/* 學習模式專用按鈕 藍色 */
 .mode-order {
-  background: #9254de !important;
+  background: #409eff !important;
 }
 .mode-order:hover {
-  background: #7b3fd1 !important;
+  background: #2677d9 !important;
+}
+
+/* 學習模式頁 左右分欄布局 */
+.order-box {
+  width: 100%;
+}
+.order-row {
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+  align-items: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+.order-cn {
+  font-size: clamp(36px, 9vw, 66px);
+  color: #111;
+  font-weight: bold;
+}
+.order-en {
+  font-size: clamp(36px, 9vw, 66px);
+  color: #2266cc;
+  font-weight: bold;
 }
 #spellUndo { background: #ff9500; color:#fff; border:none; padding:12px 22px; border-radius:10px; font-size:18px; transition:0.15s; }
 #spellUndo:active { transform: scale(0.94); }
