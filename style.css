@@ -228,6 +228,13 @@ h2 {
   gap: 12px;
   justify-content: center;
 }
+/* 順序學習專用按鈕 獨特紫色區分 */
+.mode-order {
+  background: #9254de !important;
+}
+.mode-order:hover {
+  background: #7b3fd1 !important;
+}
 #spellUndo { background: #ff9500; color:#fff; border:none; padding:12px 22px; border-radius:10px; font-size:18px; transition:0.15s; }
 #spellUndo:active { transform: scale(0.94); }
 #spellClearAll { background: #ff3b30; color:#fff; border:none; padding:12px 22px; border-radius:10px; font-size:18px; transition:0.15s; }
