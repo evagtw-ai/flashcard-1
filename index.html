@@ -2,28 +2,28 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <!-- 移动端适配核心 -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>幼升小常見詞彙</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="container">
-  <!-- 首页分类选择 -->
+  <!-- 首頁分類選擇 -->
   <div id="page-home" class="page">
     <h1>常見詞彙</h1>
     <div class="category-list" id="categoryWrap"></div>
   </div>
 
-  <!-- 模式选择页 -->
+  <!-- 模式選擇頁 -->
   <div id="page-mode" class="page hidden">
     <h2 id="currentCatName"></h2>
     <div class="mode-btns">
       <button class="mode-btn" data-mode="cn">中文</button>
       <button class="mode-btn" data-mode="en">English</button>
       <button class="mode-btn" data-mode="match">配對遊戲</button>
-      <!-- 新增拼寫遊戲按鈕 -->
       <button class="mode-btn" data-mode="spell">拼寫遊戲</button>
+      <!-- 新增句子認讀按鈕 -->
+      <button class="mode-btn" data-mode="sentence">句子認讀</button>
     </div>
     <button class="back-btn" onclick="backHome()">返回Back</button>
   </div>
@@ -51,33 +51,34 @@
     <button class="back-btn" onclick="backMode()">返回Back</button>
   </div>
 
-  <!-- 全新：拼寫遊戲頁面 -->
+  <!-- 拼寫遊戲頁 -->
   <div id="page-spell" class="page hidden">
-    <!-- 中文詞卡 + 播放按鈕 -->
     <div class="spell-card-box">
       <p class="spell-cn-text" id="spellCnWord"></p>
       <button class="voice-btn" id="spellVoiceBtn">🔊</button>
     </div>
-
-    <!-- 下方橫線作答區 -->
     <div class="spell-input-line" id="spellAnswerLine"></div>
-
-    <!-- 亂序字母選擇區 -->
     <div class="spell-letter-group" id="spellLetterBox"></div>
-
-   <!-- 操作按鈕：取消前一個 / 清空全部（帶emoji） -->
-<div class="spell-control-btns">
-  <button id="spellUndo">↩️ 刪除</button>
-  <button id="spellClearAll">🗑️ 清空</button>
-  <button id="spellCheckAnswer">✅ 確認</button>
-</div>
-
-    <!-- 提示文字 -->
+    <div class="spell-control-btns">
+      <button id="spellUndo">↩️ 刪除</button>
+      <button id="spellClearAll">🗑️ 清空</button>
+      <button id="spellCheckAnswer">✅ 確認</button>
+    </div>
     <p class="spell-tip" id="spellTip"></p>
-
-    <!-- 切換單詞 / 返回 -->
     <div class="operate-btns">
       <button onclick="nextSpellWord()">下一個Next</button>
+      <button class="back-btn" onclick="backMode()">返回Back</button>
+    </div>
+  </div>
+
+  <!-- 新增：句子認讀頁面 -->
+  <div id="page-sentence" class="page hidden">
+    <div class="word-box">
+      <p class="word-text" id="showSentence"></p>
+      <button class="voice-btn" id="sentenceVoiceBtn">🔊</button>
+    </div>
+    <div class="operate-btns">
+      <button onclick="nextSentence()">下一個Next</button>
       <button class="back-btn" onclick="backMode()">返回Back</button>
     </div>
   </div>
