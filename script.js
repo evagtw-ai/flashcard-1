@@ -1,4 +1,4 @@
-// ===================== 1. 詞彙分類數據 =====================
+// 詞彙庫
 const wordData = {
   Occupation: [
     { cn: "飛機師", en: "pilot" },
@@ -49,7 +49,7 @@ const catNameMap = {
   All: "全部"
 };
 
-// 句子庫：前11句完全保留你原文，新增19句，總共30句
+// 句子庫：前11句完全保留你原文，新增19句合計30句
 const sentenceCnList = [
   "老師教學生知識。",
   "醫生醫治病人。",
@@ -63,56 +63,40 @@ const sentenceCnList = [
   "理髮師在理髮店修剪頭髮。",
   "清潔工人在街道上清洗地板。",
   "飛機師駕駛飛機飛上高空。",
-  "太空人前往太空探索星球。",
-  "農夫在田地種植新鮮蔬果。",
-  "畫家拿起畫筆繪畫風景。",
-  "歌手站上舞台開心唱歌。",
-  "演員在台上表演有趣故事。",
-  "漁夫出海捕捉海裡的魚。",
+  "太空人在火星探索生物。",
+  "農夫在田地裡種植蔬菜。",
+  "畫家用畫筆繪畫風景。",
+  "歌手在舞台上開心唱歌。",
+  "演員表演跳舞。",
+  "漁夫坐船出海釣魚。",
   "建築工人搭建高大房屋。",
   "工程師設計堅固的橋樑。",
-  "學生跟隨老師認真學習。",
+  "學生在課室認真學習。",
   "老師教導小朋友寫字讀書。",
-  "醫生細心檢查小朋友身體。",
-  "護士細心照顧每一位病人。",
-  "警察在街上維持秩序。",
-  "消防員快速趕去現場救火。",
-  "郵差每日騎車派送信件。",
-  "廚師做出美味可口的餐點。",
-  "司機小心載乘客到目的地。",
-  "農夫每日細心打理農田。"
+  "廚師做出美味的差點。",
 ];
 const sentenceEnList = [
-  "The teacher teaches students knowledge.",
-  "The doctor treats sick people.",
-  "The nurse helps patients get injections.",
-  "The policeman keeps public order.",
-  "This is a fireman, he puts out fires and saves people.",
-  "The postman sends letters to my home.",
-  "The driver drives cars on the road.",
+"The teacher helps students music.",
+  "The doctor helps sick people.",
+  "The nurse works in the hospital.",
+  "The policeman cathes bad people.",
+  "The fireman puts out fires and saves people.",
+  "The postman brings letters to my home.",
+  "The driver drives a car on the road.",
   "The chef cooks food in the kitchen.",
-  "The waiter serves guests in the restaurant.",
-  "The barber cuts hair in the barbershop.",
-  "The cleaner washes the floor on the street.",
-  "The pilot flies a plane high up in the sky.",
-  "The astronaut travels to space to explore planets.",
-  "The farmer grows fresh fruits and vegetables in fields.",
-  "The artist draws scenery with a paintbrush.",
-  "The singer sings happily on the stage.",
-  "The actor acts fun stories on stage.",
-  "The fisherman goes out to sea to catch fish.",
+  "The cleaner cleans the street floor.",
+  "The pilot flies a plane high up.",
+  "The astronaut flies to space.",
+  "The farmer grows fruit and vegetables.",
+  "The artist draws nice pictures.",
+  "The singer sings nice songs.",
+  "The actor tells fun stories.",
+  "The fisherman catches fish at sea.",
   "The builder builds tall houses.",
-  "The engineer designs strong bridges.",
-  "The student studies hard with the teacher.",
+  "The engineer makes safe bridges.",
+  "The student learns with the teacher.",
   "The teacher teaches kids to read and write.",
-  "The doctor checks children’s bodies carefully.",
-  "The nurse takes good care of every patient.",
-  "The policeman keeps order on the street.",
-  "The fireman hurries to the scene to put out fires.",
-  "The postman rides a bike to deliver letters every day.",
-  "The chef makes delicious meals.",
-  "The driver takes passengers to destinations carefully.",
-  "The farmer takes good care of farmland every day."
+  "The doctor looks after little kids.",
 ];
 
 // 全域變數
@@ -125,7 +109,7 @@ let spellUserAnswer = [];
 let spellShuffleLetters = [];
 let currentSentenceIndex = 0;
 
-// ===================== 2. 頁面切換控制 =====================
+// 頁面切換
 function hideAllPage() {
   document.querySelectorAll(".page").forEach(p => p.classList.add("hidden"));
 }
@@ -138,7 +122,7 @@ function showPage(id) {
 function backHome() { showPage("page-home"); }
 function backMode() { showPage("page-mode"); }
 
-// ===================== 3. 首頁分類渲染（雙重渲染防空白） =====================
+// 首頁分類渲染
 function initCategory() {
   const wrap = document.getElementById("categoryWrap");
   if (!wrap) return;
@@ -176,7 +160,7 @@ function selectCategory(catKey) {
   showPage("page-mode");
 }
 
-// ===================== 4. 模式切換綁定（新增 sentence 句子模式） =====================
+// 模式切換綁定
 document.querySelectorAll(".mode-btn").forEach(btn => {
   btn.onclick = () => {
     currentMode = btn.dataset.mode;
@@ -188,7 +172,6 @@ document.querySelectorAll(".mode-btn").forEach(btn => {
     } else {
       titleDom.innerHTML = `<div style="font-size:32px; font-weight:bold;">${cnName}</div><div style="font-size:20px; opacity:0.7;">${enName.toLowerCase()}</div>`;
     }
-
     if (currentMode === "cn" || currentMode === "en") {
       nextWord();
       showPage("page-study");
@@ -205,7 +188,7 @@ document.querySelectorAll(".mode-btn").forEach(btn => {
   };
 });
 
-// ===================== 5. 發音函數【僅保留粵語中文、英式英文，移除普通話】 =====================
+// 發音：只粵語，無普通話
 function playCnVoice(text) {
   speechSynthesis.cancel();
   const cantonese = new SpeechSynthesisUtterance(text);
@@ -213,15 +196,15 @@ function playCnVoice(text) {
   cantonese.rate = 0.95;
   speechSynthesis.speak(cantonese);
 }
-function playEnVoice(wordEn) {
+function playEnVoice(text) {
   speechSynthesis.cancel();
-  const eng = new SpeechSynthesisUtterance(wordEn);
+  const eng = new SpeechSynthesisUtterance(text);
   eng.lang = "en-GB";
   eng.rate = 0.8;
   speechSynthesis.speak(eng);
 }
 
-// ===================== 單詞朗讀頁 =====================
+// 單詞朗讀
 function nextWord() {
   const randomIdx = Math.floor(Math.random() * wordList.length);
   currentWord = wordList[randomIdx];
@@ -233,7 +216,7 @@ document.getElementById("voiceBtn").onclick = function () {
   currentMode === "cn" ? playCnVoice(currentWord.cn) : playEnVoice(currentWord.en);
 };
 
-// ===================== 配對遊戲 =====================
+// 配對遊戲
 let matchType = "cn2en";
 function createMatchQ() {
   matchType = Math.random() > 0.5 ? "cn2en" : "en2cn";
@@ -243,13 +226,11 @@ function createMatchQ() {
   let otherList = wordList.filter((_, i) => i !== correctIdx);
   otherList = otherList.sort(() => Math.random() - 0.5).slice(0, 2);
   const options = [correct, ...otherList].sort(() => Math.random() - 0.5);
-
   const qDom = document.getElementById("qWord");
   const optWrap = document.getElementById("optionWrap");
   const tipDom = document.getElementById("matchTip");
   tipDom.innerText = "";
   optWrap.innerHTML = "";
-
   if (matchType === "cn2en") {
     qDom.innerText = correct.cn;
     options.forEach(item => {
@@ -283,7 +264,7 @@ function checkAnswer(select, right, tipDom) {
   }
 }
 
-// ===================== 拼寫遊戲 =====================
+// 拼寫遊戲
 function initSpellGame() {
   const randomIdx = Math.floor(Math.random() * wordList.length);
   currentWord = wordList[randomIdx];
@@ -296,7 +277,6 @@ function renderSpellUI() {
   document.getElementById("spellCnWord").innerText = currentWord.cn;
   document.getElementById("spellTip").innerText = "";
   const targetLength = spellTargetEn.length;
-
   const lineBox = document.getElementById("spellAnswerLine");
   lineBox.innerHTML = "";
   for(let i=0; i<targetLength; i++){
@@ -349,7 +329,7 @@ function nextSpellWord() {
   initSpellGame();
 }
 
-// ===================== 句子認讀頁 =====================
+// 句子認讀功能
 function nextSentence() {
   currentSentenceIndex = Math.floor(Math.random() * sentenceCnList.length);
   const sentenceDom = document.getElementById("showSentence");
@@ -367,7 +347,7 @@ document.getElementById("sentenceVoiceBtn").onclick = function () {
   }
 };
 
-// ===================== 頁面載入初始化 =====================
+// 頁面初始化
 document.addEventListener("DOMContentLoaded", function () {
   initCategory();
   setTimeout(() => initCategory(), 300);
