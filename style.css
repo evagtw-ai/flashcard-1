@@ -1,3 +1,6 @@
+/* ==============================================
+全局通用基礎樣式（所有頁面共用，不動分類專屬）
+============================================== */
 * {
   margin: 0;
   padding: 0;
@@ -24,24 +27,12 @@ body {
   min-height: calc(100vh - 30px);
   justify-content: center;
 }
-.hidden {
-  display: none !important;
-}
-h1 {
-  text-align: center;
-  color: #2266cc;
-  font-size: clamp(28px, 6vw, 48px);
-}
-h2 {
-  text-align: center;
-  color: #333;
-  font-size: clamp(20px, 4vw, 32px);
-}
-.progress-text {
-  text-align: center;
-  font-size: 18px;
-  color: #666;
-}
+.hidden { display: none !important; }
+h1 { text-align: center; color: #2266cc; font-size: clamp(28px, 6vw, 48px); }
+h2 { text-align: center; color: #333; font-size: clamp(20px, 4vw, 32px); }
+.progress-text { text-align: center; font-size: 18px; color: #666; }
+
+/* 首頁分類按鈕通用 */
 .category-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -59,17 +50,11 @@ h2 {
   max-width: 160px;
   transition: all 0.15s ease;
 }
-.category-list button:hover:not(:disabled) {
-  background: #2677d9;
-  transform: scale(0.97);
-}
-.category-list button:active:not(:disabled) {
-  transform: scale(0.94);
-}
-.category-list button:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
+.category-list button:hover:not(:disabled) { background: #2677d9; transform: scale(0.97); }
+.category-list button:active:not(:disabled) { transform: scale(0.94); }
+.category-list button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* 模式頁按鈕通用 */
 .mode-btns {
   display: flex;
   flex-wrap: wrap;
@@ -86,20 +71,12 @@ h2 {
   cursor: pointer;
   transition: all 0.15s ease;
 }
-.mode-btn:hover {
-  transform: scale(0.97);
-  background: #2ab8b8;
-}
-.mode-btn:active {
-  transform: scale(0.94);
-}
-/* 學習模式專用藍色按鈕 */
-.mode-order {
-  background: #409eff !important;
-}
-.mode-order:hover {
-  background: #2677d9 !important;
-}
+.mode-btn:hover { transform: scale(0.97); background: #2ab8b8; }
+.mode-btn:active { transform: scale(0.94); }
+.mode-order { background: #409eff !important; }
+.mode-order:hover { background: #2677d9 !important; }
+
+/* 文字閱讀卡片通用 */
 .word-box, .q-box, .spell-card-box {
   flex: 1;
   display: flex;
@@ -127,13 +104,10 @@ h2 {
   cursor: pointer;
   transition: all 0.15s ease;
 }
-.voice-btn:active {
-  transform: scale(0.88);
-}
-.voice-btn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
+.voice-btn:active { transform: scale(0.88); }
+.voice-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* 底部操作按鈕通用 */
 .operate-btns {
   display: flex;
   gap: 15px;
@@ -148,20 +122,12 @@ h2 {
   cursor: pointer;
   transition: all 0.15s ease;
 }
-.operate-btns button:first-child {
-  background: #52c41a;
-  color: #fff;
-}
-.operate-btns button:first-child:active {
-  transform: scale(0.94);
-}
-.back-btn {
-  background: #999;
-  color: white;
-}
-.back-btn:active {
-  transform: scale(0.94);
-}
+.operate-btns button:first-child { background: #52c41a; color: #fff; }
+.operate-btns button:first-child:active { transform: scale(0.94); }
+.back-btn { background: #999; color: white; }
+.back-btn:active { transform: scale(0.94); }
+
+/* 配對頁選項按鈕 */
 .option-list {
   display: flex;
   flex-direction: column;
@@ -178,16 +144,10 @@ h2 {
   max-width: 400px;
   transition: all 0.15s ease;
 }
-.option-list button:active {
-  transform: scale(0.97);
-  background: #f0f8ff;
-}
-.tip, .spell-tip {
-  text-align: center;
-  font-size: 22px;
-  font-weight: bold;
-  min-height: 30px;
-}
+.option-list button:active { transform: scale(0.97); background: #f0f8ff; }
+.tip, .spell-tip { text-align: center; font-size: 22px; font-weight: bold; min-height: 30px; }
+
+/* 拼寫頁通用 */
 .spell-input-line {
   min-height: 70px;
   display: flex;
@@ -218,10 +178,7 @@ h2 {
   border-radius: 10px;
   transition: all 0.15s ease;
 }
-.spell-letter-group button:active {
-  transform: scale(0.88);
-  background: #e8fbfb;
-}
+.spell-letter-group button:active { transform: scale(0.88); background: #e8fbfb; }
 .spell-control-btns {
   display: flex;
   flex-wrap: wrap;
@@ -234,7 +191,8 @@ h2 {
 #spellClearAll:active { transform: scale(0.94); }
 #spellCheckAnswer { background: #34c759; color:#fff; border:none; padding:12px 22px; border-radius:10px; font-size:18px; transition:0.15s; }
 #spellCheckAnswer:active { transform: scale(0.94); }
-/* 自定義完成彈窗美化 */
+
+/* 自定義完成彈窗全局樣式 */
 .modal-box {
   background: #fffef0;
   padding: 40px 30px;
@@ -249,32 +207,19 @@ h2 {
   0% { transform: scale(0.8); opacity:0; }
   100% { transform: scale(1); opacity:1; }
 }
-.modal-text {
-  font-size: 28px;
-  margin-bottom: 30px;
-  color: #2266cc;
-  font-weight: bold;
-}
-.modal-btn-wrap {
-  display: flex;
-  gap: 20px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-.modal-again {
-  padding:12px 24px; border:none; border-radius:8px; background:#34c759; color:#fff; font-size:18px; cursor:pointer; transition:0.15s;
-}
+.modal-text { font-size: 28px; margin-bottom: 30px; color: #2266cc; font-weight: bold; }
+.modal-btn-wrap { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+.modal-again { padding:12px 24px; border:none; border-radius:8px; background:#34c759; color:#fff; font-size:18px; cursor:pointer; transition:0.15s; }
 .modal-again:active { transform: scale(0.94); }
-.modal-back {
-  padding:12px 24px; border:none; border-radius:8px; background:#999; color:#fff; font-size:18px; cursor:pointer; transition:0.15s;
-}
+.modal-back { padding:12px 24px; border:none; border-radius:8px; background:#999; color:#fff; font-size:18px; cursor:pointer; transition:0.15s; }
 .modal-back:active { transform: scale(0.94); }
 
-
-/* ========== 學習模式 左右獨立卡片樣式 ========== */
-#page-orderStudy {
-  flex: 1;
-}
+/* ==============================================
+【模塊專用樣式隔離區】
+1. 學習模式 orderStudy 左右獨立卡片（僅單詞分類使用）
+2. 後續若新增分類專用UI，在此下方追加區塊
+============================================== */
+#page-orderStudy { flex: 1; }
 .order-card-wrap {
   display: flex;
   width: 100%;
@@ -286,31 +231,15 @@ h2 {
   flex: 1;
   min-width: 260px;
   max-width: 48%;
-  padding: 80px 20px; /* 加大上下內邊距，文字居中更美觀 */
+  padding: 80px 20px;
   border-radius: 16px;
   box-shadow: 0 2px 12px #ddd;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  /* 刪除 label 專用 gap，只保留文字自身間距 */
 }
-.cn-card {
-  background: #ffffff;
-  border: 3px solid #409eff;
-}
-.en-card {
-  background: #f7fdff;
-  border: 3px solid #36cbcb;
-}
-/* 刪除 .card-label 樣式，不再顯示標題文字 */
-.order-cn {
-  font-size: clamp(36px, 9vw, 66px);
-  color: #111;
-  font-weight: bold;
-}
-.order-en {
-  font-size: clamp(36px, 9vw, 66px);
-  color: #2266cc;
-  font-weight: bold;
-}
+.cn-card { background: #ffffff; border: 3px solid #409eff; }
+.en-card { background: #f7fdff; border: 3px solid #36cbcb; }
+.order-cn { font-size: clamp(36px, 9vw, 66px); color: #111; font-weight: bold; }
+.order-en { font-size: clamp(36px, 9vw, 66px); color: #2266cc; font-weight: bold; }
