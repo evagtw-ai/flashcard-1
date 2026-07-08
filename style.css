@@ -19,6 +19,8 @@ body {
   gap: 25px;
   padding: 20px 10px;
   min-height: calc(100vh - 30px);
+  /* 所有頁面整體內容垂直居中 */
+  justify-content: center;
 }
 .hidden {
   display: none !important;
@@ -33,10 +35,12 @@ h2 {
   color: #333;
   font-size: clamp(20px, 4vw, 32px);
 }
+/* 首頁分類按鈕居中排列 */
 .category-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 14px;
+  justify-items: center;
 }
 .category-list button {
   padding: 20px 8px;
@@ -45,6 +49,8 @@ h2 {
   background: #409eff;
   color: white;
   cursor: pointer;
+  width: 100%;
+  max-width: 160px;
 }
 .category-list button:hover:not(:disabled) {
   background: #2677d9;
@@ -53,6 +59,7 @@ h2 {
   opacity: 0.45;
   cursor: not-allowed;
 }
+/* 模式頁按鈕居中 */
 .mode-btns {
   display: flex;
   flex-wrap: wrap;
@@ -68,12 +75,13 @@ h2 {
   color: #fff;
   cursor: pointer;
 }
+/* 閱讀卡片：文字區塊水平垂直居中 */
 .word-box, .q-box, .spell-card-box {
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center; /* 垂直居中 */
-  align-items: center;     /* 水平居中 */
+  justify-content: center;
+  align-items: center;
   text-align: center;
   padding: 60px 20px;
   background: #fff;
@@ -118,6 +126,7 @@ h2 {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  align-items: center;
 }
 .option-list button {
   padding: 16px;
@@ -125,6 +134,8 @@ h2 {
   border: 2px solid #409eff;
   background: #fff;
   border-radius: 10px;
+  width: 100%;
+  max-width: 400px;
 }
 .tip, .spell-tip {
   text-align: center;
@@ -132,7 +143,7 @@ h2 {
   font-weight: bold;
   min-height: 30px;
 }
-/* 拼寫專用居中 */
+/* 拼寫模塊居中 */
 .spell-input-line {
   min-height: 70px;
   display: flex;
