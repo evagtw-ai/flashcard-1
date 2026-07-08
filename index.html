@@ -18,11 +18,12 @@
   <div id="page-mode" class="page hidden">
     <h2 id="currentCatName"></h2>
     <div class="mode-btns">
+      <!-- 順序學習放最上方，新增專用 class 用於區分顏色 -->
+      <button class="mode-btn mode-order" data-mode="sentence">順序學習</button>
       <button class="mode-btn" data-mode="cn">中文</button>
       <button class="mode-btn" data-mode="en">English</button>
       <button class="mode-btn" data-mode="match">配對遊戲</button>
       <button class="mode-btn" data-mode="spell">拼寫遊戲</button>
-      <!-- 新增句子認讀按鈕 -->
       <button class="mode-btn" data-mode="sentence">句子認讀</button>
     </div>
     <button class="back-btn" onclick="backHome()">返回Back</button>
@@ -79,6 +80,19 @@
     </div>
     <div class="operate-btns">
       <button onclick="nextSentence()">下一個Next</button>
+      <button class="back-btn" onclick="backMode()">返回Back</button>
+    </div>
+  </div>
+
+  <!-- 新增：順序學習頁面 -->
+  <div id="page-orderStudy" class="page hidden">
+    <div class="word-box">
+      <p class="word-text" id="orderWordText"></p>
+      <button class="voice-btn" id="orderVoiceBtn">🔊</button>
+    </div>
+    <div class="operate-btns">
+      <button onclick="prevOrderWord()">上一個</button>
+      <button onclick="nextOrderWord()">下一個</button>
       <button class="back-btn" onclick="backMode()">返回Back</button>
     </div>
   </div>
