@@ -82,15 +82,19 @@ h2 {
   justify-content: center;
 }
 .mode-btn {
-  padding: 20px 32px;
-  border: none;
-  border-radius: 14px;
-  font-size: clamp(18px, 3vw, 24px);
-  background: #36cbcb;
-  color: #fff;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow:0 4px 8px #bcecec;
+  width: 130px;
+  height:72px;
+  font-size: 20px;
+  font-weight:bold;
+  border:none;
+  border-radius:18px;
+  color:white;
+  cursor:pointer;
+  transition:0.2s;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
 }
 .mode-btn:hover {
   transform: translateY(-3px) scale(0.97);
@@ -139,13 +143,17 @@ h2 {
   flex-wrap: wrap;
 }
 .operate-btns button, .back-btn {
-  padding: 16px 30px;
-  font-size: clamp(16px, 3vw, 20px);
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow:0 3px 8px #ddd;
+  padding:15px 22px;
+  font-size: 20px;
+  font-weight:bold;
+  border:none;
+  border-radius:16px;
+  color:white;
+  cursor:pointer;
+  transition:0.2s;
+  display:flex;
+  align-items:center;
+  gap:6px;
 }
 .operate-btns button:first-child {
   background: #52c41a;
