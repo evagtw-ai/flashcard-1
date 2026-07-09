@@ -65,7 +65,7 @@ h1 {
   color:#666;
 }
 
-/*首頁按鈕：禁用按鈕樣式修復，不再和背景融合*/
+/*首頁分類按鈕樣式*/
 .category-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px,1fr));
@@ -84,7 +84,8 @@ h1 {
 .category-list button:nth-child(1){background:#ff87a2;}
 .category-list button:nth-child(2){background:#70c8ff;}
 .category-list button:nth-child(3){background:#86e3a7;}
-.category-list button:nth-child(4){background:#bb98ff;}
+/*修改All按鈕為明亮卡通橙色，解決看不清問題*/
+.category-list button:nth-child(4){background:#ff9f43;}
 .category-list button:hover:not(:disabled){
   transform: translateY(-4px);
 }
@@ -163,35 +164,46 @@ h1 {
 .voice-btn:active {transform: scale(0.85);}
 .voice-btn:disabled {opacity:0.35;}
 
-/*底部按鈕：返回按鈕取消滿版寬度，內容居中*/
+/*底部按鈕區域：修改icon和文字間距，返回按鈕統一深灰色#666666*/
 .operate-btns {
   display:flex;
-  gap:16px;
+  gap:18px;
   justify-content:center;
   flex-wrap:wrap;
   width:100%;
+  margin-top:12px;
 }
-.operate-btns button, .back-btn {
-  padding:15px 22px;
-  font-size: 20px;
+.operate-btns button,
+.back-btn {
+  min-width:96px;
+  height:46px;
+  padding:0 24px;
+  font-size:20px;
   font-weight:bold;
   border:none;
-  border-radius:16px;
+  border-radius:14px;
   color:white;
   cursor:pointer;
   transition:0.2s;
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:6px;
+  gap:8px; /*圖標與文字增加間距，解決擠在一起問題*/
+  line-height:1;
 }
 .operate-btns button:first-of-type{
   background:#62d474;
 }
-.operate-btns .back-btn {
-  padding:15px 36px;
+/*全局返回按鈕強制統一深灰色*/
+.operate-btns .back-btn,
+.back-btn,
+#page-mode .back-btn{
+  min-width:96px;
+  height:46px;
+  padding:0 24px;
   flex:none;
-  background:#b0b0b0;
+  background:#666666 !important;
+  color:white !important;
 }
 .operate-btns button:active, .back-btn:active {
   transform: scale(0.95);
@@ -278,37 +290,37 @@ h1 {
   background:#e8fbf0;
   transform: scale(0.9);
 }
+/*拼寫底部按鈕增加圖標文字間距*/
 .spell-control-btns {
   display:flex;
-  gap:14px;
+  gap:18px;
   justify-content:center;
+  flex-wrap:wrap;
+}
+#spellUndo,
+#spellClearAll,
+#spellCheckAnswer {
+  min-width:96px;
+  height:46px;
+  padding:0 24px;
+  font-size:18px;
+  font-weight:bold;
+  border:none;
+  border-radius:14px;
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
 }
 #spellUndo {
   background:#ffb344;
-  color:white;
-  border:none;
-  font-size:18px;
-  font-weight:bold;
-  padding:14px 24px;
-  border-radius:14px;
 }
 #spellClearAll {
   background:#ff7777;
-  color:white;
-  border:none;
-  font-size:18px;
-  font-weight:bold;
-  padding:14px 24px;
-  border-radius:14px;
 }
 #spellCheckAnswer {
   background:#62d474;
-  color:white;
-  border:none;
-  font-size:18px;
-  font-weight:bold;
-  padding:14px 24px;
-  border-radius:14px;
 }
 #spellUndo:active,#spellClearAll:active,#spellCheckAnswer:active {
   transform: scale(0.95);
