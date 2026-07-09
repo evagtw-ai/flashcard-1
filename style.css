@@ -19,15 +19,17 @@ body {
 .page {
   width:100%;
 }
-/*遊戲頁重構：內容整體居中，返回按鈕取消滿版寬度*/
+/*遊戲頁核心設定：滿屏高度、禁止滾動，內容垂直居中排列*/
 .game-page {
   min-height: 100vh;
-  height:100vh;
-  display:flex;
+  height: 100vh;
+  display: flex;
   flex-direction: column;
-  overflow-y:hidden;
-  padding:30px 20px;
-  align-items:center;
+  overflow-y: hidden;
+  padding: 20px 20px;
+  align-items: center;
+  justify-content: center; /*整體內容垂直居中*/
+  gap:24px; /*各模塊固定間距*/
 }
 .home-page {
   min-height:100vh;
@@ -47,7 +49,6 @@ h1 {
 }
 #currentCatName {
   text-align:center;
-  margin-bottom:30px;
   width:100%;
 }
 #currentCatName div:nth-child(1){
@@ -63,6 +64,7 @@ h1 {
   font-size: clamp(18px,3vw,22px);
   text-align:center;
   color:#666;
+  width:100%;
 }
 
 /*首頁分類按鈕樣式*/
@@ -84,7 +86,7 @@ h1 {
 .category-list button:nth-child(1){background:#ff87a2;}
 .category-list button:nth-child(2){background:#70c8ff;}
 .category-list button:nth-child(3){background:#86e3a7;}
-/*修改All按鈕為明亮卡通橙色，解決看不清問題*/
+/*All按鈕明亮卡通橙色*/
 .category-list button:nth-child(4){background:#ff9f43;}
 .category-list button:hover:not(:disabled){
   transform: translateY(-4px);
@@ -92,7 +94,7 @@ h1 {
 .category-list button:active:not(:disabled){
   transform: scale(0.95);
 }
-/*禁用按鈕樣式：淺灰底色+灰色文字，清晰可見*/
+/*禁用按鈕：淺灰底色+灰色文字，清晰可見*/
 .category-list button.disabled-btn{
   background:#dddddd !important;
   color:#777777 !important;
@@ -108,7 +110,6 @@ h1 {
   flex-wrap:wrap;
   gap:16px;
   justify-content:center;
-  margin-bottom:40px;
   width:100%;
 }
 .mode-btn {
@@ -164,14 +165,13 @@ h1 {
 .voice-btn:active {transform: scale(0.85);}
 .voice-btn:disabled {opacity:0.35;}
 
-/*底部按鈕區域：修改icon和文字間距，返回按鈕統一深灰色#666666*/
+/*底部按鈕：圖標文字間距8px，返回按鈕全局深灰色 #666666*/
 .operate-btns {
   display:flex;
   gap:18px;
   justify-content:center;
   flex-wrap:wrap;
   width:100%;
-  margin-top:12px;
 }
 .operate-btns button,
 .back-btn {
@@ -188,13 +188,13 @@ h1 {
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:8px; /*圖標與文字增加間距，解決擠在一起問題*/
+  gap:8px;
   line-height:1;
 }
 .operate-btns button:first-of-type{
   background:#62d474;
 }
-/*全局返回按鈕強制統一深灰色*/
+/*全部頁面返回按鈕強制深灰色，解決和背景融合看不清問題*/
 .operate-btns .back-btn,
 .back-btn,
 #page-mode .back-btn{
@@ -240,7 +240,7 @@ h1 {
   text-align:center;
 }
 
-/*拼寫區域：禁止換行，只可水平滑動*/
+/*拼寫區域：禁止換行，僅水平滑動*/
 .spell-input-line {
   display:flex;
   gap:14px;
@@ -290,7 +290,7 @@ h1 {
   background:#e8fbf0;
   transform: scale(0.9);
 }
-/*拼寫底部按鈕增加圖標文字間距*/
+/*拼寫控制按鈕*/
 .spell-control-btns {
   display:flex;
   gap:18px;
