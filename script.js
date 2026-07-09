@@ -222,7 +222,7 @@ let sentenceUsedIndex = [];
 function playFeedbackVoice(isRight) {
   if (audioPlaying) return;
   const utter = new SpeechSynthesisUtterance();
-  utter.lang = "zh‑HK";
+  utter.lang = "zh-HK";
   utter.rate = 0.95;
   if (isRight) {
     utter.text = "答對了，你真棒！";
@@ -423,6 +423,8 @@ function playCnVoice(text) {
   };
   speechSynthesis.speak(cantonese);
 }
+
+// 英式英語發音
 function playEnVoice(text) {
   if (audioPlaying) return;
   speechSynthesis.cancel();
