@@ -1,6 +1,3 @@
-/* ==============================================
-全局通用基礎樣式（所有頁面共用，不動分類專屬）
-============================================== */
 * {
   margin: 0;
   padding: 0;
@@ -12,7 +9,7 @@
 body {
   background: #f0f8ff;
   min-height: 100vh;
-  padding: 15px;
+  padding: 24px 16px;
   overscroll-behavior: none;
 }
 .container {
@@ -22,61 +19,88 @@ body {
 .page {
   display: flex;
   flex-direction: column;
-  gap: 25px;
-  padding: 20px 10px;
-  min-height: calc(100vh - 30px);
+  gap: 32px;
+  padding: 30px 16px;
+  min-height: calc(100vh - 40px);
   justify-content: center;
 }
 .hidden { display: none !important; }
-h1 { text-align: center; color: #2266cc; font-size: clamp(28px, 6vw, 48px); }
-h2 { text-align: center; color: #333; font-size: clamp(20px, 4vw, 32px); }
-.progress-text { text-align: center; font-size: 18px; color: #666; }
+h1 {
+  text-align: center;
+  color: #2266cc;
+  font-size: clamp(28px, 6vw, 48px);
+  margin-bottom:10px;
+}
+h2 {
+  text-align: center;
+  color: #333;
+  font-size: clamp(20px, 4vw, 32px);
+}
+.progress-text {
+  text-align: center;
+  font-size: 20px;
+  color: #555;
+}
 
-/* 首頁分類按鈕通用 */
+/*首頁按鈕*/
 .category-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 20px;
   justify-items: center;
 }
 .category-list button {
-  padding: 20px 8px;
+  padding: 24px 10px;
   border: none;
-  border-radius: 12px;
+  border-radius: 16px;
   background: #409eff;
   color: white;
   cursor: pointer;
   width: 100%;
-  max-width: 160px;
-  transition: all 0.15s ease;
+  max-width: 180px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 8px #c6def8;
 }
-.category-list button:hover:not(:disabled) { background: #2677d9; transform: scale(0.97); }
-.category-list button:active:not(:disabled) { transform: scale(0.94); }
-.category-list button:disabled { opacity: 0.45; cursor: not-allowed; }
+.category-list button:hover:not(:disabled) {
+  background: #2677d9;
+  transform: translateY(-4px) scale(0.97);
+}
+.category-list button:active:not(:disabled) {
+  transform: scale(0.94);
+}
+.category-list button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow:none;
+}
 
-/* 模式頁按鈕通用 */
+/*模式頁按鈕*/
 .mode-btns {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 20px;
   justify-content: center;
 }
 .mode-btn {
-  padding: 18px 30px;
+  padding: 20px 32px;
   border: none;
-  border-radius: 10px;
+  border-radius: 14px;
   font-size: clamp(18px, 3vw, 24px);
   background: #36cbcb;
   color: #fff;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
+  box-shadow:0 4px 8px #bcecec;
 }
-.mode-btn:hover { transform: scale(0.97); background: #2ab8b8; }
+.mode-btn:hover {
+  transform: translateY(-3px) scale(0.97);
+  background: #2ab8b8;
+}
 .mode-btn:active { transform: scale(0.94); }
 .mode-order { background: #409eff !important; }
 .mode-order:hover { background: #2677d9 !important; }
 
-/* 文字閱讀卡片通用 */
+/*卡片容器放寬*/
 .word-box, .q-box, .spell-card-box {
   flex: 1;
   display: flex;
@@ -84,11 +108,11 @@ h2 { text-align: center; color: #333; font-size: clamp(20px, 4vw, 32px); }
   justify-content: center;
   align-items: center;
   text-align: center;
-  padding: 60px 20px;
+  padding: 80px 30px;
   background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 2px 12px #ddd;
-  gap: 30px;
+  border-radius: 20px;
+  box-shadow: 0 4px 16px #d8e8f8;
+  gap: 35px;
   width: 100%;
 }
 .word-text, .q-word, .spell-cn-text {
@@ -100,140 +124,154 @@ h2 { text-align: center; color: #333; font-size: clamp(20px, 4vw, 32px); }
 .voice-btn {
   background: transparent;
   border: none;
-  font-size: clamp(26px, 5vw, 38px);
+  font-size: clamp(28px, 5vw, 40px);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
 }
 .voice-btn:active { transform: scale(0.88); }
 .voice-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
-/* 底部操作按鈕通用 */
+/*底部按鈕*/
 .operate-btns {
   display: flex;
-  gap: 15px;
+  gap: 18px;
   justify-content: center;
   flex-wrap: wrap;
 }
 .operate-btns button, .back-btn {
-  padding: 14px 26px;
+  padding: 16px 30px;
   font-size: clamp(16px, 3vw, 20px);
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
+  box-shadow:0 3px 8px #ddd;
 }
-.operate-btns button:first-child { background: #52c41a; color: #fff; }
+.operate-btns button:first-child {
+  background: #52c41a;
+  color: #fff;
+}
 .operate-btns button:first-child:active { transform: scale(0.94); }
 .back-btn { background: #999; color: white; }
 .back-btn:active { transform: scale(0.94); }
 
-/* 配對頁選項按鈕 */
+/*配對頁*/
 .option-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
   align-items: center;
+  width: 100%;
 }
 .option-list button {
-  padding: 16px;
+  padding: 20px;
   font-size: clamp(18px, 4vw, 26px);
-  border: 2px solid #409eff;
+  border: 3px solid #409eff;
   background: #fff;
-  border-radius: 10px;
+  border-radius: 14px;
   width: 100%;
-  max-width: 400px;
-  transition: all 0.15s ease;
+  max-width: 420px;
+  transition: all 0.2s ease;
 }
-.option-list button:active { transform: scale(0.97); background: #f0f8ff; }
-.tip, .spell-tip { text-align: center; font-size: 22px; font-weight: bold; min-height: 30px; }
+.option-list button:active {
+  transform: scale(0.97);
+  background: #f0f8ff;
+}
+.tip, .spell-tip {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  min-height: 35px;
+}
 
-/* 拼寫頁通用 */
+/*拼寫區，禁止換行，超出水平滾動*/
 .spell-input-line {
   min-height: 70px;
   display: flex;
   justify-content: center;
   align-items: flex-end;
   gap: 16px;
-  padding: 10px 0;
+  padding: 10px 10px;
   font-size: 36px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
 }
 .spell-cell {
-  width: 40px;
+  width: 42px;
   text-align: center;
   border-bottom: 4px solid #2266cc;
-  min-height: 40px;
+  min-height: 42px;
 }
 .spell-letter-group {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 14px;
   justify-content: center;
 }
 .spell-letter-group button {
-  width: 56px;
-  height: 56px;
-  font-size: 26px;
-  border: 2px solid #36cbcb;
+  width: 60px;
+  height: 60px;
+  font-size: 28px;
+  border: 3px solid #36cbcb;
   background: #fff;
-  border-radius: 10px;
-  transition: all 0.15s ease;
+  border-radius: 12px;
+  transition: all 0.2s ease;
 }
-.spell-letter-group button:active { transform: scale(0.88); background: #e8fbfb; }
+.spell-letter-group button:active {
+  transform: scale(0.88);
+  background: #e8fbfb;
+}
 .spell-control-btns {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 14px;
   justify-content: center;
 }
-#spellUndo { background: #ff9500; color:#fff; border:none; padding:12px 22px; border-radius:10px; font-size:18px; transition:0.15s; }
+#spellUndo { background: #ff9500; color:#fff; border:none; padding:14px 24px; border-radius:12px; font-size:18px; transition:0.2s; }
 #spellUndo:active { transform: scale(0.94); }
-#spellClearAll { background: #ff3b30; color:#fff; border:none; padding:12px 22px; border-radius:10px; font-size:18px; transition:0.15s; }
+#spellClearAll { background: #ff3b30; color:#fff; border:none; padding:14px 24px; border-radius:12px; font-size:18px; transition:0.2s; }
 #spellClearAll:active { transform: scale(0.94); }
-#spellCheckAnswer { background: #34c759; color:#fff; border:none; padding:12px 22px; border-radius:10px; font-size:18px; transition:0.15s; }
+#spellCheckAnswer { background: #34c759; color:#fff; border:none; padding:14px 24px; border-radius:12px; font-size:18px; transition:0.2s; }
 #spellCheckAnswer:active { transform: scale(0.94); }
 
-/* 自定義完成彈窗全局樣式 */
+/*彈窗*/
 .modal-box {
   background: #fffef0;
-  padding: 40px 30px;
-  border-radius: 20px;
+  padding: 45px 35px;
+  border-radius: 24px;
   text-align: center;
-  min-width: 300px;
+  min-width: 320px;
   max-width: 90%;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-  animation: popIn 0.2s ease-out;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.15);
+  animation: popIn 0.25s ease-out;
 }
 @keyframes popIn {
   0% { transform: scale(0.8); opacity:0; }
   100% { transform: scale(1); opacity:1; }
 }
-.modal-text { font-size: 28px; margin-bottom: 30px; color: #2266cc; font-weight: bold; }
-.modal-btn-wrap { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
-.modal-again { padding:12px 24px; border:none; border-radius:8px; background:#34c759; color:#fff; font-size:18px; cursor:pointer; transition:0.15s; }
+.modal-text { font-size: 30px; margin-bottom: 30px; color: #2266cc; font-weight: bold; }
+.modal-btn-wrap { display: flex; gap: 22px; justify-content: center; flex-wrap: wrap; }
+.modal-again { padding:14px 26px; border:none; border-radius:10px; background:#34c759; color:#fff; font-size:18px; cursor:pointer; transition:0.2s; }
 .modal-again:active { transform: scale(0.94); }
-.modal-back { padding:12px 24px; border:none; border-radius:8px; background:#999; color:#fff; font-size:18px; cursor:pointer; transition:0.15s; }
+.modal-back { padding:14px 26px; border:none; border-radius:10px; background:#999; color:#fff; font-size:18px; cursor:pointer; transition:0.2s; }
 .modal-back:active { transform: scale(0.94); }
 
-/* ==============================================
-【模塊專用樣式隔離區】
-1. 學習模式 orderStudy 左右獨立卡片（僅單詞分類使用）
-2. 後續若新增分類專用UI，在此下方追加區塊
-============================================== */
+/*學習模式左右卡片*/
 #page-orderStudy { flex: 1; }
 .order-card-wrap {
   display: flex;
   width: 100%;
-  gap: 20px;
+  gap: 24px;
   justify-content: center;
   flex-wrap: wrap;
 }
 .order-card {
   flex: 1;
-  min-width: 260px;
+  min-width: 280px;
   max-width: 48%;
-  padding: 80px 20px;
-  border-radius: 16px;
-  box-shadow: 0 2px 12px #ddd;
+  padding: 90px 20px;
+  border-radius: 20px;
+  box-shadow: 0 4px 16px #ddd;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -241,5 +279,5 @@ h2 { text-align: center; color: #333; font-size: clamp(20px, 4vw, 32px); }
 }
 .cn-card { background: #ffffff; border: 3px solid #409eff; }
 .en-card { background: #f7fdff; border: 3px solid #36cbcb; }
-.order-cn { font-size: clamp(36px, 9vw, 66px); color: #111; font-weight: bold; }
-.order-en { font-size: clamp(36px, 9vw, 66px); color: #2266cc; font-weight: bold; }
+.order-cn { font-size: clamp(38px, 9vw, 68px); color: #111; font-weight: bold; }
+.order-en { font-size: clamp(38px, 9vw, 68px); color: #2266cc; font-weight: bold; }
