@@ -204,6 +204,7 @@ let spellTargetEn = "";
 let spellRawWord = "";
 let spellUserAnswer = [];
 let spellShuffleLetters = [];
+let originalLetters = []; //本題原始字母池
 let currentSentenceIndex = 0;
 let audioPlaying = false;
 const NEXT_COOLDOWN = 300;
@@ -218,16 +219,48 @@ let matchUsedIndex = [];
 let spellUsedIndex = [];
 let sentenceUsedIndex = [];
 
-//播放專用提示語音
+//粵語發音
+function playCnVoice(text) {
+  if (audioPlaying) return;
+  speechSynthesis.cancel();
+  const cantonese = new SpeechSynthesisUtterance(text);
+  cantonese.lang = "zh-HK";
+  cantonese.rate = 0.95;
+  audioPlaying = true;
+  document.querySelectorAll(".voice-btn").forEach(btn => btn.disabled = true);
+  cantonese.onend = () => {
+    audioPlaying = false;
+    document.querySelectorAll(".voice-btn").forEach(btn => btn.disabled = false);
+  };
+  speechSynthesis.speak(cantonese);
+}
+
+//英式英語發音
+function playEnVoice(text) {
+  if (audioPlaying) return;
+  speechSynthesis.cancel();
+  const eng = new SpeechSynthesisUtterance(text);
+  eng.lang = "en-GB";
+  eng.rate = 0.8;
+  audioPlaying = true;
+  document.querySelectorAll(".voice-btn").forEach(btn => btn.disabled = true);
+  eng.onend = () => {
+    audioPlaying = false;
+    document.querySelectorAll(".voice-btn").forEach(btn => btn.disabled = false);
+  };
+  speechSynthesis.speak(eng);
+}
+
+//答題反饋粵語
 function playFeedbackVoice(isRight) {
   if (audioPlaying) return;
   const utter = new SpeechSynthesisUtterance();
   utter.lang = "zh-HK";
-  utter.rate = 0.95;
+  utter.rate = 0.98;
   if (isRight) {
-    utter.text = "答對了，你真棒！";
+    utter.text = "你真叻！";
   } else {
-    utter.text = "oops，答錯了，再試一次吧";
+    utter.text = "再試一次吧！";
   }
   audioPlaying = true;
   document.querySelectorAll(".voice-btn").forEach(btn => btn.disabled = true);
@@ -378,7 +411,7 @@ function selectCategory(catKey) {
 document.querySelectorAll(".mode-btn").forEach(btn => {
   btn.onclick = () => {
     currentMode = btn.dataset.mode;
-    wrongCount = 0; //切換模式重置錯誤次數
+    wrongCount = 0;
     const cnName = catNameMap[currentCat];
     const titleDom = document.getElementById("currentCatName");
     titleDom.innerHTML = `
@@ -407,38 +440,6 @@ document.querySelectorAll(".mode-btn").forEach(btn => {
     }
   };
 });
-
-//單詞讀音
-function playCnVoice(text) {
-  if (audioPlaying) return;
-  speechSynthesis.cancel();
-  const cantonese = new SpeechSynthesisUtterance(text);
-  cantonese.lang = "zh-HK";
-  cantonese.rate = 0.95;
-  audioPlaying = true;
-  document.querySelectorAll(".voice-btn").forEach(btn => btn.disabled = true);
-  cantonese.onend = () => {
-    audioPlaying = false;
-    document.querySelectorAll(".voice-btn").forEach(btn => btn.disabled = false);
-  };
-  speechSynthesis.speak(cantonese);
-}
-
-// 英式英語發音
-function playEnVoice(text) {
-  if (audioPlaying) return;
-  speechSynthesis.cancel();
-  const eng = new SpeechSynthesisUtterance(text);
-  eng.lang = "en-GB";
-  eng.rate = 0.8;
-  audioPlaying = true;
-  document.querySelectorAll(".voice-btn").forEach(btn => btn.disabled = true);
-  eng.onend = () => {
-    audioPlaying = false;
-    document.querySelectorAll(".voice-btn").forEach(btn => btn.disabled = false);
-  };
-  speechSynthesis.speak(eng);
-}
 
 //順序學習頁
 function renderOrderWord() {
@@ -608,7 +609,7 @@ document.getElementById("qVoiceBtn").onclick = function () {
   matchType === "cn2en" ? playCnVoice(currentWord.cn) : playEnVoice(currentWord.en);
 };
 
-//拼寫遊戲
+// --------------------------拼寫模塊核心代碼----------------------------
 function initSpellGame() {
   if (nextBtnLock) return;
   nextBtnLock = true;
@@ -630,7 +631,8 @@ function initSpellGame() {
   spellRawWord = currentWord.en.toLowerCase();
   spellTargetEn = spellRawWord.replace(/ /g, "");
   spellUserAnswer = [];
-  spellShuffleLetters = spellTargetEn.split("").sort(() => Math.random() - 0.5);
+  originalLetters = spellTargetEn.split("");
+  spellShuffleLetters = [...originalLetters].sort(() => Math.random() - 0.5);
   renderSpellUI();
   let progressDom = document.querySelector("#page-spell .progress-text");
   if (!progressDom) {
@@ -646,48 +648,63 @@ function renderSpellUI() {
   document.getElementById("spellTip").innerText = "";
   const lineBox = document.getElementById("spellAnswerLine");
   lineBox.innerHTML = "";
+  let cellList = [];
   [...spellRawWord].forEach(char => {
     const cell = document.createElement("div");
     cell.className = "spell-cell";
     if (char === " ") {
       cell.style.borderBottom = "none";
-    } else {
-      cell.textContent = "";
     }
     lineBox.appendChild(cell);
+    cellList.push(cell);
   });
-  let tempLetters = [...spellShuffleLetters];
-  spellUserAnswer.forEach(ch => {
-    let pos = tempLetters.indexOf(ch);
-    if (pos !== -1) tempLetters.splice(pos, 1);
+  //填入字母並增加彈入動畫
+  for (let i = 0; i < spellUserAnswer.length; i++) {
+    cellList[i].textContent = spellUserAnswer[i];
+    cellList[i].style.animation = "popLetter 0.2s ease-out";
+  }
+  //計算剩餘字母，處理重複字母
+  let tempArr = [...originalLetters];
+  let usedCopy = [...spellUserAnswer];
+  let remainLetters = [];
+  tempArr.forEach(ch => {
+    let idx = usedCopy.indexOf(ch);
+    if (idx === -1) {
+      remainLetters.push(ch);
+    } else {
+      usedCopy.splice(idx, 1);
+    }
   });
   const letterWrap = document.getElementById("spellLetterBox");
   letterWrap.innerHTML = "";
-  tempLetters.forEach(letter => {
+  remainLetters.forEach(letter => {
     const btn = document.createElement("button");
     btn.textContent = letter;
     btn.onclick = function () {
-      spellUserAnswer.push(letter);
-      renderSpellUI();
+      if (spellUserAnswer.length < spellTargetEn.length) {
+        spellUserAnswer.push(letter);
+        renderSpellUI();
+      }
     };
     letterWrap.appendChild(btn);
   });
 }
 
-document.getElementById("spellVoiceBtn").onclick = function () {
-  playCnVoice(currentWord.cn);
-};
 document.addEventListener("DOMContentLoaded", function () {
+  //撤回按鈕
   document.getElementById("spellUndo").onclick = function () {
     if (spellUserAnswer.length > 0) {
       spellUserAnswer.pop();
       renderSpellUI();
     }
   };
+  //清空按鈕，字母重新亂序
   document.getElementById("spellClearAll").onclick = function () {
     spellUserAnswer = [];
+    spellShuffleLetters = [...originalLetters].sort(() => Math.random() - 0.5);
     renderSpellUI();
   };
+  //確認答案
   document.getElementById("spellCheckAnswer").onclick = function () {
     const userStr = spellUserAnswer.join("");
     const tipDom = document.getElementById("spellTip");
@@ -706,6 +723,9 @@ document.addEventListener("DOMContentLoaded", function () {
       } else {
         tipDom.style.color = "#f03030";
         tipDom.innerText = "拼寫錯誤，再嘗試一次";
+        spellUserAnswer = [];
+        spellShuffleLetters = [...originalLetters].sort(() => Math.random() - 0.5);
+        renderSpellUI();
       }
     }
   };
