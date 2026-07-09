@@ -19,7 +19,7 @@ body {
 .page {
   width:100%;
 }
-/*遊戲頁重構：放棄space‑evenly，改用margin控制間距，解決空白過多問題*/
+/*遊戲頁重構：內容整體居中，返回按鈕取消滿版寬度*/
 .game-page {
   min-height: 100vh;
   height:100vh;
@@ -27,6 +27,7 @@ body {
   flex-direction: column;
   overflow-y:hidden;
   padding:30px 20px;
+  align-items:center;
 }
 .home-page {
   min-height:100vh;
@@ -47,6 +48,7 @@ h1 {
 #currentCatName {
   text-align:center;
   margin-bottom:30px;
+  width:100%;
 }
 #currentCatName div:nth-child(1){
   font-size: clamp(26px,5vw,32px);
@@ -63,7 +65,7 @@ h1 {
   color:#666;
 }
 
-/*首頁分類按鈕 馬卡龍配色*/
+/*首頁按鈕：禁用按鈕樣式修復，不再和背景融合*/
 .category-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px,1fr));
@@ -82,24 +84,31 @@ h1 {
 .category-list button:nth-child(1){background:#ff87a2;}
 .category-list button:nth-child(2){background:#70c8ff;}
 .category-list button:nth-child(3){background:#86e3a7;}
+.category-list button:nth-child(4){background:#bb98ff;}
 .category-list button:hover:not(:disabled){
   transform: translateY(-4px);
 }
 .category-list button:active:not(:disabled){
   transform: scale(0.95);
 }
-.category-list button:disabled {
-  opacity:0.45;
+/*禁用按鈕樣式：淺灰底色+灰色文字，清晰可見*/
+.category-list button.disabled-btn{
+  background:#dddddd !important;
+  color:#777777 !important;
   box-shadow:none;
 }
+.category-list button:disabled {
+  opacity:1;
+}
 
-/*模式頁按鈕：取消固定寬度，改用min‑width，解決文字擠壓問題*/
+/*模式頁按鈕：自適應寬度*/
 .mode-btns {
   display:flex;
   flex-wrap:wrap;
   gap:16px;
   justify-content:center;
   margin-bottom:40px;
+  width:100%;
 }
 .mode-btn {
   min-width:110px;
@@ -129,6 +138,7 @@ h1 {
 /*卡片通用樣式*/
 .word-box, .q-box, .spell-card-box {
   width:100%;
+  max-width:800px;
   padding:50px 20px;
   background:#ffffff;
   border-radius:24px;
@@ -153,12 +163,13 @@ h1 {
 .voice-btn:active {transform: scale(0.85);}
 .voice-btn:disabled {opacity:0.35;}
 
-/*底部按鈕，返回按鈕取消100%寬度*/
+/*底部按鈕：返回按鈕取消滿版寬度，內容居中*/
 .operate-btns {
   display:flex;
   gap:16px;
   justify-content:center;
   flex-wrap:wrap;
+  width:100%;
 }
 .operate-btns button, .back-btn {
   padding:15px 22px;
@@ -171,12 +182,12 @@ h1 {
   transition:0.2s;
   display:flex;
   align-items:center;
+  justify-content:center;
   gap:6px;
 }
 .operate-btns button:first-of-type{
   background:#62d474;
 }
-/*返回按鈕只根據內容寬度，不再撐滿整行*/
 .operate-btns .back-btn {
   padding:15px 36px;
   flex:none;
@@ -192,6 +203,7 @@ h1 {
   flex-direction:column;
   gap:14px;
   width:100%;
+  max-width:800px;
 }
 .option-list button {
   width:90%;
