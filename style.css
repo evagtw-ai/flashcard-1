@@ -18,16 +18,15 @@ body {
 }
 .page {
   width:100%;
-  padding:16px 14px;
 }
-/*遊戲頁強制一頁高度，禁止垂直滾動*/
+/*遊戲頁重構：放棄space‑evenly，改用margin控制間距，解決空白過多問題*/
 .game-page {
   min-height: 100vh;
   height:100vh;
   display:flex;
   flex-direction: column;
-  justify-content: space-evenly;
   overflow-y:hidden;
+  padding:30px 20px;
 }
 .home-page {
   min-height:100vh;
@@ -35,6 +34,7 @@ body {
   flex-direction: column;
   justify-content: center;
   gap:40px;
+  padding:16px 14px;
 }
 .hidden { display: none !important; }
 
@@ -46,6 +46,7 @@ h1 {
 }
 #currentCatName {
   text-align:center;
+  margin-bottom:30px;
 }
 #currentCatName div:nth-child(1){
   font-size: clamp(26px,5vw,32px);
@@ -92,15 +93,17 @@ h1 {
   box-shadow:none;
 }
 
-/*模式頁按鈕*/
+/*模式頁按鈕：取消固定寬度，改用min‑width，解決文字擠壓問題*/
 .mode-btns {
   display:flex;
   flex-wrap:wrap;
   gap:16px;
   justify-content:center;
+  margin-bottom:40px;
 }
 .mode-btn {
-  width: 130px;
+  min-width:110px;
+  padding:0 14px;
   height:72px;
   font-size: 20px;
   font-weight:bold;
@@ -150,7 +153,7 @@ h1 {
 .voice-btn:active {transform: scale(0.85);}
 .voice-btn:disabled {opacity:0.35;}
 
-/*底部操作按鈕*/
+/*底部按鈕，返回按鈕取消100%寬度*/
 .operate-btns {
   display:flex;
   gap:16px;
@@ -173,7 +176,10 @@ h1 {
 .operate-btns button:first-of-type{
   background:#62d474;
 }
-.back-btn {
+/*返回按鈕只根據內容寬度，不再撐滿整行*/
+.operate-btns .back-btn {
+  padding:15px 36px;
+  flex:none;
   background:#b0b0b0;
 }
 .operate-btns button:active, .back-btn:active {
