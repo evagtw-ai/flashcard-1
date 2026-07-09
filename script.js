@@ -93,7 +93,7 @@ const catNameMap = {
   Stationary: "文具",
   Fruit: "水果",
   People: "人物",
-  All: "全部"
+  All: "全部詞彙"
 };
 
 //拆分句子，分類獨立句子
@@ -190,7 +190,8 @@ const sentenceGroup = {
       "We queue up at the bus stop."
     ]
   },
-  Color: { cn: [], en: [] }
+  Color: { cn: [], en: [] },
+  All: { cn: [], en: [] }
 };
 let currentSentenceCnList = [];
 let currentSentenceEnList = [];
@@ -199,6 +200,7 @@ let currentSentenceEnList = [];
 let currentCat = "";
 let currentMode = "";
 let wordList = [];
+let fullWordPool = []; //All模式全部詞庫
 let currentWord = null;
 let spellTargetEn = "";
 let spellRawWord = "";
@@ -210,6 +212,8 @@ let audioPlaying = false;
 const NEXT_COOLDOWN = 300;
 let nextBtnLock = false;
 let orderIndex = 0;
+const ALL_COUNT = 20; //All模式固定20題
+let allUsedIndex = [];
 
 //答錯次數計數
 let wrongCount = 0;
@@ -280,6 +284,7 @@ function loadStorage() {
     matchUsedIndex = obj.match || [];
     spellUsedIndex = obj.spell || [];
     sentenceUsedIndex = obj.sentence || [];
+    allUsedIndex = obj.all || [];
   }
 }
 function saveStorage() {
@@ -287,7 +292,8 @@ function saveStorage() {
     word: wordUsedIndex,
     match: matchUsedIndex,
     spell: spellUsedIndex,
-    sentence: sentenceUsedIndex
+    sentence: sentenceUsedIndex,
+    all: allUsedIndex
   };
   localStorage.setItem("studyRecord", JSON.stringify(saveObj));
 }
@@ -335,6 +341,37 @@ function showFinishModal(resetCallback) {
   document.body.appendChild(modal);
 }
 
+//答錯兩次彈窗
+function showAnswerModal(answer, nextFunc) {
+  const modal = document.createElement("div");
+  modal.style.position = "fixed";
+  modal.style.left = "0";
+  modal.style.top = "0";
+  modal.style.width = "100vw";
+  modal.style.height = "100vh";
+  modal.style.background = "rgba(0,0,0,0.5)";
+  modal.style.display = "flex";
+  modal.style.justifyContent = "center";
+  modal.style.alignItems = "center";
+  modal.style.zIndex = "9999";
+  const box = document.createElement("div");
+  box.className = "modal-box";
+  const text = document.createElement("p");
+  text.className = "modal-text";
+  text.innerText = `正確答案：${answer}`;
+  const confirmBtn = document.createElement("button");
+  confirmBtn.className = "modal-again";
+  confirmBtn.innerText = "確認";
+  confirmBtn.onclick = () => {
+    document.body.removeChild(modal);
+    nextFunc();
+  };
+  box.appendChild(text);
+  box.appendChild(confirmBtn);
+  modal.appendChild(box);
+  document.body.appendChild(modal);
+}
+
 function stopAllAudio() {
   window.speechSynthesis.cancel();
   audioPlaying = false;
@@ -355,12 +392,12 @@ function showPage(id) {
 function backHome() { showPage("page-home"); }
 function backMode() { showPage("page-mode"); }
 
-//首頁分類渲染
+//首頁分類渲染：開啟All按鈕，禁用按鈕修改樣式標記
 function initCategory() {
   const wrap = document.getElementById("categoryWrap");
   if (!wrap) return;
   wrap.innerHTML = "";
-  const openCats = ["Occupation", "Place", "Color"];
+  const openCats = ["Occupation", "Place", "Color", "All"];
   Object.keys(wordData).forEach(key => {
     const btn = document.createElement("button");
     btn.innerHTML = `
@@ -370,6 +407,7 @@ function initCategory() {
     if (openCats.includes(key)) {
       btn.onclick = () => selectCategory(key);
     } else {
+      btn.classList.add("disabled-btn");
       btn.disabled = true;
     }
     wrap.appendChild(btn);
@@ -379,6 +417,13 @@ function initCategory() {
 function selectCategory(catKey) {
   currentCat = catKey;
   if (catKey === "All") {
+    //匯集所有可用詞條，隨機挑選20個
+    fullWordPool = [...wordData.Occupation, ...wordData.Place, ...wordData.Color];
+    allUsedIndex = [];
+    //打亂順序取前20
+    fullWordPool.sort(() => Math.random() - 0.5);
+    wordList = fullWordPool.slice(0, ALL_COUNT);
+  } else if (catKey === "All") {
     wordList = [];
     Object.values(wordData).forEach(arr => wordList.push(...arr));
   } else {
@@ -468,6 +513,12 @@ function nextOrderWord() {
   if (orderIndex >= total - 1) {
     showFinishModal(function (again) {
       if (again) {
+        //All模式重新隨機20題
+        if(currentCat === "All"){
+          fullWordPool = [...wordData.Occupation, ...wordData.Place, ...wordData.Color];
+          fullWordPool.sort(() => Math.random() - 0.5);
+          wordList = fullWordPool.slice(0, ALL_COUNT);
+        }
         orderIndex = 0;
         renderOrderWord();
       } else {
@@ -500,7 +551,15 @@ function nextWord() {
   const total = wordList.length;
   if (wordUsedIndex.length >= total) {
     showFinishModal(function (again) {
-      if (again) { wordUsedIndex = []; saveStorage(); nextWord(); }
+      if (again) {
+        if(currentCat === "All"){
+          fullWordPool = [...wordData.Occupation, ...wordData.Place, ...wordData.Color];
+          fullWordPool.sort(() => Math.random() - 0.5);
+          wordList = fullWordPool.slice(0, ALL_COUNT);
+          wordUsedIndex = [];
+        }
+        saveStorage(); nextWord();
+      }
       else { showPage("page-mode"); }
     });
     return;
@@ -535,7 +594,15 @@ function createMatchQ() {
   const total = wordList.length;
   if (matchUsedIndex.length >= total) {
     showFinishModal(function (again) {
-      if (again) { matchUsedIndex = []; saveStorage(); createMatchQ(); }
+      if (again) {
+        if(currentCat === "All"){
+          fullWordPool = [...wordData.Occupation, ...wordData.Place, ...wordData.Color];
+          fullWordPool.sort(() => Math.random() - 0.5);
+          wordList = fullWordPool.slice(0, ALL_COUNT);
+          matchUsedIndex = [];
+        }
+        saveStorage(); createMatchQ();
+      }
       else { showPage("page-mode"); }
     });
     return;
@@ -593,11 +660,7 @@ function matchCheckAnswer(select, right, tipDom) {
     wrongCount += 1;
     playFeedbackVoice(false);
     if (wrongCount >= 2) {
-      tipDom.style.color = "#e53e3e";
-      tipDom.innerText = `正確答案：${right}`;
-      setTimeout(() => {
-        createMatchQ();
-      }, 1800);
+      showAnswerModal(right, ()=>{createMatchQ();})
     } else {
       tipDom.style.color = "#f03030";
       tipDom.innerText = "答錯咯，再試一次！";
@@ -618,7 +681,15 @@ function initSpellGame() {
   const total = wordList.length;
   if (spellUsedIndex.length >= total) {
     showFinishModal(function (again) {
-      if (again) { spellUsedIndex = []; saveStorage(); initSpellGame(); }
+      if (again) {
+        if(currentCat === "All"){
+          fullWordPool = [...wordData.Occupation, ...wordData.Place, ...wordData.Color];
+          fullWordPool.sort(() => Math.random() - 0.5);
+          wordList = fullWordPool.slice(0, ALL_COUNT);
+          spellUsedIndex = [];
+        }
+        saveStorage(); initSpellGame();
+      }
       else { showPage("page-mode"); }
     });
     return;
@@ -717,9 +788,7 @@ document.addEventListener("DOMContentLoaded", function () {
       wrongCount += 1;
       playFeedbackVoice(false);
       if (wrongCount >= 2) {
-        tipDom.style.color = "#e53e3e";
-        tipDom.innerText = `正確答案：${spellRawWord}`;
-        setTimeout(() => initSpellGame(), 1800);
+        showAnswerModal(spellRawWord, ()=>{initSpellGame()});
       } else {
         tipDom.style.color = "#f03030";
         tipDom.innerText = "拼寫錯誤，再嘗試一次";
