@@ -792,7 +792,7 @@ document.getElementById("qVoiceBtn").onclick = function () {
   matchType === "cn2en" ? playCnVoice(currentWord.cn) : playEnVoice(currentWord.en);
 };
 
-// --------------------------拼寫模塊核心代碼【已全局統一亂序】----------------------------
+// --------------------------拼寫模塊【徹底修復字母亂序】----------------------------
 function initSpellGame() {
   if (nextBtnLock) return;
   nextBtnLock = true;
@@ -820,11 +820,12 @@ function initSpellGame() {
   saveStorage();
   currentWord = wordList[randomIdx];
   spellRawWord = currentWord.en.toLowerCase();
-  // 過濾所有空格，得到純字母目標串
+  // 過濾空格得到需要拼寫的純字母
   spellTargetEn = spellRawWord.replace(/ /g, "");
   spellUserAnswer = [];
+  // 提取原始字母陣列
   originalLetters = spellTargetEn.split("");
-  // ========== 所有分類統一強制洗牌，不再區分章節 ==========
+  // 核心：載入新單詞強制洗牌亂序
   spellShuffleLetters = shuffleArray([...originalLetters]);
   renderSpellUI();
   let progressDom = document.querySelector("#page-spell .progress-text");
@@ -842,37 +843,45 @@ function renderSpellUI() {
   const lineBox = document.getElementById("spellAnswerLine");
   lineBox.innerHTML = "";
   let cellList = [];
+  // 繪製輸入格，保留空格位置（如 bus stop 中間空一格）
   [...spellRawWord].forEach(char => {
     const cell = document.createElement("div");
     cell.className = "spell-cell";
     if (char === " ") {
       cell.style.borderBottom = "none";
+      cell.style.width = "16px";
     }
     lineBox.appendChild(cell);
     cellList.push(cell);
   });
-  //填入字母並增加彈入動畫
+  // 回填用戶已選字母
   for (let i = 0; i < spellUserAnswer.length; i++) {
     cellList[i].textContent = spellUserAnswer[i];
     cellList[i].style.animation = "popLetter 0.2s ease-out";
   }
-  //計算剩餘字母，處理重複字母
-  let tempArr = [...originalLetters];
-  let usedCopy = [...spellUserAnswer];
+
+  // 計算剩餘可點擊字母（處理重複字母）
+  let tempOriginal = [...originalLetters];
+  let tempUsed = [...spellUserAnswer];
   let remainLetters = [];
-  tempArr.forEach(ch => {
-    let idx = usedCopy.indexOf(ch);
+  tempOriginal.forEach(ch => {
+    const idx = tempUsed.indexOf(ch);
     if (idx === -1) {
       remainLetters.push(ch);
     } else {
-      usedCopy.splice(idx, 1);
+      tempUsed.splice(idx, 1);
     }
   });
+
+  // 每次渲染都再次洗牌，保證字母永遠打亂
+  const finalShuffleLetters = shuffleArray(remainLetters);
+
   const letterWrap = document.getElementById("spellLetterBox");
   letterWrap.innerHTML = "";
-  remainLetters.forEach(letter => {
+  finalShuffleLetters.forEach(letter => {
     const btn = document.createElement("button");
     btn.textContent = letter;
+    btn.className = "spell-letter-btn";
     btn.onclick = function () {
       if (spellUserAnswer.length < spellTargetEn.length) {
         spellUserAnswer.push(letter);
@@ -891,7 +900,7 @@ document.addEventListener("DOMContentLoaded", function () {
       renderSpellUI();
     }
   };
-  //清空按鈕，字母重新洗牌亂序
+  //清空按鈕：重置答案並重新洗牌字母
   document.getElementById("spellClearAll").onclick = function () {
     spellUserAnswer = [];
     spellShuffleLetters = shuffleArray([...originalLetters]);
@@ -915,6 +924,7 @@ document.addEventListener("DOMContentLoaded", function () {
         tipDom.style.color = "#f03030";
         tipDom.innerText = "拼寫錯誤，再嘗試一次";
         spellUserAnswer = [];
+        //答錯重置也重新亂序
         spellShuffleLetters = shuffleArray([...originalLetters]);
         renderSpellUI();
       }
