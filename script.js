@@ -113,7 +113,7 @@ const wordData = {
     { cn: "海豹", en: "seal" },
     { cn: "蚊", en: "mosquito" },
     { cn: "蝙蝠", en: "bat" },
-    { cn: "袋鼠", en: "kangaroo" }, // 修正拼寫 kangroo → kangaroo
+    { cn: "袋鼠", en: "kangaroo" },
     { cn: "螃蟹", en: "crab" },
     { cn: "豹子", en: "leopard" },
     { cn: "浣熊", en: "raccoon" },
@@ -301,7 +301,7 @@ const sentenceGroup = {
     ],
     en: [
       "Lily has golden hair.",
-      "Alex has big blue eyes." // 修正 bule → blue
+      "Alex has big blue eyes."
     ]
   },
   All: { cn: [], en: [] }
@@ -400,6 +400,41 @@ function playEnVoice(text) {
     document.querySelectorAll(".voice-btn").forEach(btn => btn.disabled = false);
   };
   window.speechSynthesis.speak(utter);
+}
+
+// ========== 新增：拼寫遊戲專用 先英文、後中文雙語發音函數 ==========
+function playSpellBilingualVoice(enText, cnText) {
+  if (!enText || !cnText || audioPlaying || !window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  audioPlaying = true;
+
+  // 第一步：播放英式英文單詞/短語
+  const engUtter = new SpeechSynthesisUtterance(enText);
+  engUtter.lang = "en-GB";
+  engUtter.rate = 0.8;
+  engUtter.volume = 1;
+  const engVoice = globalVoiceList.find(v => v.lang.startsWith("en-GB"));
+  if (engVoice) engUtter.voice = engVoice;
+
+  // 英文播完再播中文繁體釋義（zh-CN普通話）
+  engUtter.onend = () => {
+    const cnUtter = new SpeechSynthesisUtterance(cnText);
+    cnUtter.lang = "zh-CN";
+    cnUtter.rate = 0.95;
+    cnUtter.volume = 1;
+    const cnVoice = globalVoiceList.find(v => v.lang.startsWith("zh-CN"));
+    if (cnVoice) cnUtter.voice = cnVoice;
+
+    cnUtter.onend = () => {
+      audioPlaying = false;
+      document.querySelectorAll(".voice-btn").forEach(btn => btn.disabled = false);
+    };
+    window.speechSynthesis.speak(cnUtter);
+  };
+
+  // 按鈕禁用防重複點擊
+  document.querySelectorAll(".voice-btn").forEach(btn => btn.disabled = true);
+  window.speechSynthesis.speak(engUtter);
 }
 
 //答題反饋粵語
@@ -873,7 +908,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
-// --------------------------拼寫模塊【徹底修復字母亂序、中文發音依賴全局音色】----------------------------
+// --------------------------拼寫模塊【徹底修復字母亂序、雙語發音】----------------------------
 function initSpellGame() {
   if (nextBtnLock) return;
   nextBtnLock = true;
@@ -986,8 +1021,19 @@ function renderSpellUI() {
   });
 }
 
-// 拼寫頁按鈕綁定
+// 拼寫頁按鈕綁定（重點修改發音按鈕調用雙語函數）
 document.addEventListener("DOMContentLoaded", function () {
+  //拼寫遊戲播放讀音按鈕：調用雙語發音
+  const spellVoiceBtn = document.getElementById("spellVoiceBtn");
+  if (spellVoiceBtn) {
+    spellVoiceBtn.classList.add("voice-btn");
+    spellVoiceBtn.onclick = function () {
+      if (!currentWord) return;
+      // 先英文，後中文
+      playSpellBilingualVoice(currentWord.en, currentWord.cn);
+    };
+  }
+
   //撤回按鈕
   const spellUndo = document.getElementById("spellUndo");
   if (spellUndo) {
