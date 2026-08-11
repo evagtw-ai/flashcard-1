@@ -74,7 +74,7 @@ const wordData = {
   Object: [],
   Vegetable: [],
   Animal: [
-     { cn: "青蛙", en: "frog" },
+    { cn: "青蛙", en: "frog" },
     { cn: "老鼠", en: "mouse" },
     { cn: "綿羊", en: "sheep" },
     { cn: "山羊", en: "goat" },
@@ -96,42 +96,42 @@ const wordData = {
     { cn: "蜥蜴", en: "lizard" },
     { cn: "鯨魚", en: "whale" },
     { cn: "獅子", en: "lion" },
-     { cn: "狐狸", en: "fox" },
-       { cn: "貓頭鷹", en: "owl" },
+    { cn: "狐狸", en: "fox" },
+    { cn: "貓頭鷹", en: "owl" },
     { cn: "魚", en: "fish" },
-     { cn: "金魚", en: "goldfish" },
-       { cn: "螞蟻", en: "ant" },
+    { cn: "金魚", en: "goldfish" },
+    { cn: "螞蟻", en: "ant" },
     { cn: "蜜蜂", en: "bee" },
-     { cn: "鯊魚", en: "shark" },
-       { cn: "豬", en: "pig" },
+    { cn: "鯊魚", en: "shark" },
+    { cn: "豬", en: "pig" },
     { cn: "兔子", en: "rabbit" },
-     { cn: "蝸牛", en: "snail" },
-       { cn: "樹熊", en: "koala" },
+    { cn: "蝸牛", en: "snail" },
+    { cn: "樹熊", en: "koala" },
     { cn: "北極熊", en: "polar bear" },
-     { cn: "鹿", en: "deer" },
-       { cn: "熊", en: "bear" },
+    { cn: "鹿", en: "deer" },
+    { cn: "熊", en: "bear" },
     { cn: "海豹", en: "seal" },
-     { cn: "蚊", en: "mosquito" },
-       { cn: "蝙蝠", en: "bat" },
+    { cn: "蚊", en: "mosquito" },
+    { cn: "蝙蝠", en: "bat" },
     { cn: "袋鼠", en: "kangroo" },
-     { cn: "螃蟹", en: "crab" },
-       { cn: "豹子", en: "leopard" },
+    { cn: "螃蟹", en: "crab" },
+    { cn: "豹子", en: "leopard" },
     { cn: "浣熊", en: "raccoon" },
-     { cn: "狼", en: "wolf" },
-     { cn: "鵝", en: "goose" },
-     { cn: "水母", en: "jellyfish" },
-       { cn: "八爪魚", en: "octopus" },
+    { cn: "狼", en: "wolf" },
+    { cn: "鵝", en: "goose" },
+    { cn: "水母", en: "jellyfish" },
+    { cn: "八爪魚", en: "octopus" },
     { cn: "猩猩", en: "gorilla" },
-     { cn: "草蜢", en: "grasshopper" },
-       { cn: "蜻蜓", en: "dragonfly" },
+    { cn: "草蜢", en: "grasshopper" },
+    { cn: "蜻蜓", en: "dragonfly" },
     { cn: "孔雀", en: "peacock" },
-     { cn: "甲蟲", en: "beetle" },
-     { cn: "海鷗", en: "seagull" },
-     { cn: "蝴蝶", en: "butterfly" },
-       { cn: "海豚", en: "dolphin" },
+    { cn: "甲蟲", en: "beetle" },
+    { cn: "海鷗", en: "seagull" },
+    { cn: "蝴蝶", en: "butterfly" },
+    { cn: "海豚", en: "dolphin" },
     { cn: "恐龍", en: "dinosaur" },
-     { cn: "烏龜", en: "turtle" },
-       { cn: "鸚鵡", en: "parrot" },
+    { cn: "烏龜", en: "turtle" },
+    { cn: "鸚鵡", en: "parrot" },
     { cn: "熊貓", en: "panda" },
     { cn: "河馬", en: "hippo" }
   ],
@@ -168,7 +168,7 @@ const catNameMap = {
   Stationary: "文具",
   Fruit: "水果",
   People: "人物",
- Body: "身體",
+  Body: "身體",
   All: "全部詞彙"
 };
 
@@ -266,7 +266,7 @@ const sentenceGroup = {
       "We queue up at the bus stop."
     ]
   },
-   Animal: {
+  Animal: {
     cn: [
       "農場裡有山羊，豬和鵝。",
       "老虎是森林之王。",
@@ -290,19 +290,20 @@ const sentenceGroup = {
     ]
   },
   Color: { cn: [], en: [] },
-  Body: { 
+  Body: {
     cn: [
-       "我用眼睛看風景。",
+      "我用眼睛看風景。",
       "我用耳朵聽音樂。",
       "我用鼻子來呼吸。",
       "我用嘴巴來唱歌。",
       "我用手寫字。",
       "我用腳走路。"
-    ], 
-         en: [
-                 "Lily has golden hair.",
+    ],
+    en: [
+      "Lily has golden hair.",
       "Alex has big bule eyes."
-         ] },
+    ]
+  },
   All: { cn: [], en: [] }
 };
 let currentSentenceCnList = [];
@@ -334,6 +335,16 @@ let wordUsedIndex = [];
 let matchUsedIndex = [];
 let spellUsedIndex = [];
 let sentenceUsedIndex = [];
+
+// ========== 通用標準Fisher-Yates洗牌函數（全局統一亂序） ==========
+function shuffleArray(arr) {
+  const copyArr = [...arr];
+  for (let i = copyArr.length - 1; i > 0; i--) {
+    const randomPos = Math.floor(Math.random() * (i + 1));
+    [copyArr[i], copyArr[randomPos]] = [copyArr[randomPos], copyArr[i]];
+  }
+  return copyArr;
+}
 
 //粵語發音
 function playCnVoice(text) {
@@ -530,14 +541,11 @@ function selectCategory(catKey) {
   currentCat = catKey;
   if (catKey === "All") {
     //匯集所有可用詞條，隨機挑選20個
-    fullWordPool = [...wordData.Occupation, ...wordData.Place, ...wordData.Color];
+    fullWordPool = [...wordData.Occupation, ...wordData.Place, ...wordData.Color, ...wordData.Animal, ...wordData.Body];
     allUsedIndex = [];
-    //打亂順序取前20
-    fullWordPool.sort(() => Math.random() - 0.5);
+    //使用標準洗牌
+    fullWordPool = shuffleArray(fullWordPool);
     wordList = fullWordPool.slice(0, ALL_COUNT);
-  } else if (catKey === "All") {
-    wordList = [];
-    Object.values(wordData).forEach(arr => wordList.push(...arr));
   } else {
     wordList = [...wordData[catKey]];
   }
@@ -626,9 +634,9 @@ function nextOrderWord() {
     showFinishModal(function (again) {
       if (again) {
         //All模式重新隨機20題
-        if(currentCat === "All"){
-          fullWordPool = [...wordData.Occupation, ...wordData.Place, ...wordData.Color];
-          fullWordPool.sort(() => Math.random() - 0.5);
+        if (currentCat === "All") {
+          fullWordPool = [...wordData.Occupation, ...wordData.Place, ...wordData.Color, ...wordData.Animal, ...wordData.Body];
+          fullWordPool = shuffleArray(fullWordPool);
           wordList = fullWordPool.slice(0, ALL_COUNT);
         }
         orderIndex = 0;
@@ -664,9 +672,9 @@ function nextWord() {
   if (wordUsedIndex.length >= total) {
     showFinishModal(function (again) {
       if (again) {
-        if(currentCat === "All"){
-          fullWordPool = [...wordData.Occupation, ...wordData.Place, ...wordData.Color];
-          fullWordPool.sort(() => Math.random() - 0.5);
+        if (currentCat === "All") {
+          fullWordPool = [...wordData.Occupation, ...wordData.Place, ...wordData.Color, ...wordData.Animal, ...wordData.Body];
+          fullWordPool = shuffleArray(fullWordPool);
           wordList = fullWordPool.slice(0, ALL_COUNT);
           wordUsedIndex = [];
         }
@@ -707,9 +715,9 @@ function createMatchQ() {
   if (matchUsedIndex.length >= total) {
     showFinishModal(function (again) {
       if (again) {
-        if(currentCat === "All"){
-          fullWordPool = [...wordData.Occupation, ...wordData.Place, ...wordData.Color];
-          fullWordPool.sort(() => Math.random() - 0.5);
+        if (currentCat === "All") {
+          fullWordPool = [...wordData.Occupation, ...wordData.Place, ...wordData.Color, ...wordData.Animal, ...wordData.Body];
+          fullWordPool = shuffleArray(fullWordPool);
           wordList = fullWordPool.slice(0, ALL_COUNT);
           matchUsedIndex = [];
         }
@@ -727,8 +735,8 @@ function createMatchQ() {
   const correct = wordList[correctIdx];
   currentWord = correct;
   let otherList = wordList.filter((_, i) => i !== correctIdx);
-  otherList = otherList.sort(() => Math.random() - 0.5).slice(0, 2);
-  const options = [correct, ...otherList].sort(() => Math.random() - 0.5);
+  otherList = shuffleArray(otherList).slice(0, 2);
+  const options = shuffleArray([correct, ...otherList]);
   const qDom = document.getElementById("qWord");
   const optWrap = document.getElementById("optionWrap");
   const tipDom = document.getElementById("matchTip");
@@ -772,7 +780,7 @@ function matchCheckAnswer(select, right, tipDom) {
     wrongCount += 1;
     playFeedbackVoice(false);
     if (wrongCount >= 2) {
-      showAnswerModal(right, ()=>{createMatchQ();})
+      showAnswerModal(right, () => { createMatchQ(); })
     } else {
       tipDom.style.color = "#f03030";
       tipDom.innerText = "答錯咯，再試一次！";
@@ -784,7 +792,7 @@ document.getElementById("qVoiceBtn").onclick = function () {
   matchType === "cn2en" ? playCnVoice(currentWord.cn) : playEnVoice(currentWord.en);
 };
 
-// --------------------------拼寫模塊核心代碼----------------------------
+// --------------------------拼寫模塊核心代碼【已全局統一亂序】----------------------------
 function initSpellGame() {
   if (nextBtnLock) return;
   nextBtnLock = true;
@@ -794,9 +802,9 @@ function initSpellGame() {
   if (spellUsedIndex.length >= total) {
     showFinishModal(function (again) {
       if (again) {
-        if(currentCat === "All"){
-          fullWordPool = [...wordData.Occupation, ...wordData.Place, ...wordData.Color];
-          fullWordPool.sort(() => Math.random() - 0.5);
+        if (currentCat === "All") {
+          fullWordPool = [...wordData.Occupation, ...wordData.Place, ...wordData.Color, ...wordData.Animal, ...wordData.Body];
+          fullWordPool = shuffleArray(fullWordPool);
           wordList = fullWordPool.slice(0, ALL_COUNT);
           spellUsedIndex = [];
         }
@@ -812,10 +820,12 @@ function initSpellGame() {
   saveStorage();
   currentWord = wordList[randomIdx];
   spellRawWord = currentWord.en.toLowerCase();
+  // 過濾所有空格，得到純字母目標串
   spellTargetEn = spellRawWord.replace(/ /g, "");
   spellUserAnswer = [];
   originalLetters = spellTargetEn.split("");
-  spellShuffleLetters = [...originalLetters].sort(() => Math.random() - 0.5);
+  // ========== 所有分類統一強制洗牌，不再區分章節 ==========
+  spellShuffleLetters = shuffleArray([...originalLetters]);
   renderSpellUI();
   let progressDom = document.querySelector("#page-spell .progress-text");
   if (!progressDom) {
@@ -881,10 +891,10 @@ document.addEventListener("DOMContentLoaded", function () {
       renderSpellUI();
     }
   };
-  //清空按鈕，字母重新亂序
+  //清空按鈕，字母重新洗牌亂序
   document.getElementById("spellClearAll").onclick = function () {
     spellUserAnswer = [];
-    spellShuffleLetters = [...originalLetters].sort(() => Math.random() - 0.5);
+    spellShuffleLetters = shuffleArray([...originalLetters]);
     renderSpellUI();
   };
   //確認答案
@@ -900,12 +910,12 @@ document.addEventListener("DOMContentLoaded", function () {
       wrongCount += 1;
       playFeedbackVoice(false);
       if (wrongCount >= 2) {
-        showAnswerModal(spellRawWord, ()=>{initSpellGame()});
+        showAnswerModal(spellRawWord, () => { initSpellGame() });
       } else {
         tipDom.style.color = "#f03030";
         tipDom.innerText = "拼寫錯誤，再嘗試一次";
         spellUserAnswer = [];
-        spellShuffleLetters = [...originalLetters].sort(() => Math.random() - 0.5);
+        spellShuffleLetters = shuffleArray([...originalLetters]);
         renderSpellUI();
       }
     }
