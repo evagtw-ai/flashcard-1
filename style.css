@@ -87,61 +87,54 @@ h1 {
   color: #777;
 }
 
-/* 第1項：職業 */
+/* 1.職業 */
 .category-list button:nth-child(1) {
   background: #ff87a2;
   color: white;
 }
-
-/* 第2項：地點 */
+/* 2.地點 */
 .category-list button:nth-child(2) {
   background: #70c8ff;
   color: white;
 }
-
-/* 第3項：顏色 */
+/* 3.顏色 */
 .category-list button:nth-child(3) {
   background: #86e3a7;
   color: white;
 }
-
-/* 第4項：全部詞彙 */
-.category-list button:nth-child(9) {
+/* 8.動物 Animal */
+.category-list button:nth-child(8) {
+  background: #a87bff;
+  color: white;
+}
+/* 13.身體 Body */
+.category-list button:nth-child(13) {
+  background: #36c9c5;
+  color: white;
+}
+/* 14.全部詞彙 All */
+.category-list button:nth-child(14) {
   background: #ff9f43;
   color: white;
 }
 
-/* 第5項：動物 */
-.category-list button:nth-child(13) {
-  background: #a87bff;
-  color: white;
-}
-
-/* 第6項：身體 */
-.category-list button:nth-child(14) {
-  background: #36c9c5;
-  color: white;
-}
-
+/* hover 點擊效果 */
 .category-list button:hover:not(:disabled) {
   transform: translateY(-4px);
 }
-
 .category-list button:active:not(:disabled) {
   transform: scale(0.95);
 }
 
-/* 禁用按鈕：淺灰底色 + 灰色文字，清晰可見 */
+/* 禁用未解鎖按鈕統一灰色 */
 .category-list button.disabled-btn {
   background: #dddddd !important;
   color: #777777 !important;
   box-shadow: none;
 }
-
 .category-list button:disabled {
   opacity: 1;
 }
-
 /*模式頁按鈕：自適應寬度*/
 .mode-btns {
   display:flex;
