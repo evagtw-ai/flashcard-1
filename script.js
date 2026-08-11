@@ -66,17 +66,92 @@ const wordData = {
     { cn: "啡色", en: "brown" },
     { cn: "紅色", en: "red" },
     { cn: "黃色", en: "yellow" },
+    { cn: "金色", en: "gold" },
     { cn: "橙色", en: "orange" }
   ],
   Nature: [],
   Clothing: [],
   Object: [],
   Vegetable: [],
-  Animal: [],
+  Animal: [
+     { cn: "青蛙", en: "frog" },
+    { cn: "老鼠", en: "mouse" },
+    { cn: "綿羊", en: "sheep" },
+    { cn: "山羊", en: "goat" },
+    { cn: "老虎", en: "tiger" },
+    { cn: "鴨子", en: "duck" },
+    { cn: "雞", en: "chicken" },
+    { cn: "猴子", en: "monkey" },
+    { cn: "小鳥", en: "bird" },
+    { cn: "奶牛", en: "cow" },
+    { cn: "馬", en: "horse" },
+    { cn: "狗", en: "dog" },
+    { cn: "貓", en: "cat" },
+    { cn: "斑馬", en: "zebra" },
+    { cn: "長頸鹿", en: "giraffe" },
+    { cn: "蛇", en: "snake" },
+    { cn: "鱷魚", en: "crocodile" },
+    { cn: "大象 ", en: "elephant" },
+    { cn: "蜘蛛", en: "spider" },
+    { cn: "蜥蜴", en: "lizard" },
+    { cn: "鯨魚", en: "whale" },
+    { cn: "獅子", en: "lion" },
+     { cn: "狐狸", en: "fox" },
+       { cn: "貓頭鷹", en: "owl" },
+    { cn: "魚", en: "fish" },
+     { cn: "金魚", en: "goldfish" },
+       { cn: "螞蟻", en: "ant" },
+    { cn: "蜜蜂", en: "bee" },
+     { cn: "鯊魚", en: "shark" },
+       { cn: "豬", en: "pig" },
+    { cn: "兔子", en: "rabbit" },
+     { cn: "蝸牛", en: "snail" },
+       { cn: "樹熊", en: "koala" },
+    { cn: "北極熊", en: "polar bear" },
+     { cn: "鹿", en: "deer" },
+       { cn: "熊", en: "bear" },
+    { cn: "海豹", en: "seal" },
+     { cn: "蚊", en: "mosquito" },
+       { cn: "蝙蝠", en: "bat" },
+    { cn: "袋鼠", en: "kangroo" },
+     { cn: "螃蟹", en: "crab" },
+       { cn: "豹子", en: "leopard" },
+    { cn: "浣熊", en: "raccoon" },
+     { cn: "狼", en: "wolf" },
+     { cn: "鵝", en: "goose" },
+     { cn: "水母", en: "jellyfish" },
+       { cn: "八爪魚", en: "octopus" },
+    { cn: "猩猩", en: "gorilla" },
+     { cn: "草蜢", en: "grasshopper" },
+       { cn: "蜻蜓", en: "dragonfly" },
+    { cn: "孔雀", en: "peacock" },
+     { cn: "甲蟲", en: "beetle" },
+     { cn: "海鷗", en: "seagull" },
+     { cn: "蝴蝶", en: "butterfly" },
+       { cn: "海豚", en: "dolphin" },
+    { cn: "恐龍", en: "dinosaur" },
+     { cn: "烏龜", en: "turtle" },
+       { cn: "鸚鵡", en: "parrot" },
+    { cn: "熊貓", en: "panda" },
+    { cn: "河馬", en: "hippo" }
+  ],
   Transportation: [],
   Stationary: [],
   Fruit: [],
   People: [],
+  Body: [
+    { cn: "臉", en: "face" },
+    { cn: "眼睛", en: "eye" },
+    { cn: "嘴巴", en: "mouth" },
+    { cn: "鼻子", en: "nose" },
+    { cn: "耳朵", en: "ear" },
+    { cn: "頭", en: "head" },
+    { cn: "頭髮", en: "hair" },
+    { cn: "腿", en: "leg" },
+    { cn: "手臂", en: "arm" },
+    { cn: "手", en: "hand" },
+    { cn: "腳", en: "foot" }
+  ],
   All: []
 };
 
@@ -93,6 +168,7 @@ const catNameMap = {
   Stationary: "文具",
   Fruit: "水果",
   People: "人物",
+ Body: "身體",
   All: "全部詞彙"
 };
 
@@ -190,7 +266,43 @@ const sentenceGroup = {
       "We queue up at the bus stop."
     ]
   },
+   Animal: {
+    cn: [
+      "農場裡有山羊，豬和鵝。",
+      "老虎是森林之王。",
+      "小白兔愛吃青菜。",
+      "蜜蜂在花間採蜜。",
+      "蝸牛殼子是居所。",
+      "鸚鵡模仿人說話。",
+      "螞蟻合力搬食物。",
+      "甲蟲在草上爬呀爬。",
+      "小魚在水中游泳。",
+      "小鳥在天空中飛。",
+      "爸爸愛吃豬肉、白菜和米飯。",
+      "水母和鯨魚是海洋中的動物。",
+      "假日，我和媽媽到海洋公園看大熊貓",
+      "春天來了，兩隻蝴蝶在飛舞。",
+      "小羊喜歡吃青草。"
+    ],
+    en: [
+      "Fish can live in the water.",
+      "Rabbit can run fast."
+    ]
+  },
   Color: { cn: [], en: [] },
+  Body: { 
+    cn: [
+       "我用眼睛看風景。",
+      "我用耳朵聽音樂。",
+      "我用鼻子來呼吸。",
+      "我用嘴巴來唱歌。",
+      "我用手寫字。",
+      "我用腳走路。"
+    ], 
+         en: [
+                 "Lily has golden hair.",
+      "Alex has big bule eyes."
+         ] },
   All: { cn: [], en: [] }
 };
 let currentSentenceCnList = [];
