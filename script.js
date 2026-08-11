@@ -402,7 +402,7 @@ function playEnVoice(text) {
   window.speechSynthesis.speak(utter);
 }
 
-// ========== 新增：拼寫遊戲專用 先英文、後中文雙語發音函數 ==========
+// ========== 【已修改】拼寫遊戲專用 先英文、後粵語雙語發音函數 ==========
 function playSpellBilingualVoice(enText, cnText) {
   if (!enText || !cnText || audioPlaying || !window.speechSynthesis) return;
   window.speechSynthesis.cancel();
@@ -416,13 +416,13 @@ function playSpellBilingualVoice(enText, cnText) {
   const engVoice = globalVoiceList.find(v => v.lang.startsWith("en-GB"));
   if (engVoice) engUtter.voice = engVoice;
 
-  // 英文播完再播中文繁體釋義（zh-CN普通話）
+  // 英文播完再播中文繁體釋義（統一 zh-HK 香港粵語，與學習模塊完全一致）
   engUtter.onend = () => {
     const cnUtter = new SpeechSynthesisUtterance(cnText);
-    cnUtter.lang = "zh-CN";
+    cnUtter.lang = "zh-HK";
     cnUtter.rate = 0.95;
     cnUtter.volume = 1;
-    const cnVoice = globalVoiceList.find(v => v.lang.startsWith("zh-CN"));
+    const cnVoice = globalVoiceList.find(v => v.lang.startsWith("zh-HK"));
     if (cnVoice) cnUtter.voice = cnVoice;
 
     cnUtter.onend = () => {
@@ -1021,15 +1021,14 @@ function renderSpellUI() {
   });
 }
 
-// 拼寫頁按鈕綁定（重點修改發音按鈕調用雙語函數）
+// 拼寫頁按鈕綁定
 document.addEventListener("DOMContentLoaded", function () {
-  //拼寫遊戲播放讀音按鈕：調用雙語發音
+  //拼寫遊戲播放讀音按鈕：調用雙語函數
   const spellVoiceBtn = document.getElementById("spellVoiceBtn");
   if (spellVoiceBtn) {
     spellVoiceBtn.classList.add("voice-btn");
     spellVoiceBtn.onclick = function () {
       if (!currentWord) return;
-      // 先英文，後中文
       playSpellBilingualVoice(currentWord.en, currentWord.cn);
     };
   }
