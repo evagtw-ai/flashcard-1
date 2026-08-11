@@ -67,41 +67,79 @@ h1 {
   width:100%;
 }
 
-/*首頁分類按鈕樣式*/
+/* 首頁分類按鈕樣式 */
 .category-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px,1fr));
-  gap:20px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 20px;
 }
+
 .category-list button {
-  padding:26px 8px;
-  border:none;
-  border-radius:20px;
+  padding: 26px 8px;
+  border: none;
+  border-radius: 20px;
   font-size: 22px;
-  font-weight:bold;
-  color:white;
-  box-shadow: 0 4px 10px #ffd6d6;
+  font-weight: bold;
+  color: white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
   transition: 0.2s;
+  background-color: #ddd;
+  color: #777;
 }
-.category-list button:nth-child(1){background:#ff87a2;}
-.category-list button:nth-child(2){background:#70c8ff;}
-.category-list button:nth-child(3){background:#86e3a7;}
-/*All按鈕明亮卡通橙色*/
-.category-list button:nth-child(4){background:#ff9f43;}
-.category-list button:hover:not(:disabled){
+
+/* 第1項：職業 */
+.category-list button:nth-child(1) {
+  background: #ff87a2;
+  color: white;
+}
+
+/* 第2項：地點 */
+.category-list button:nth-child(2) {
+  background: #70c8ff;
+  color: white;
+}
+
+/* 第3項：顏色 */
+.category-list button:nth-child(3) {
+  background: #86e3a7;
+  color: white;
+}
+
+/* 第4項：全部詞彙 */
+.category-list button:nth-child(9) {
+  background: #ff9f43;
+  color: white;
+}
+
+/* 第5項：動物 */
+.category-list button:nth-child(13) {
+  background: #a87bff;
+  color: white;
+}
+
+/* 第6項：身體 */
+.category-list button:nth-child(14) {
+  background: #36c9c5;
+  color: white;
+}
+
+.category-list button:hover:not(:disabled) {
   transform: translateY(-4px);
 }
-.category-list button:active:not(:disabled){
+
+.category-list button:active:not(:disabled) {
   transform: scale(0.95);
 }
-/*禁用按鈕：淺灰底色+灰色文字，清晰可見*/
-.category-list button.disabled-btn{
-  background:#dddddd !important;
-  color:#777777 !important;
-  box-shadow:none;
+
+/* 禁用按鈕：淺灰底色 + 灰色文字，清晰可見 */
+.category-list button.disabled-btn {
+  background: #dddddd !important;
+  color: #777777 !important;
+  box-shadow: none;
 }
+
 .category-list button:disabled {
-  opacity:1;
+  opacity: 1;
 }
 
 /*模式頁按鈕：自適應寬度*/
