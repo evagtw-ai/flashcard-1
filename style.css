@@ -64,7 +64,6 @@ h1 {
   color:#666;
   width:100%;
 }
-
 /* ========== 首頁分類按鈕【重點修復長英文溢出】 ========== */
 .category-list {
   display: grid;
@@ -133,7 +132,6 @@ h1 {
 .category-list button:disabled {
   opacity: 1;
 }
-
 /*模式頁按鈕：自適應寬度*/
 .mode-btns {
   display:flex;
@@ -166,7 +164,6 @@ h1 {
 .mode-btn:nth-child(6){background:#f68ad0;}
 .mode-btn:hover {transform: translateY(-3px);}
 .mode-btn:active {transform: scale(0.95);}
-
 /*卡片通用樣式*/
 .word-box, .q-box, .spell-card-box {
   width:100%;
@@ -194,7 +191,6 @@ h1 {
 }
 .voice-btn:active {transform: scale(0.85);}
 .voice-btn:disabled {opacity:0.35;}
-
 /*底部按鈕：圖標文字間距8px，返回按鈕全局深灰色 #666666*/
 .operate-btns {
   display:flex;
@@ -238,7 +234,6 @@ h1 {
 .operate-btns button:active, .back-btn:active {
   transform: scale(0.95);
 }
-
 /*配對頁選項按鈕*/
 .option-list {
   display:flex;
@@ -270,7 +265,14 @@ h1 {
   min-height:30px;
   text-align:center;
 }
-
+/* ==========配對遊戲 ------ 分隔線居中修復========== */
+.match-divider {
+  text-align: center;
+  margin: 20px 0;
+  letter-spacing:6px;
+  color:#999;
+  width:100%;
+}
 /*拼寫區域：禁止換行，僅水平滑動*/
 .spell-input-line {
   display:flex;
@@ -322,7 +324,6 @@ h1 {
   background:#e8fbf0;
   transform: scale(0.9);
 }
-
 /*拼寫控制按鈕*/
 .spell-control-btns {
   display:flex;
@@ -364,7 +365,6 @@ h1 {
   min-height:30px;
   text-align:center;
 }
-
 /*學習模式左右卡片*/
 .order-card-wrap {
   display:flex;
@@ -401,7 +401,6 @@ h1 {
   font-weight:bold;
   color:#2266cc;
 }
-
 /*彈窗樣式*/
 .modal-box {
   background:#fffef8;
@@ -434,7 +433,6 @@ h1 {
 .modal-again {background:#62d474;}
 .modal-back {background:#b0b0b0;}
 .modal-again:active,.modal-back:active {transform:scale(0.95);}
-
 @keyframes popIn {
   0% {transform:scale(0.8);opacity:0;}
   100% {transform:scale(1);opacity:1;}
