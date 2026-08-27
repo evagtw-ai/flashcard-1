@@ -60,25 +60,29 @@
     </div>
   </div>
 
-  <!--拼寫頁-->
-  <div id="page-spell" class="page game-page hidden">
-    <p class="progress-text"></p>
-    <div class="spell-card-box">
-      <p class="spell-cn-text" id="spellCnWord"></p>
-      <button class="voice-btn" id="spellVoiceBtn">🔊</button>
-      <div class="spell-input-line" id="spellAnswerLine"></div>
-      <div class="spell-letter-group" id="spellLetterBox"></div>
+<!--拼寫頁-->
+<div id="page-spell" class="page game-page hidden">
+  <p class="progress-text"></p>
+  <div class="spell-card-box">
+    <p class="spell-cn-text" id="spellCnWord"></p>
+    <button class="voice-btn" id="spellVoiceBtn">🔊</button>
+    <div class="spell-input-line" id="spellAnswerLine">
+      <!-- 新增內層容器，所有 spell-cell 動態生成到這裡面 -->
+      <div class="spell-input-inner"></div>
     </div>
-    <div class="spell-control-btns">
-      <button id="spellUndo">↩️ 撤回</button>
-      <button id="spellClearAll">🗑️ 清空</button>
-      <button id="spellCheckAnswer">✅ 確認</button>
-    </div>
-    <p class="spell-tip" id="spellTip"></p>
-    <div class="operate-btns">
-      <button class="back-btn" onclick="backMode()">🏠 返回</button>
-    </div>
+    <div class="spell-letter-group" id="spellLetterBox"></div>
   </div>
+  <div class="spell-control-btns">
+    <button id="spellUndo">↩️ 撤回</button>
+    <button id="spellClearAll">🗑️ 清空</button>
+    <button id="spellCheckAnswer">✅ 確認</button>
+  </div>
+  <p class="spell-tip" id="spellTip"></p>
+  <div class="operate-btns">
+    <button class="back-btn" onclick="backMode()">🏠 返回</button>
+  </div>
+</div>
+
 
   <!--句子頁-->
   <div id="page-sentence" class="page game-page hidden">
