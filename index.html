@@ -16,7 +16,10 @@
 
   <!--模式頁-->
   <div id="page-mode" class="page game-page hidden">
-    <h2 id="currentCatName"></h2>
+    <div id="currentCatName">
+      <div></div>
+      <div></div>
+    </div>
     <div class="mode-btns">
       <button class="mode-btn mode-order" data-mode="orderStudy">📖 學習</button>
       <button class="mode-btn" data-mode="cn">🇨🇳 中文</button>
@@ -25,7 +28,9 @@
       <button class="mode-btn" data-mode="spell">✏️ 拼寫</button>
       <button class="mode-btn" data-mode="sentence">📝 句子</button>
     </div>
-    <button class="back-btn" onclick="backHome()">🏠 返回</button>
+    <div class="operate-btns">
+      <button class="back-btn" onclick="backHome()">🏠 返回</button>
+    </div>
   </div>
 
   <!--單詞朗讀頁-->
@@ -106,9 +111,18 @@
       <button class="back-btn" onclick="backMode()">🏠 返回</button>
     </div>
   </div>
-</div>
-  <script src="wordlist.js"></script>
 
+  <!-- 結束彈窗（默認隱藏，JS控制顯示） -->
+  <div class="modal-box hidden" id="finishModal">
+    <div class="modal-text">🎉本分類完成！</div>
+    <div class="modal-btn-wrap">
+      <button class="modal-again">🔁再練一次</button>
+      <button class="modal-back">🏠返回分類</button>
+    </div>
+  </div>
+</div>
+
+<script src="wordlist.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
