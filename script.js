@@ -8,13 +8,11 @@ let wrongCount = 0;
 let wordUsedIndex = []; let matchUsedIndex = []; let spellUsedIndex = []; let sentenceUsedIndex = []; let allUsedIndex = [];
 //【修復】彈窗防重複彈出鎖
 let modalIsOpen = false;
-
 // ===== 關鍵修復：全局預加載瀏覽器語音音色 =====
 let globalVoiceList = [];
 window.speechSynthesis.onvoiceschanged = function () {
   globalVoiceList = window.speechSynthesis.getVoices();
 };
-
 // ========== 通用標準Fisher‑Yates洗牌函數（全局統一亂序） ==========
 function shuffleArray(arr) {
   const copyArr = [...arr];
@@ -24,7 +22,6 @@ function shuffleArray(arr) {
   }
   return copyArr;
 }
-
 // ========== 重構粵語中文發音函數 ==========
 function playCnVoice(text) {
   if (!text || audioPlaying || !window.speechSynthesis) return;
@@ -44,7 +41,6 @@ function playCnVoice(text) {
   };
   window.speechSynthesis.speak(utter);
 }
-
 //英式英語發音
 function playEnVoice(text) {
   if (!text || audioPlaying || !window.speechSynthesis) return;
@@ -64,7 +60,6 @@ function playEnVoice(text) {
   };
   window.speechSynthesis.speak(utter);
 }
-
 // ========== 拼寫遊戲專用 先英文、後粵語雙語發音函數 ==========
 function playSpellBilingualVoice(enText, cnText) {
   if (!enText || !cnText || audioPlaying || !window.speechSynthesis) return;
@@ -92,7 +87,6 @@ function playSpellBilingualVoice(enText, cnText) {
   document.querySelectorAll(".voice‑btn").forEach(btn => btn.disabled = true);
   window.speechSynthesis.speak(engUtter);
 }
-
 //答題反饋粵語
 function playFeedbackVoice(isRight) {
   if (audioPlaying || !window.speechSynthesis) return;
@@ -111,16 +105,13 @@ function playFeedbackVoice(isRight) {
   };
   window.speechSynthesis.speak(utter);
 }
-
 //本輪狀態不再持久化，清空localStorage相關讀寫
 function loadStorage() {}
 function saveStorage() {}
-
 //【修復完成彈窗：增加modalIsOpen鎖，禁止重複生成彈窗DOM】
 function showFinishModal(resetCallback) {
   if (modalIsOpen) return;
   modalIsOpen = true;
-
   const modal = document.createElement("div");
   modal.style.position = "fixed";
   modal.style.left = "0";
@@ -162,7 +153,6 @@ function showFinishModal(resetCallback) {
   modal.appendChild(box);
   document.body.appendChild(modal);
 }
-
 //答錯兩次彈窗
 function showAnswerModal(answer, nextFunc) {
   const modal = document.createElement("div");
@@ -193,19 +183,16 @@ function showAnswerModal(answer, nextFunc) {
   modal.appendChild(box);
   document.body.appendChild(modal);
 }
-
 function stopAllAudio() {
   window.speechSynthesis.cancel();
   audioPlaying = false;
   document.querySelectorAll(".voice‑btn").forEach(btn => btn.disabled = false);
 }
-
 //頁面切換
 function hideAllPage() {
   stopAllAudio();
   document.querySelectorAll(".page").forEach(p => p.classList.add("hidden"));
 }
-
 function showPage(id) {
   hideAllPage();
   const pageDom = document.getElementById(id);
@@ -215,19 +202,16 @@ function showPage(id) {
     initCategory();
   }
 }
-
 function backHome() {
   // 返回首頁：清空本輪全部進度
   wordUsedIndex = []; matchUsedIndex = []; spellUsedIndex = []; sentenceUsedIndex = []; allUsedIndex = [];
   modalIsOpen = false;
   showPage("page‑home");
 }
-
 function backMode() {
   modalIsOpen = false;
   showPage("page‑mode");
 }
-
 //首頁分類渲染：開啟All按鈕，禁用按鈕修改樣式標記
 function initCategory() {
   const wrap = document.getElementById("categoryWrap");
@@ -249,7 +233,6 @@ function initCategory() {
     wrap.appendChild(btn);
   });
 }
-
 function selectCategory(catKey) {
   currentCat = catKey;
   if (catKey === "All") {
@@ -269,14 +252,20 @@ function selectCategory(catKey) {
     alert("當前分類暫無單詞，敬請期待！");
     return;
   }
-  currentSentenceCnList = sentenceGroup[catKey].cn;
-  currentSentenceEnList = sentenceGroup[catKey].en;
+
+  // =========【BUG修復】增加sentenceGroup空值保護，Body/Animal沒有句子配置不會報錯崩潰 =========
+  if(sentenceGroup && sentenceGroup[catKey]){
+    currentSentenceCnList = sentenceGroup[catKey].cn || [];
+    currentSentenceEnList = sentenceGroup[catKey].en || [];
+  }else{
+    currentSentenceCnList = [];
+    currentSentenceEnList = [];
+  }
 
   // =========【重點】進入分類就重置本輪全部狀態，確保每次進入都是全新一輪 =========
   wordUsedIndex = []; matchUsedIndex = []; spellUsedIndex = []; sentenceUsedIndex = []; allUsedIndex = [];
   orderIndex = 0; wrongCount = 0;
   modalIsOpen = false;
-
   const cnName = catNameMap[currentCat];
   const titleDom = document.getElementById("currentCatName");
   if (titleDom) {
@@ -287,7 +276,6 @@ function selectCategory(catKey) {
   }
   showPage("page‑mode");
 }
-
 //模式按鈕點擊
 document.querySelectorAll(".mode‑btn").forEach(btn => {
   btn.onclick = () => {
@@ -304,6 +292,11 @@ document.querySelectorAll(".mode‑btn").forEach(btn => {
     }
     if (currentCat === "Color" && currentMode === "sentence") {
       alert("顏色分類暫無句子內容");
+      return;
+    }
+    //【修復】分類沒有句子資料攔截進入句子模式
+    if(currentMode === "sentence" && currentSentenceCnList.length === 0){
+      alert("此分類暫無句子內容");
       return;
     }
     if (currentMode === "cn" || currentMode === "en") {
@@ -329,7 +322,6 @@ document.querySelectorAll(".mode‑btn").forEach(btn => {
     }
   };
 });
-
 //順序學習頁
 function renderOrderWord() {
   const total = wordList.length;
@@ -347,7 +339,6 @@ function renderOrderWord() {
   if (cnEl) cnEl.innerText = item.cn;
   if (enEl) enEl.innerText = item.en;
 }
-
 function prevOrderWord() {
   if (orderIndex <= 0) {
     alert("已經是第一個單詞！");
@@ -356,7 +347,6 @@ function prevOrderWord() {
   orderIndex--;
   renderOrderWord();
 }
-
 function nextOrderWord() {
   const total = wordList.length;
   if (orderIndex >= total - 1) {
@@ -384,7 +374,6 @@ function nextOrderWord() {
   orderIndex++;
   renderOrderWord();
 }
-
 // 順序學習發音按鈕綁定
 document.addEventListener("DOMContentLoaded", function () {
   const orderVoiceBtn = document.getElementById("orderVoiceBtn");
@@ -403,7 +392,6 @@ document.addEventListener("DOMContentLoaded", function () {
     };
   }
 });
-
 //單詞隨機學習
 function nextWord() {
   if (nextBtnLock) return;
@@ -448,7 +436,6 @@ function nextWord() {
   }
   if (progressDom) progressDom.innerText = `已學習 ${wordUsedIndex.length}/${total}`;
 }
-
 // 單詞學習發音按鈕
 document.addEventListener("DOMContentLoaded", function () {
   const voiceBtn = document.getElementById("voiceBtn");
@@ -459,7 +446,6 @@ document.addEventListener("DOMContentLoaded", function () {
     };
   }
 });
-
 //配對遊戲
 let matchType = "cn2en";
 function createMatchQ() {
@@ -531,7 +517,6 @@ function createMatchQ() {
     });
   }
 }
-
 function matchCheckAnswer(select, right, tipDom) {
   if (select === right) {
     if (tipDom) {
@@ -555,7 +540,6 @@ function matchCheckAnswer(select, right, tipDom) {
     }
   }
 }
-
 // 配對頁發音按鈕
 document.addEventListener("DOMContentLoaded", function () {
   const qVoiceBtn = document.getElementById("qVoiceBtn");
@@ -566,7 +550,6 @@ document.addEventListener("DOMContentLoaded", function () {
     };
   }
 });
-
 // --------------------------拼寫模塊----------------------------
 function initSpellGame() {
   if (nextBtnLock) return;
@@ -616,7 +599,6 @@ function initSpellGame() {
   }
   if (progressDom) progressDom.innerText = `已學習 ${spellUsedIndex.length}/${total}`;
 }
-
 function renderSpellUI() {
   const cnWordEl = document.getElementById("spellCnWord");
   const tipEl = document.getElementById("spellTip");
@@ -668,7 +650,6 @@ function renderSpellUI() {
     letterWrap.appendChild(btn);
   });
 }
-
 // 拼寫頁按鈕綁定
 document.addEventListener("DOMContentLoaded", function () {
   const spellVoiceBtn = document.getElementById("spellVoiceBtn");
@@ -726,11 +707,9 @@ document.addEventListener("DOMContentLoaded", function () {
     };
   }
 });
-
 function nextSpellWord() {
   initSpellGame();
 }
-
 //句子認讀
 function nextSentence() {
   if (nextBtnLock) return;
@@ -770,7 +749,6 @@ function nextSentence() {
   }
   if (progressDom) progressDom.innerText = `已學習 ${sentenceUsedIndex.length}/${total}`;
 }
-
 // 句子頁發音按鈕
 document.addEventListener("DOMContentLoaded", function () {
   const sentenceVoiceBtn = document.getElementById("sentenceVoiceBtn");
@@ -784,7 +762,6 @@ document.addEventListener("DOMContentLoaded", function () {
     };
   }
 });
-
 // 全局初始化入口【修復：移除重複initCategory()】
 document.addEventListener("DOMContentLoaded", function () {
   loadStorage();
