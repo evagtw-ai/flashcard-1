@@ -1,13 +1,32 @@
-let currentSentenceCnList = []; let currentSentenceEnList = []; //全域變數
-let currentCat = ""; let currentMode = ""; let wordList = []; let fullWordPool = []; //All模式全部詞庫
-let currentWord = null; let spellTargetEn = ""; let spellRawWord = ""; let spellUserAnswer = []; let spellShuffleLetters = []; let originalLetters = []; //本題原始字母池
-let currentSentenceIndex = 0; let audioPlaying = false; const NEXT_COOLDOWN = 300; let nextBtnLock = false; let orderIndex = 0; const ALL_COUNT = 20; //All模式固定20題
+let currentSentenceCnList = [];
+let currentSentenceEnList = [];
+//全域變數
+let currentCat = "";
+let currentMode = "";
+let wordList = [];
+let fullWordPool = []; //All模式全部詞庫
+let currentWord = null;
+let spellTargetEn = "";
+let spellRawWord = "";
+let spellUserAnswer = [];
+let spellShuffleLetters = [];
+let originalLetters = []; //本題原始字母池
+let currentSentenceIndex = 0;
+let audioPlaying = false;
+const NEXT_COOLDOWN = 300;
+let nextBtnLock = false;
+let orderIndex = 0;
+const ALL_COUNT = 20; //All模式固定20題
+
 //答錯次數計數
 let wrongCount = 0;
+
 // ===== 輪次狀態：全部在進入模式時重置；返回分類頁自動清空，不記憶舊進度 =====
-let wordUsedIndex = []; let matchUsedIndex = []; let spellUsedIndex = []; let sentenceUsedIndex = []; let allUsedIndex = [];
-//【修復】彈窗防重複彈出鎖
-let modalIsOpen = false;
+let wordUsedIndex = [];
+let matchUsedIndex = [];
+let spellUsedIndex = [];
+let sentenceUsedIndex = [];
+let allUsedIndex = [];
 
 // ===== 關鍵修復：全局預加載瀏覽器語音音色 =====
 let globalVoiceList = [];
@@ -116,11 +135,8 @@ function playFeedbackVoice(isRight) {
 function loadStorage() {}
 function saveStorage() {}
 
-//【修復完成彈窗：增加modalIsOpen鎖，禁止重複生成彈窗DOM】
+//完成彈窗
 function showFinishModal(resetCallback) {
-  if (modalIsOpen) return;
-  modalIsOpen = true;
-
   const modal = document.createElement("div");
   modal.style.position = "fixed";
   modal.style.left = "0";
@@ -144,7 +160,6 @@ function showFinishModal(resetCallback) {
   btnAgain.innerText = "再學一次";
   btnAgain.onclick = () => {
     document.body.removeChild(modal);
-    modalIsOpen = false;
     resetCallback(true);
   };
   const btnBack = document.createElement("button");
@@ -152,7 +167,6 @@ function showFinishModal(resetCallback) {
   btnBack.innerText = "返回上一級";
   btnBack.onclick = () => {
     document.body.removeChild(modal);
-    modalIsOpen = false;
     resetCallback(false);
   };
   btnWrap.appendChild(btnAgain);
@@ -210,23 +224,20 @@ function showPage(id) {
   hideAllPage();
   const pageDom = document.getElementById(id);
   if (pageDom) pageDom.classList.remove("hidden");
-  if (id === "page‑home") {
-    modalIsOpen = false; //返回首頁釋放彈窗鎖
-    initCategory();
-  }
+  if (id === "page‑home") initCategory();
 }
 
 function backHome() {
   // 返回首頁：清空本輪全部進度
-  wordUsedIndex = []; matchUsedIndex = []; spellUsedIndex = []; sentenceUsedIndex = []; allUsedIndex = [];
-  modalIsOpen = false;
+  wordUsedIndex = [];
+  matchUsedIndex = [];
+  spellUsedIndex = [];
+  sentenceUsedIndex = [];
+  allUsedIndex = [];
   showPage("page‑home");
 }
 
-function backMode() {
-  modalIsOpen = false;
-  showPage("page‑mode");
-}
+function backMode() { showPage("page‑mode"); }
 
 //首頁分類渲染：開啟All按鈕，禁用按鈕修改樣式標記
 function initCategory() {
@@ -273,9 +284,13 @@ function selectCategory(catKey) {
   currentSentenceEnList = sentenceGroup[catKey].en;
 
   // =========【重點】進入分類就重置本輪全部狀態，確保每次進入都是全新一輪 =========
-  wordUsedIndex = []; matchUsedIndex = []; spellUsedIndex = []; sentenceUsedIndex = []; allUsedIndex = [];
-  orderIndex = 0; wrongCount = 0;
-  modalIsOpen = false;
+  wordUsedIndex = [];
+  matchUsedIndex = [];
+  spellUsedIndex = [];
+  sentenceUsedIndex = [];
+  allUsedIndex = [];
+  orderIndex = 0;
+  wrongCount = 0;
 
   const cnName = catNameMap[currentCat];
   const titleDom = document.getElementById("currentCatName");
@@ -293,7 +308,6 @@ document.querySelectorAll(".mode‑btn").forEach(btn => {
   btn.onclick = () => {
     currentMode = btn.dataset.mode;
     wrongCount = 0;
-    modalIsOpen = false;
     const cnName = catNameMap[currentCat];
     const titleDom = document.getElementById("currentCatName");
     if (titleDom) {
@@ -307,23 +321,18 @@ document.querySelectorAll(".mode‑btn").forEach(btn => {
       return;
     }
     if (currentMode === "cn" || currentMode === "en") {
-      wordUsedIndex = [];
       nextWord();
       showPage("page‑study");
     } else if (currentMode === "orderStudy") {
-      orderIndex = 0;
       renderOrderWord();
       showPage("page‑orderStudy");
     } else if (currentMode === "match") {
-      matchUsedIndex = [];
       createMatchQ();
       showPage("page‑match");
     } else if (currentMode === "spell") {
-      spellUsedIndex = [];
       initSpellGame();
       showPage("page‑spell");
     } else if (currentMode === "sentence") {
-      sentenceUsedIndex = [];
       nextSentence();
       showPage("page‑sentence");
     }
@@ -375,7 +384,6 @@ function nextOrderWord() {
         orderIndex = 0;
         renderOrderWord();
       } else {
-        orderIndex = 0;
         showPage("page‑mode");
       }
     });
@@ -422,14 +430,11 @@ function nextWord() {
             ...JSON.parse(JSON.stringify(wordData.Body))
           ]);
           wordList = fullWordPool.slice(0, ALL_COUNT);
+          wordUsedIndex = [];
         }
-        wordUsedIndex = [];
         nextWord();
       }
-      else {
-        wordUsedIndex = [];
-        showPage("page‑mode");
-      }
+      else { showPage("page‑mode"); }
     });
     return;
   }
@@ -480,14 +485,11 @@ function createMatchQ() {
             ...JSON.parse(JSON.stringify(wordData.Body))
           ]);
           wordList = fullWordPool.slice(0, ALL_COUNT);
+          matchUsedIndex = [];
         }
-        matchUsedIndex = [];
         createMatchQ();
       }
-      else {
-        matchUsedIndex = [];
-        showPage("page‑mode");
-      }
+      else { showPage("page‑mode"); }
     });
     return;
   }
@@ -586,14 +588,11 @@ function initSpellGame() {
             ...JSON.parse(JSON.stringify(wordData.Body))
           ]);
           wordList = fullWordPool.slice(0, ALL_COUNT);
+          spellUsedIndex = [];
         }
-        spellUsedIndex = [];
         initSpellGame();
       }
-      else {
-        spellUsedIndex = [];
-        showPage("page‑mode");
-      }
+      else { showPage("page‑mode"); }
     });
     return;
   }
@@ -739,14 +738,8 @@ function nextSentence() {
   const total = currentSentenceCnList.length;
   if (sentenceUsedIndex.length >= total) {
     showFinishModal(function (again) {
-      if (again) {
-        sentenceUsedIndex = [];
-        nextSentence();
-      }
-      else {
-        sentenceUsedIndex = [];
-        showPage("page‑mode");
-      }
+      if (again) { sentenceUsedIndex = []; nextSentence(); }
+      else { showPage("page‑mode"); }
     });
     return;
   }
@@ -785,8 +778,9 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
-// 全局初始化入口【修復：移除重複initCategory()】
+// 全局初始化入口
 document.addEventListener("DOMContentLoaded", function () {
   loadStorage();
   initCategory();
+  setTimeout(() => initCategory(), 300);
 });
