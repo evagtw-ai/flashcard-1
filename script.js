@@ -272,14 +272,15 @@ function selectCategory(catKey) {
   allUsedIndex = [];
   orderIndex = 0;
   wrongCount = 0;
+
   const cnName = catNameMap[currentCat];
+  const enName = currentCat.toLowerCase();
   const titleDom = document.getElementById("currentCatName");
-  if (titleDom) {
-    titleDom.innerHTML = `
-        <div style="font-size:32px; font-weight:bold;">${cnName}</div>
-        <div style="font-size:20px; opacity:0.7;">${currentCat.toLowerCase()}</div>
-    `;
+  if (titleDom && titleDom.children.length >= 2) {
+    titleDom.children[0].textContent = cnName;
+    titleDom.children[1].textContent = enName;
   }
+
   showPage("page-mode");
 }
 //模式按鈕點擊
@@ -288,12 +289,11 @@ document.querySelectorAll(".mode-btn").forEach(btn => {
     currentMode = btn.dataset.mode;
     wrongCount = 0;
     const cnName = catNameMap[currentCat];
+    const enName = currentCat.toLowerCase();
     const titleDom = document.getElementById("currentCatName");
-    if (titleDom) {
-      titleDom.innerHTML = `
-          <div style="font-size:32px; font-weight:bold;">${cnName}</div>
-          <div style="font-size:20px; opacity:0.7;">${currentCat.toLowerCase()}</div>
-      `;
+    if (titleDom && titleDom.children.length >= 2) {
+      titleDom.children[0].textContent = cnName;
+      titleDom.children[1].textContent = enName;
     }
     if (currentCat === "Color" && currentMode === "sentence") {
       alert("顏色分類暫無句子內容");
