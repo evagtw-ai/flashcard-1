@@ -91,7 +91,7 @@ const wordData = {
     { cn: "長頸鹿", en: "giraffe" },
     { cn: "蛇", en: "snake" },
     { cn: "鱷魚", en: "crocodile" },
-    { cn: "大象 ", en: "elephant" },
+    { cn: "大象", en: "elephant" },
     { cn: "蜘蛛", en: "spider" },
     { cn: "蜥蜴", en: "lizard" },
     { cn: "鯨魚", en: "whale" },
