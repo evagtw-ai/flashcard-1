@@ -24,6 +24,10 @@ let wordUsedIndex = [];
 let matchUsedIndex = [];
 let spellUsedIndex = [];
 let sentenceUsedIndex = [];
+// 全局記錄當前彈窗實例，用於防止重複彈窗
+let activeFinishModalEl = null;
+let activeAnswerModalEl = null;
+
 // ===== 關鍵修復：全局預加載瀏覽器語音音色 =====
 let globalVoiceList = [];
 window.speechSynthesis.onvoiceschanged = function () {
@@ -149,8 +153,15 @@ function saveStorage() {
     };
     localStorage.setItem("studyRecord", JSON.stringify(saveObj));
 }
-// 完成彈窗【修復回調邏輯】
+
+// ==========【修復】完成彈窗：增加單例保護，防止多彈窗重疊 ==========
 function showFinishModal(resetCallback) {
+    // 如果已有彈窗直接返回，禁止重複彈出
+    if (activeFinishModalEl) return;
+    // 彈窗打開時，強制鎖重置狀態
+    stopAllAudio();
+    nextBtnLock = false;
+
     const modal = document.createElement("div");
     modal.style.position = "fixed";
     modal.style.left = "0";
@@ -173,14 +184,20 @@ function showFinishModal(resetCallback) {
     btnAgain.className = "modal‑again";
     btnAgain.innerText = "再學一次";
     btnAgain.onclick = () => {
-        document.body.removeChild(modal);
+        if(activeFinishModalEl){
+            document.body.removeChild(activeFinishModalEl);
+            activeFinishModalEl = null;
+        }
         resetCallback(true);
     };
     const btnBack = document.createElement("button");
     btnBack.className = "modal‑back";
     btnBack.innerText = "返回上一級";
     btnBack.onclick = () => {
-        document.body.removeChild(modal);
+        if(activeFinishModalEl){
+            document.body.removeChild(activeFinishModalEl);
+            activeFinishModalEl = null;
+        }
         resetCallback(false);
     };
     btnWrap.appendChild(btnAgain);
@@ -189,9 +206,15 @@ function showFinishModal(resetCallback) {
     box.appendChild(btnWrap);
     modal.appendChild(box);
     document.body.appendChild(modal);
+    activeFinishModalEl = modal;
 }
-// 答錯兩次彈窗
+
+// ==========【修復】答錯兩次彈窗，增加單例保護 ==========
 function showAnswerModal(answer, nextFunc) {
+    if (activeAnswerModalEl) return;
+    stopAllAudio();
+    nextBtnLock = false;
+
     const modal = document.createElement("div");
     modal.style.position = "fixed";
     modal.style.left = "0";
@@ -212,14 +235,19 @@ function showAnswerModal(answer, nextFunc) {
     confirmBtn.className = "modal‑again";
     confirmBtn.innerText = "確認";
     confirmBtn.onclick = () => {
-        document.body.removeChild(modal);
+        if(activeAnswerModalEl){
+            document.body.removeChild(activeAnswerModalEl);
+            activeAnswerModalEl = null;
+        }
         nextFunc();
     };
     box.appendChild(text);
     box.appendChild(confirmBtn);
     modal.appendChild(box);
     document.body.appendChild(modal);
+    activeAnswerModalEl = modal;
 }
+
 function stopAllAudio() {
     window.speechSynthesis.cancel();
     audioPlaying = false;
@@ -228,6 +256,15 @@ function stopAllAudio() {
 // 頁面切換
 function hideAllPage() {
     stopAllAudio();
+    // 切頁強制銷毀殘留彈窗
+    if(activeFinishModalEl){
+        document.body.removeChild(activeFinishModalEl);
+        activeFinishModalEl = null;
+    }
+    if(activeAnswerModalEl){
+        document.body.removeChild(activeAnswerModalEl);
+        activeAnswerModalEl = null;
+    }
     document.querySelectorAll(".page").forEach(p => p.classList.add("hidden"));
 }
 function showPage(id) {
@@ -316,7 +353,6 @@ document.querySelectorAll(".mode‑btn").forEach(btn => {
         } else if (currentMode === "sentence") {
             sentenceUsedIndex = [];
         }
-
         const cnName = catNameMap[currentCat];
         const titleDom = document.getElementById("currentCatName");
         if (titleDom) {
