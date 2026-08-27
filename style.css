@@ -6,7 +6,6 @@
   user-select: none;
   -webkit-user-select: none;
 }
-
 body {
   background-color: #fef7f3;
   overscroll-behavior: none;
@@ -40,7 +39,6 @@ body {
   padding:16px 14px;
 }
 .hidden { display: none !important; }
-
 h1 {
   font-size: clamp(32px,7vw,46px);
   text-align:center;
@@ -67,26 +65,28 @@ h1 {
   width:100%;
 }
 
-/* 首頁分類按鈕樣式 */
+/* ========== 首頁分類按鈕【重點修復長英文溢出】 ========== */
 .category-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 18px;
 }
-
 .category-list button {
-  padding: 26px 8px;
+  padding: 20px 10px;
   border: none;
   border-radius: 20px;
-  font-size: 22px;
+  font-size: clamp(16px,2.5vw,22px);
   font-weight: bold;
   color: white;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
   transition: 0.2s;
   background-color: #ddd;
   color: #777;
+  /* 解決長英文溢出：強制換行，禁止文字撐大按鈕 */
+  word-break: break-word;
+  white-space: normal;
+  overflow:hidden;
 }
-
 /* 1.職業 */
 .category-list button:nth-child(1) {
   background: #ff87a2;
@@ -117,7 +117,6 @@ h1 {
   background: #ff9f43;
   color: white;
 }
-
 /* hover 點擊效果 */
 .category-list button:hover:not(:disabled) {
   transform: translateY(-4px);
@@ -125,7 +124,6 @@ h1 {
 .category-list button:active:not(:disabled) {
   transform: scale(0.95);
 }
-
 /* 禁用未解鎖按鈕統一灰色 */
 .category-list button.disabled-btn {
   background: #dddddd !important;
@@ -135,6 +133,7 @@ h1 {
 .category-list button:disabled {
   opacity: 1;
 }
+
 /*模式頁按鈕：自適應寬度*/
 .mode-btns {
   display:flex;
@@ -259,6 +258,7 @@ h1 {
   background:white;
   font-weight:bold;
   transition:0.2s;
+  word-break:break-word;
 }
 .option-list button:active {
   background:#eaf6ff;
@@ -279,6 +279,7 @@ h1 {
   overflow-x:auto;
   padding:10px 5px;
   min-height:70px;
+  width:100%;
 }
 .spell-cell {
   width:42px;
@@ -321,6 +322,7 @@ h1 {
   background:#e8fbf0;
   transform: scale(0.9);
 }
+
 /*拼寫控制按鈕*/
 .spell-control-btns {
   display:flex;
@@ -408,6 +410,7 @@ h1 {
   text-align:center;
   box-shadow:0 5px 20px rgba(0,0,0,0.1);
   min-width:300px;
+  animation: popIn 0.25s ease-out;
 }
 .modal-text {
   font-size:28px;
@@ -431,6 +434,7 @@ h1 {
 .modal-again {background:#62d474;}
 .modal-back {background:#b0b0b0;}
 .modal-again:active,.modal-back:active {transform:scale(0.95);}
+
 @keyframes popIn {
   0% {transform:scale(0.8);opacity:0;}
   100% {transform:scale(1);opacity:1;}
