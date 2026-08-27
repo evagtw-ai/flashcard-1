@@ -9,7 +9,7 @@ let currentWord = null;
 let spellTargetEn = "";
 let spellRawWord = "";
 let spellUserAnswer = [];
-let spellShuffleLetters = [];
+let spellShuffleLetters = []; // 紀錄本題固定的亂序字母
 let originalLetters = []; // 本題原始字母池
 let currentSentenceIndex = 0;
 let audioPlaying = false;
@@ -138,7 +138,7 @@ function loadStorage() {
     allUsedIndex = [];
 }
 function saveStorage() {
-    // 根據要求：不再保存進度至 localStorage，確保每次刷新皆為全新狀態
+    // 不再保存進度至 localStorage
 }
 
 // 完成彈窗
@@ -169,7 +169,7 @@ function showFinishModal(resetCallback) {
     btnAgain.innerText = "再學一次";
     btnAgain.onclick = () => {
         document.body.removeChild(modal);
-        resetCallback(true); // 關閉彈窗並重新開始
+        resetCallback(true);
     };
     
     const btnBack = document.createElement("button");
@@ -177,7 +177,7 @@ function showFinishModal(resetCallback) {
     btnBack.innerText = "返回上一級";
     btnBack.onclick = () => {
         document.body.removeChild(modal);
-        resetCallback(false); // 關閉彈窗並返回模式選擇
+        resetCallback(false);
     };
     
     btnWrap.appendChild(btnAgain);
@@ -625,6 +625,7 @@ function initSpellGame() {
     spellTargetEn = spellRawWord.replace(/ /g, "");
     spellUserAnswer = [];
     originalLetters = spellTargetEn.split("");
+    // 在這裡洗牌一次，並記錄這個"唯一的亂序"
     spellShuffleLetters = shuffleArray([...originalLetters]);
     
     renderSpellUI();
@@ -669,22 +670,26 @@ function renderSpellUI() {
         }
     }
     
-    let tempOriginal = [...originalLetters];
+    // ======== 修改點：根據已保存的固定的亂序陣列 (spellShuffleLetters) 來篩選剩餘字母 ========
     let tempUsed = [...spellUserAnswer];
     let remainLetters = [];
-    tempOriginal.forEach(ch => {
+    
+    // 依序檢查初始的亂序陣列
+    spellShuffleLetters.forEach(ch => {
         const idx = tempUsed.indexOf(ch);
         if (idx === -1) {
+            // 這個字母還沒被點擊過，加入剩餘顯示清單，保持原本亂序的相對位置
             remainLetters.push(ch);
         } else {
+            // 已經被點擊過，從 tempUsed 中刪除（用來處理單詞中有多個相同字母的情況）
             tempUsed.splice(idx, 1);
         }
     });
     
-    const finalShuffleLetters = shuffleArray(remainLetters);
     if (letterWrap) letterWrap.innerHTML = "";
     
-    finalShuffleLetters.forEach(letter => {
+    // 直接渲染 remainLetters，不再調用 shuffleArray() 重新洗牌
+    remainLetters.forEach(letter => {
         const btn = document.createElement("button");
         btn.textContent = letter;
         btn.className = "spell-letter-btn";
@@ -720,7 +725,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (spellClearAll) {
         spellClearAll.onclick = function () {
             spellUserAnswer = [];
-            spellShuffleLetters = shuffleArray([...originalLetters]);
+            // 清空時不再重新洗牌，保持原本的位置
             renderSpellUI();
         };
     }
@@ -747,7 +752,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         tipDom.innerText = "拼寫錯誤，再嘗試一次";
                     }
                     spellUserAnswer = [];
-                    spellShuffleLetters = shuffleArray([...originalLetters]);
+                    // 答錯時也不再重新洗牌，方便使用者根據剛才的位置重新思考
                     renderSpellUI();
                 }
             }
