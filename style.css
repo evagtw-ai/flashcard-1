@@ -265,10 +265,10 @@ font-weight:bold;
 min-height:30px;
 text-align:center;
 }
-/*拼寫區域：禁止換行，PC&移動端居中，超出才水平滑動【修改版】*/
+/*拼寫區域：禁止換行，PC&移動端居中，超出才水平滑動*/
 .spell-input-line {
   display: flex;
-  justify-content: center;  /* ✅ 內容居中 */
+  justify-content: center;
   gap:14px;
   flex-wrap:nowrap;
   overflow-x:auto;
@@ -276,13 +276,21 @@ text-align:center;
   min-height:70px;
   width:100%;
 }
-/* 新增內層包裝，實現真正居中滾動：html要對應調整 */
 .spell-input-inner {
   display: inline-flex;
   gap: inherit;
   flex-wrap: nowrap;
   margin: 0 auto;
 }
+/*美化滾動條*/
+.spell-input-line::-webkit-scrollbar {
+  height: 6px;
+}
+.spell-input-line::-webkit-scrollbar-thumb {
+  background-color:#ccc;
+  border-radius:3px;
+}
+
 
 .spell-cell {
 width:42px;
