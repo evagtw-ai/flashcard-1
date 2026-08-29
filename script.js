@@ -339,7 +339,7 @@ function initCategory() {
     const wrap = document.getElementById("categoryWrap");
     if (!wrap) return;
     wrap.innerHTML = "";
-    const openCats = ["Occupation", "Place", "Color", "Animal", "Transportation", "Body", "Stationary", "Nature", "Fruit", "All"];
+    const openCats = ["Occupation", "Place", "Color", "Animal", "Transportation", "Body", "Stationery", "Nature", "Fruit", "All"];
     Object.keys(wordData).forEach(key => {
         const btn = document.createElement("button");
         btn.innerHTML = `        <div style="font-size:22px; font-weight:bold;">${catNameMap[key]}</div>         <div style="font-size:14px; opacity:0.8;">${key}</div>        `;
