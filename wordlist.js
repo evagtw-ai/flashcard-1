@@ -363,8 +363,9 @@ Nature: {
       ]
     }
   },
-  Stationary: { words: [
-     { cn: "鉛筆", en: "pencil" },
+Stationery: { 
+    words: [
+      { cn: "鉛筆", en: "pencil" },
       { cn: "膠水", en: "glue" },
       { cn: "尺子", en: "ruler" },
       { cn: "筆", en: "pen" },
@@ -373,7 +374,18 @@ Nature: {
       { cn: "訂書機", en: "stapler" },
       { cn: "剪刀", en: "scissors" },
       { cn: "紙張", en: "paper" }
-  ], sentences: { cn: [], en: [] } },
+    ], 
+    sentences: { 
+      cn: [
+        "我用鉛筆在紙上寫字。",
+        "使用剪刀要注意安全。"
+      ], 
+      en: [
+        "I use glue to stick the paper.",
+        "My eraser is pink and small."
+      ] 
+    } 
+  },
 Fruit: {
     words: [
       { cn: "蘋果", en: "apple" },
@@ -460,7 +472,7 @@ const catNameMap = {
   Occupation: "職業",
   Animal: "動物",
   Transportation: "交通",
-  Stationary: "文具",
+  Stationery: "文具",
   Fruit: "水果",
   People: "人物",
   Body: "身體",
