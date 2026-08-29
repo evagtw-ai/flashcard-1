@@ -111,6 +111,11 @@ color: white;
     background: #c586ff;
     color: white;
 }
+/* 11. 水果 Fruit */
+.category-list button:nth-child(10) {
+    background: #ff6b81;
+    color: white;
+}
 /* 8. 動物 Animal */
 .category-list button:nth-child(8) {
 background: #a87bff;
