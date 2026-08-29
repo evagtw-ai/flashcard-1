@@ -39,7 +39,7 @@
 </div>
 <div class="operate-btns">
 <button onclick="nextWord()">➡️ 下一頁</button>
-<button class="back-btn" onclick="backMode()">🏠 返回</button>
+<button class="back-btn" onclick="backMode()">🏠 首頁</button>
 </div>
 </div>
 <!--配對遊戲頁-->
@@ -52,7 +52,7 @@
 <div class="option-list" id="optionWrap"></div>
 <p class="tip" id="matchTip"></p>
 <div class="operate-btns">
-<button class="back-btn" onclick="backMode()">🏠 返回</button>
+<button class="back-btn" onclick="backMode()">🏠 首頁</button>
 </div>
 </div>
 <!--拼寫頁-->
@@ -67,22 +67,18 @@
 <div class="spell-letter-group" id="spellLetterBox"></div>
 </div>
 <div class="spell-control-btns">
-<button id="spellUndo">↩️ 撤回</button>
-<button id="spellClearAll">🗑️ 清空</button>
-<button id="spellCheckAnswer">✅ 確認</button>
+<button id="spellUndo">↩️ delete</button>
+<button id="spellClearAll">🗑️ clear all</button>
+<button id="spellCheckAnswer">✅ 提交</button>
 </div>
 <p class="spell-tip" id="spellTip"></p>
 <div class="operate-btns">
-<button class="back-btn" onclick="backMode()">🏠 返回</button>
+<button class="back-btn" onclick="backMode()">🏠 首頁</button>
 </div>
 </div>
 <!--句子重組頁-->
 <div id="page-sentence" class="page game-page hidden">
     <p class="progress-text"></p>
-    
-    <div style="display:flex; justify-content:center; width:100%;">
-        <button class="voice-btn" id="sentenceVoiceBtn" style="font-size: 32px; background:#fff; border-radius:50px; padding:10px 30px; box-shadow:0 3px 10px #e9e3df;">🔊 聽原句</button>
-    </div>
 
     <!-- 句子重組遊戲區 -->
     <div class="sentence-build-box">
@@ -96,13 +92,13 @@
 
     <!-- 操作按鈕 -->
     <div class="spell-control-btns">
-        <button id="sentenceUndoBtn" style="background:#ffb344; min-width:96px; height:46px; border:none; border-radius:14px; color:white; font-size:18px; font-weight:bold; cursor:pointer;">↩️ 撤銷</button>
-        <button id="sentenceClearBtn" style="background:#ff7777; min-width:96px; height:46px; border:none; border-radius:14px; color:white; font-size:18px; font-weight:bold; cursor:pointer;">🗑️ 清空</button>
-        <button id="sentenceCheckBtn" style="background:#62d474; min-width:96px; height:46px; border:none; border-radius:14px; color:white; font-size:18px; font-weight:bold; cursor:pointer;">✅ 確定</button>
+        <button id="sentenceUndoBtn" style="background:#ffb344; min-width:96px; height:46px; border:none; border-radius:14px; color:white; font-size:18px; font-weight:bold; cursor:pointer;">↩️ delete</button>
+        <button id="sentenceClearBtn" style="background:#ff7777; min-width:96px; height:46px; border:none; border-radius:14px; color:white; font-size:18px; font-weight:bold; cursor:pointer;">🗑️ clear all</button>
+        <button id="sentenceCheckBtn" style="background:#62d474; min-width:96px; height:46px; border:none; border-radius:14px; color:white; font-size:18px; font-weight:bold; cursor:pointer;">✅ 提交</button>
     </div>
     
     <div class="operate-btns">
-        <button class="back-btn" onclick="backMode()">🏠 返回</button>
+        <button class="back-btn" onclick="backMode()">🏠 首頁</button>
     </div>
 </div>
 <!--學習模式（左右卡片）-->
@@ -116,11 +112,11 @@
 <p class="order-en" id="orderEnText"></p>
 </div>
 </div>
-<button class="voice-btn" id="orderVoiceBtn">🔊播放</button>
+<button class="voice-btn" id="orderVoiceBtn">🔊</button>
 <div class="operate-btns">
 <button onclick="prevOrderWord()">⬅️ 上一頁</button>
 <button onclick="nextOrderWord()">➡️ 下一頁</button>
-<button class="back-btn" onclick="backMode()">🏠 返回</button>
+<button class="back-btn" onclick="backMode()">🏠 首頁</button>
 </div>
 </div>
 </div>
