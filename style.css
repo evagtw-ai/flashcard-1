@@ -40,7 +40,7 @@ padding:16px 14px;
 }
 .hidden {display: none !important;}
 h1 {
-font-size: clamp (32px,7vw,46px);
+font-size: clamp(32px,7vw,46px);
 text-align:center;
 color:#ff7c7c;
 font-weight:bold;
@@ -49,22 +49,22 @@ font-weight:bold;
 text-align:center;
 width:100%;
 }
-#currentCatName div:nth-child (1){
-font-size: clamp (26px,5vw,32px);
+#currentCatName div:nth-child(1){
+font-size: clamp(26px,5vw,32px);
 font-weight:bold;
 color:#333;
 }
-#currentCatName div:nth-child (2){
-font-size: clamp (18px,3vw,22px);
+#currentCatName div:nth-child(2){
+font-size: clamp(18px,3vw,22px);
 opacity:0.7;
 }
 .progress-text {
-font-size: clamp (18px,3vw,22px);
+font-size: clamp(18px,3vw,22px);
 text-align:center;
 color:#666;
 width:100%;
 }
-/* ========== 首頁分類按鈕【重點修復長英文溢出】 ========== */
+/* ========== 首頁分類按鈕 ========== */
 .category-list {
 display: grid;
 grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -81,7 +81,6 @@ box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 transition: 0.2s;
 background-color: #ddd;
 color: #777;
-/* 解決長英文溢出：強制換行，禁止文字撐大按鈕 */
 word-break: break-word;
 white-space: normal;
 overflow:hidden;
@@ -106,10 +105,10 @@ color: white;
 background: #a87bff;
 color: white;
 }
-/* 9. 交通 Transportation */
+/* 9. 交通 Transportation 確認配色 */
 .category-list button:nth-child(9) {
-    background: #ffb84d;
-    color: #ffffff;
+background: #ffb84d;
+color: #ffffff;
 }
 /* 13. 身體 Body */
 .category-list button:nth-child(13) {
@@ -128,7 +127,7 @@ transform: translateY(-4px);
 .category-list button:active:not(:disabled) {
 transform: scale(0.95);
 }
-/* 禁用未解鎖按鈕統一灰色 */
+/* 禁用未解鎖按鈕統一灰色，優先級最高 */
 .category-list button.disabled-btn {
 background: #dddddd !important;
 color: #777777 !important;
@@ -196,7 +195,7 @@ transition:0.2s;
 }
 .voice-btn:active {transform: scale(0.85);}
 .voice-btn:disabled {opacity:0.35;}
-/*底部按鈕：圖標文字間距 8px，返回按鈕全局深灰色 #666666*/
+/*底部按鈕*/
 .operate-btns {
 display:flex;
 gap:18px;
@@ -225,7 +224,7 @@ line-height:1;
 .operate-btns button:first-of-type {
 background:#62d474;
 }
-/*全部頁面返回按鈕強制深灰色，解決和背景融合看不清問題*/
+/*返回按鈕強制深灰色*/
 .operate-btns .back-btn,
 .back-btn,
 #page-mode .back-btn{
@@ -270,7 +269,7 @@ font-weight:bold;
 min-height:30px;
 text-align:center;
 }
-/*拼寫區域：禁止換行，PC&移動端居中，超出才水平滑動*/
+/*拼寫區域居中*/
 .spell-input-line {
   display: flex;
   justify-content: center;
