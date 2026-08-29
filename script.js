@@ -247,7 +247,7 @@ function initCategory() {
     const wrap = document.getElementById("categoryWrap");
     if (!wrap) return;
     wrap.innerHTML = "";
-    const openCats = ["Occupation", "Place", "Color", "Animal", "Body", "All"];
+    const openCats = ["Occupation", "Place", "Color", "Animal","Transportation", "Body", "All"];
     Object.keys(wordData).forEach(key => {
         const btn = document.createElement("button");
         btn.innerHTML = `
