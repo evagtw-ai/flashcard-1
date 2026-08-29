@@ -243,8 +243,10 @@ function saveStorage() {
 function showFinishModal(resetCallback) {
     const modal = document.createElement("div");
     modal.style.position = "fixed";
-    modal.style.left = "0"; modal.style.top = "0";
-    modal.style.width = "100vw"; modal.style.height = "100vh";
+    modal.style.left = "0";
+    modal.style.top = "0";
+    modal.style.width = "100vw";
+    modal.style.height = "100vh";
     modal.style.background = "rgba(0,0,0,0.5)";
     modal.style.display = "flex"; modal.style.justifyContent = "center"; modal.style.alignItems = "center";
     modal.style.zIndex = "9999";
@@ -285,8 +287,10 @@ function showFinishModal(resetCallback) {
 function showAnswerModal(answer, nextFunc) {
     const modal = document.createElement("div");
     modal.style.position = "fixed";
-    modal.style.left = "0"; modal.style.top = "0";
-    modal.style.width = "100vw"; modal.style.height = "100vh";
+    modal.style.left = "0";
+    modal.style.top = "0";
+    modal.style.width = "100vw";
+    modal.style.height = "100vh";
     modal.style.background = "rgba(0,0,0,0.5)";
     modal.style.display = "flex"; modal.style.justifyContent = "center"; modal.style.alignItems = "center";
     modal.style.zIndex = "9999";
@@ -644,13 +648,25 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-// 拼寫遊戲
+// 拼寫遊戲 (加入黑名單過濾機制)
 function initSpellGame() {
     if (nextBtnLock) return;
     nextBtnLock = true;
     setTimeout(() => nextBtnLock = false, NEXT_COOLDOWN);
     wrongCount = 0;
-    const total = wordList.length;
+    
+    // ★ 核心修改：將物件格式的黑名單轉換成單純的英文陣列，然後進行過濾
+    // 確保就算 BANNED_SPELL_WORDS 沒定義也不會報錯
+    const bannedList = (typeof BANNED_SPELL_WORDS !== 'undefined') ? BANNED_SPELL_WORDS : [];
+    const bannedEnList = bannedList.map(item => item.en);
+    const validSpellWords = wordList.filter(w => !bannedEnList.includes(w.en));
+    const total = validSpellWords.length;
+
+    if (total === 0) {
+        alert("本分類目前沒有開放拼寫的單詞喔！");
+        backMode();
+        return;
+    }
 
     if (spellUsedIndex.length >= total) {
         showFinishModal(function (again) {
@@ -661,11 +677,12 @@ function initSpellGame() {
         });
         return;
     }
+    
     let randomIdx;
     do { randomIdx = Math.floor(Math.random() * total); } while (spellUsedIndex.includes(randomIdx));
     spellUsedIndex.push(randomIdx);
 
-    currentWord = wordList[randomIdx];
+    currentWord = validSpellWords[randomIdx];
     spellRawWord = currentWord.en.toLowerCase();
     spellTargetEn = spellRawWord.replace(/ /g, "");
     spellUserAnswer = [];
