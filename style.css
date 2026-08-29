@@ -106,8 +106,8 @@ color: white;
 background: #a87bff;
 color: white;
 }
-/* ✅交通 Transportation：使用屬性選擇器，不受數組順序影響 */
-.category-list button[data-cat="Transportation"] {
+/* 9. 交通 Transportation */
+.category-list button:nth-child(9) {
     background: #ffb84d;
     color: #ffffff;
 }
