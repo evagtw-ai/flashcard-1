@@ -5,34 +5,44 @@ let currentCat = "";
 let currentMode = "";
 let wordList = [];
 let fullWordPool = []; //All 模式全部詞庫
-let studyPool = []; // ★ 新增：專門給「中文/English」模式使用的混合詞庫（包含單詞+句子）
+let studyPool = []; // 專門給「中文/English」模式使用的混合詞庫
 let currentWord = null;
+
+// 拼寫相關變數
 let spellTargetEn = "";
 let spellRawWord = "";
 let spellUserAnswer = [];
-let spellShuffleLetters = []; // 紀錄本題固定的亂序字母
-let originalLetters = []; // 本題原始字母池
+let spellShuffleLetters = []; 
+let originalLetters = []; 
+
+// 句子重組相關變數 (全新)
+let currentSentenceLang = "cn"; // 紀錄目前這題是中文還是英文
+let sentenceOriginalTokens = []; // 正確順序的分詞
+let sentenceShuffledTokens = []; // 打亂順序的分詞
+let sentenceUserAnswers = [];    // 玩家點擊的索引順序
 let currentSentenceIndex = 0;
+
 let audioPlaying = false;
 const NEXT_COOLDOWN = 300;
 let nextBtnLock = false;
 let orderIndex = 0;
-const ALL_COUNT = 20; //All 模式固定 20 題
+const ALL_COUNT = 20; 
+
+// 進度計數
 let allUsedIndex = [];
-// 答錯次數計數
 let wrongCount = 0;
 let wordUsedIndex = [];
 let matchUsedIndex = [];
 let spellUsedIndex = [];
 let sentenceUsedIndex = [];
 
-// ===== 關鍵修復：全局預加載瀏覽器語音音色 =====
+// ===== 全局預加載瀏覽器語音音色 =====
 let globalVoiceList = [];
 window.speechSynthesis.onvoiceschanged = function () {
     globalVoiceList = window.speechSynthesis.getVoices();
 };
 
-// ========== 通用標準 Fisher-Yates 洗牌函數（全局統一亂序） ==========
+// ========== 通用標準 Fisher-Yates 洗牌函數 ==========
 function shuffleArray(arr) {
     const copyArr = [...arr];
     for (let i = copyArr.length - 1; i > 0; i--) {
@@ -42,7 +52,7 @@ function shuffleArray(arr) {
     return copyArr;
 }
 
-// ========== 重構粵語中文發音函數（徹底解決無法發聲問題） ==========
+// ========== 粵語發音 ==========
 function playCnVoice(text) {
     if (!text || audioPlaying || !window.speechSynthesis) return;
     window.speechSynthesis.cancel();
@@ -50,8 +60,6 @@ function playCnVoice(text) {
     const utter = new SpeechSynthesisUtterance(text);
     utter.lang = "zh-HK";
     utter.rate = 0.95;
-    utter.pitch = 1;
-    utter.volume = 1;
     const cantoneseVoice = globalVoiceList.find(v => v.lang.startsWith("zh-HK"));
     if (cantoneseVoice) utter.voice = cantoneseVoice;
     document.querySelectorAll(".voice-btn").forEach(btn => btn.disabled = true);
@@ -62,7 +70,7 @@ function playCnVoice(text) {
     window.speechSynthesis.speak(utter);
 }
 
-// 英式英語發音
+// ========== 英文發音 ==========
 function playEnVoice(text) {
     if (!text || audioPlaying || !window.speechSynthesis) return;
     window.speechSynthesis.cancel();
@@ -70,8 +78,6 @@ function playEnVoice(text) {
     const utter = new SpeechSynthesisUtterance(text);
     utter.lang = "en-GB";
     utter.rate = 0.8;
-    utter.pitch = 1;
-    utter.volume = 1;
     const enVoice = globalVoiceList.find(v => v.lang.startsWith("en-GB"));
     if (enVoice) utter.voice = enVoice;
     document.querySelectorAll(".voice-btn").forEach(btn => btn.disabled = true);
@@ -82,7 +88,7 @@ function playEnVoice(text) {
     window.speechSynthesis.speak(utter);
 }
 
-// ========== 拼寫遊戲專用 先英文、後粵語雙語發音函數 ==========
+// ========== 拼寫專用 雙語發音 ==========
 function playSpellBilingualVoice(enText, cnText) {
     if (!enText || !cnText || audioPlaying || !window.speechSynthesis) return;
     window.speechSynthesis.cancel();
@@ -90,7 +96,6 @@ function playSpellBilingualVoice(enText, cnText) {
     const engUtter = new SpeechSynthesisUtterance(enText);
     engUtter.lang = "en-GB";
     engUtter.rate = 0.8;
-    engUtter.volume = 1;
     const engVoice = globalVoiceList.find(v => v.lang.startsWith("en-GB"));
     if (engVoice) engUtter.voice = engVoice;
 
@@ -98,7 +103,6 @@ function playSpellBilingualVoice(enText, cnText) {
         const cnUtter = new SpeechSynthesisUtterance(cnText);
         cnUtter.lang = "zh-HK";
         cnUtter.rate = 0.95;
-        cnUtter.volume = 1;
         const cnVoice = globalVoiceList.find(v => v.lang.startsWith("zh-HK"));
         if (cnVoice) cnUtter.voice = cnVoice;
         cnUtter.onend = () => {
@@ -111,7 +115,7 @@ function playSpellBilingualVoice(enText, cnText) {
     window.speechSynthesis.speak(engUtter);
 }
 
-// 答題反饋粵語
+// 答題反饋語音
 function playFeedbackVoice(isRight) {
     if (audioPlaying || !window.speechSynthesis) return;
     window.speechSynthesis.cancel();
@@ -132,26 +136,17 @@ function playFeedbackVoice(isRight) {
 
 // 本地存儲 
 function loadStorage() {
-    wordUsedIndex = [];
-    matchUsedIndex = [];
-    spellUsedIndex = [];
-    sentenceUsedIndex = [];
-    allUsedIndex = [];
+    wordUsedIndex = []; matchUsedIndex = []; spellUsedIndex = []; sentenceUsedIndex = []; allUsedIndex = [];
 }
-function saveStorage() {}
 
 // 完成彈窗
 function showFinishModal(resetCallback) {
     const modal = document.createElement("div");
     modal.style.position = "fixed";
-    modal.style.left = "0";
-    modal.style.top = "0";
-    modal.style.width = "100vw";
-    modal.style.height = "100vh";
+    modal.style.left = "0"; modal.style.top = "0";
+    modal.style.width = "100vw"; modal.style.height = "100vh";
     modal.style.background = "rgba(0,0,0,0.5)";
-    modal.style.display = "flex";
-    modal.style.justifyContent = "center";
-    modal.style.alignItems = "center";
+    modal.style.display = "flex"; modal.style.justifyContent = "center"; modal.style.alignItems = "center";
     modal.style.zIndex = "9999";
 
     const box = document.createElement("div");
@@ -181,24 +176,19 @@ function showFinishModal(resetCallback) {
 
     btnWrap.appendChild(btnAgain);
     btnWrap.appendChild(btnBack);
-    box.appendChild(text);
-    box.appendChild(btnWrap);
+    box.appendChild(text); box.appendChild(btnWrap);
     modal.appendChild(box);
     document.body.appendChild(modal);
 }
 
-// 答錯兩次彈窗
+// 答錯彈窗
 function showAnswerModal(answer, nextFunc) {
     const modal = document.createElement("div");
     modal.style.position = "fixed";
-    modal.style.left = "0";
-    modal.style.top = "0";
-    modal.style.width = "100vw";
-    modal.style.height = "100vh";
+    modal.style.left = "0"; modal.style.top = "0";
+    modal.style.width = "100vw"; modal.style.height = "100vh";
     modal.style.background = "rgba(0,0,0,0.5)";
-    modal.style.display = "flex";
-    modal.style.justifyContent = "center";
-    modal.style.alignItems = "center";
+    modal.style.display = "flex"; modal.style.justifyContent = "center"; modal.style.alignItems = "center";
     modal.style.zIndex = "9999";
 
     const box = document.createElement("div");
@@ -215,8 +205,7 @@ function showAnswerModal(answer, nextFunc) {
         nextFunc();
     };
 
-    box.appendChild(text);
-    box.appendChild(confirmBtn);
+    box.appendChild(text); box.appendChild(confirmBtn);
     modal.appendChild(box);
     document.body.appendChild(modal);
 }
@@ -284,13 +273,8 @@ function selectCategory(catKey) {
     currentSentenceCnList = wordData[catKey].sentences ? wordData[catKey].sentences.cn : [];
     currentSentenceEnList = wordData[catKey].sentences ? wordData[catKey].sentences.en : [];
 
-    // 切換分類：重置進度
-    wordUsedIndex = [];
-    matchUsedIndex = [];
-    spellUsedIndex = [];
-    sentenceUsedIndex = [];
-    orderIndex = 0;
-    wrongCount = 0;
+    wordUsedIndex = []; matchUsedIndex = []; spellUsedIndex = []; sentenceUsedIndex = [];
+    orderIndex = 0; wrongCount = 0;
 
     const cnName = catNameMap[currentCat];
     const titleDom = document.getElementById("currentCatName");
@@ -309,41 +293,29 @@ document.querySelectorAll(".mode-btn").forEach(btn => {
         currentMode = btn.dataset.mode;
         wrongCount = 0;
 
-        // ★ 核心修改：如果是中文或英文模式，建立混合詞庫 (studyPool)
         if (currentMode === "cn" || currentMode === "en") {
             wordUsedIndex = [];
-            studyPool = [...wordList]; // 放入單詞
+            studyPool = [...wordList]; 
             
-            const maxLen = Math.max(currentSentenceCnList.length, currentSentenceEnList.length);
-            for (let i = 0; i < maxLen; i++) {
-                const cnStr = currentSentenceCnList[i] || "";
-                const enStr = currentSentenceEnList[i] || "";
-                
-                // 確保當前模式有對應文字，才把句子加入混合詞庫（防呆機制）
-                if (currentMode === "cn" && cnStr) {
-                    studyPool.push({ cn: cnStr, en: enStr });
-                } else if (currentMode === "en" && enStr) {
-                    studyPool.push({ cn: cnStr, en: enStr });
-                }
+            if (currentMode === "cn") {
+                currentSentenceCnList.forEach(cnStr => {
+                    if (cnStr) studyPool.push({ cn: cnStr, en: "" });
+                });
+            } else if (currentMode === "en") {
+                currentSentenceEnList.forEach(enStr => {
+                    if (enStr) studyPool.push({ cn: "", en: enStr });
+                });
             }
         } 
-        else if (currentMode === "orderStudy") {
-            orderIndex = 0;
-        } else if (currentMode === "match") {
-            matchUsedIndex = [];
-        } else if (currentMode === "spell") {
-            spellUsedIndex = [];
-        } else if (currentMode === "sentence") {
-            sentenceUsedIndex = [];
-        }
+        else if (currentMode === "orderStudy") orderIndex = 0;
+        else if (currentMode === "match") matchUsedIndex = [];
+        else if (currentMode === "spell") spellUsedIndex = [];
+        else if (currentMode === "sentence") sentenceUsedIndex = [];
 
         const cnName = catNameMap[currentCat];
         const titleDom = document.getElementById("currentCatName");
         if (titleDom) {
-            titleDom.innerHTML = `
-            <div style="font-size:32px; font-weight:bold;">${cnName}</div>
-            <div style="font-size:20px; opacity:0.7;">${currentCat.toLowerCase()}</div>
-            `;
+            titleDom.innerHTML = `<div style="font-size:32px; font-weight:bold;">${cnName}</div><div style="font-size:20px; opacity:0.7;">${currentCat.toLowerCase()}</div>`;
         }
         
         if (currentCat === "Color" && currentMode === "sentence") {
@@ -352,25 +324,20 @@ document.querySelectorAll(".mode-btn").forEach(btn => {
         }
         
         if (currentMode === "cn" || currentMode === "en") {
-            nextWord();
-            showPage("page-study");
+            nextWord(); showPage("page-study");
         } else if (currentMode === "orderStudy") {
-            renderOrderWord();
-            showPage("page-orderStudy");
+            renderOrderWord(); showPage("page-orderStudy");
         } else if (currentMode === "match") {
-            createMatchQ();
-            showPage("page-match");
+            createMatchQ(); showPage("page-match");
         } else if (currentMode === "spell") {
-            initSpellGame();
-            showPage("page-spell");
+            initSpellGame(); showPage("page-spell");
         } else if (currentMode === "sentence") {
-            nextSentence();
-            showPage("page-sentence");
+            nextSentence(); showPage("page-sentence");
         }
     };
 });
 
-// 順序學習頁 (繼續維持使用 wordList)
+// 順序學習頁 
 function renderOrderWord() {
     const total = wordList.length;
     let progressDom = document.querySelector("#page-orderStudy .progress-text");
@@ -388,12 +355,8 @@ function renderOrderWord() {
     if (enEl) enEl.innerText = item.en;
 }
 function prevOrderWord() {
-    if (orderIndex <= 0) {
-        alert("已經是第一個單詞！");
-        return;
-    }
-    orderIndex--;
-    renderOrderWord();
+    if (orderIndex <= 0) { alert("已經是第一個單詞！"); return; }
+    orderIndex--; renderOrderWord();
 }
 function nextOrderWord() {
     const total = wordList.length;
@@ -401,25 +364,17 @@ function nextOrderWord() {
         showFinishModal(function (again) {
             if (again) {
                 if (currentCat === "All") {
-                    fullWordPool = shuffleArray([
-                        ...JSON.parse(JSON.stringify(wordData.Occupation)),
-                        ...JSON.parse(JSON.stringify(wordData.Place)),
-                        ...JSON.parse(JSON.stringify(wordData.Color)),
-                        ...JSON.parse(JSON.stringify(wordData.Animal)),
-                        ...JSON.parse(JSON.stringify(wordData.Body))
-                    ]);
+                    fullWordPool = shuffleArray([...wordData.Occupation.words, ...wordData.Place.words, ...wordData.Color.words, ...wordData.Animal.words, ...wordData.Body.words]);
                     wordList = fullWordPool.slice(0, ALL_COUNT);
                 }
-                orderIndex = 0;
-                renderOrderWord();
+                orderIndex = 0; renderOrderWord();
             } else {
                 showPage("page-mode");
             }
         });
         return;
     }
-    orderIndex++;
-    renderOrderWord();
+    orderIndex++; renderOrderWord();
 }
 document.addEventListener("DOMContentLoaded", function () {
     const orderVoiceBtn = document.getElementById("orderVoiceBtn");
@@ -429,9 +384,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const item = wordList[orderIndex];
             playCnVoice(item.cn);
             const waitEnd = () => new Promise(res => {
-                const timer = setInterval(() => {
-                    if (!audioPlaying) { clearInterval(timer); res(); }
-                }, 100);
+                const timer = setInterval(() => { if (!audioPlaying) { clearInterval(timer); res(); } }, 100);
             });
             await waitEnd();
             playEnVoice(item.en);
@@ -439,43 +392,32 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-// 單詞/句子 隨機混合學習 (專屬中文/English模式)
+// 單詞/句子 隨機混合學習 
 function nextWord() {
     if (nextBtnLock) return;
     nextBtnLock = true;
     setTimeout(() => nextBtnLock = false, NEXT_COOLDOWN);
-    
-    // ★ 使用新建立的混合詞庫 studyPool
     const total = studyPool.length; 
     
     if (wordUsedIndex.length >= total) {
         showFinishModal(function (again) {
             if (again) {
                 if (currentCat === "All") {
-                    fullWordPool = shuffleArray([
-                        ...JSON.parse(JSON.stringify(wordData.Occupation)),
-                        ...JSON.parse(JSON.stringify(wordData.Place)),
-                        ...JSON.parse(JSON.stringify(wordData.Color)),
-                        ...JSON.parse(JSON.stringify(wordData.Animal)),
-                        ...JSON.parse(JSON.stringify(wordData.Body))
-                    ]);
+                    fullWordPool = shuffleArray([...wordData.Occupation.words, ...wordData.Place.words, ...wordData.Color.words, ...wordData.Animal.words, ...wordData.Body.words]);
                     wordList = fullWordPool.slice(0, ALL_COUNT);
-                    studyPool = [...wordList]; // All模式目前沒有句子，所以直接複製單詞
+                    studyPool = [...wordList];
                 }
-                wordUsedIndex = [];
-                nextWord();
+                wordUsedIndex = []; nextWord();
             } else {
                 showPage("page-mode");
             }
         });
         return;
     }
-    
     let randomIdx;
     do { randomIdx = Math.floor(Math.random() * total); } while (wordUsedIndex.includes(randomIdx));
     wordUsedIndex.push(randomIdx);
 
-    // ★ 從混合詞庫中抽取
     currentWord = studyPool[randomIdx]; 
     const wordDom = document.getElementById("showWord");
     if (wordDom) wordDom.innerText = currentMode === "cn" ? currentWord.cn : currentWord.en;
@@ -489,7 +431,6 @@ function nextWord() {
     }
     if (progressDom) progressDom.innerText = `已學習 ${wordUsedIndex.length}/${total}`;
 }
-
 document.addEventListener("DOMContentLoaded", function () {
     const voiceBtn = document.getElementById("voiceBtn");
     if (voiceBtn) {
@@ -500,7 +441,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-// 配對遊戲 (繼續維持使用純單詞的 wordList)
+// 配對遊戲
 let matchType = "cn2en";
 function createMatchQ() {
     if (nextBtnLock) return;
@@ -511,18 +452,7 @@ function createMatchQ() {
     if (matchUsedIndex.length >= total) {
         showFinishModal(function (again) {
             if (again) {
-                if (currentCat === "All") {
-                    fullWordPool = shuffleArray([
-                        ...JSON.parse(JSON.stringify(wordData.Occupation)),
-                        ...JSON.parse(JSON.stringify(wordData.Place)),
-                        ...JSON.parse(JSON.stringify(wordData.Color)),
-                        ...JSON.parse(JSON.stringify(wordData.Animal)),
-                        ...JSON.parse(JSON.stringify(wordData.Body))
-                    ]);
-                    wordList = fullWordPool.slice(0, ALL_COUNT);
-                }
-                matchUsedIndex = [];
-                createMatchQ();
+                matchUsedIndex = []; createMatchQ();
             } else {
                 showPage("page-mode");
             }
@@ -559,16 +489,14 @@ function createMatchQ() {
     if (matchType === "cn2en") {
         if (qDom) qDom.innerText = correct.cn;
         options.forEach(item => {
-            const btn = document.createElement("button");
-            btn.innerText = item.en;
+            const btn = document.createElement("button"); btn.innerText = item.en;
             btn.onclick = () => matchCheckAnswer(item.en, correct.en, tipDom);
             optWrap.appendChild(btn);
         });
     } else {
         if (qDom) qDom.innerText = correct.en;
         options.forEach(item => {
-            const btn = document.createElement("button");
-            btn.innerText = item.cn;
+            const btn = document.createElement("button"); btn.innerText = item.cn;
             btn.onclick = () => matchCheckAnswer(item.cn, correct.cn, tipDom);
             optWrap.appendChild(btn);
         });
@@ -576,10 +504,7 @@ function createMatchQ() {
 }
 function matchCheckAnswer(select, right, tipDom) {
     if (select === right) {
-        if (tipDom) {
-            tipDom.style.color = "#00aa00";
-            tipDom.innerText = "答對啦！";
-        }
+        if (tipDom) { tipDom.style.color = "#00aa00"; tipDom.innerText = "答對啦！"; }
         playFeedbackVoice(true);
         setTimeout(() => { createMatchQ(); }, 1300);
     } else {
@@ -588,10 +513,7 @@ function matchCheckAnswer(select, right, tipDom) {
         if (wrongCount >= 2) {
             showAnswerModal(right, () => { createMatchQ(); });
         } else {
-            if (tipDom) {
-                tipDom.style.color = "#f03030";
-                tipDom.innerText = "答錯咯，再試一次！";
-            }
+            if (tipDom) { tipDom.style.color = "#f03030"; tipDom.innerText = "答錯咯，再試一次！"; }
         }
     }
 }
@@ -605,7 +527,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-// -------------------------- 拼寫模塊 (繼續維持使用純單詞的 wordList) ----------------------------
+// 拼寫遊戲
 function initSpellGame() {
     if (nextBtnLock) return;
     nextBtnLock = true;
@@ -616,25 +538,11 @@ function initSpellGame() {
     if (spellUsedIndex.length >= total) {
         showFinishModal(function (again) {
             if (again) {
-                if (currentCat === "All") {
-                    fullWordPool = shuffleArray([
-                        ...JSON.parse(JSON.stringify(wordData.Occupation)),
-                        ...JSON.parse(JSON.stringify(wordData.Place)),
-                        ...JSON.parse(JSON.stringify(wordData.Color)),
-                        ...JSON.parse(JSON.stringify(wordData.Animal)),
-                        ...JSON.parse(JSON.stringify(wordData.Body))
-                    ]);
-                    wordList = fullWordPool.slice(0, ALL_COUNT);
-                }
-                spellUsedIndex = [];
-                initSpellGame();
-            } else {
-                showPage("page-mode");
-            }
+                spellUsedIndex = []; initSpellGame();
+            } else { showPage("page-mode"); }
         });
         return;
     }
-
     let randomIdx;
     do { randomIdx = Math.floor(Math.random() * total); } while (spellUsedIndex.includes(randomIdx));
     spellUsedIndex.push(randomIdx);
@@ -645,13 +553,11 @@ function initSpellGame() {
     spellUserAnswer = [];
     originalLetters = spellTargetEn.split("");
     spellShuffleLetters = shuffleArray([...originalLetters]);
-
     renderSpellUI();
 
     let progressDom = document.querySelector("#page-spell .progress-text");
     if (!progressDom) {
-        progressDom = document.createElement("p");
-        progressDom.className = "progress-text";
+        progressDom = document.createElement("p"); progressDom.className = "progress-text";
         const cardBox = document.querySelector("#page-spell .spell-card-box");
         if (cardBox) cardBox.prepend(progressDom);
     }
@@ -670,46 +576,27 @@ function renderSpellUI() {
 
     let cellList = [];
     [...spellRawWord].forEach(char => {
-        const cell = document.createElement("div");
-        cell.className = "spell-cell";
-        if (char === " ") {
-            cell.style.borderBottom = "none";
-            cell.style.width = "16px";
-        }
-        innerWrap.appendChild(cell);
-        cellList.push(cell);
+        const cell = document.createElement("div"); cell.className = "spell-cell";
+        if (char === " ") { cell.style.borderBottom = "none"; cell.style.width = "16px"; }
+        innerWrap.appendChild(cell); cellList.push(cell);
     });
 
     for (let i = 0; i < spellUserAnswer.length; i++) {
-        if (cellList[i]) {
-            cellList[i].textContent = spellUserAnswer[i];
-            cellList[i].style.animation = "popLetter 0.2s ease-out";
-        }
+        if (cellList[i]) { cellList[i].textContent = spellUserAnswer[i]; cellList[i].style.animation = "popLetter 0.2s ease-out"; }
     }
 
     let tempUsed = [...spellUserAnswer];
     let remainLetters = [];
-
     spellShuffleLetters.forEach(ch => {
         const idx = tempUsed.indexOf(ch);
-        if (idx === -1) {
-            remainLetters.push(ch);
-        } else {
-            tempUsed.splice(idx, 1);
-        }
+        if (idx === -1) { remainLetters.push(ch); } else { tempUsed.splice(idx, 1); }
     });
 
     if (letterWrap) letterWrap.innerHTML = "";
-
     remainLetters.forEach(letter => {
-        const btn = document.createElement("button");
-        btn.textContent = letter;
-        btn.className = "spell-letter-btn";
+        const btn = document.createElement("button"); btn.textContent = letter; btn.className = "spell-letter-btn";
         btn.onclick = function () {
-            if (spellUserAnswer.length < spellTargetEn.length) {
-                spellUserAnswer.push(letter);
-                renderSpellUI();
-            }
+            if (spellUserAnswer.length < spellTargetEn.length) { spellUserAnswer.push(letter); renderSpellUI(); }
         };
         letterWrap.appendChild(btn);
     });
@@ -717,38 +604,19 @@ function renderSpellUI() {
 document.addEventListener("DOMContentLoaded", function () {
     const spellVoiceBtn = document.getElementById("spellVoiceBtn");
     if (spellVoiceBtn) {
-        spellVoiceBtn.classList.add("voice-btn");
-        spellVoiceBtn.onclick = function () {
-            if (!currentWord) return;
-            playSpellBilingualVoice(currentWord.en, currentWord.cn);
-        };
+        spellVoiceBtn.onclick = function () { if (!currentWord) return; playSpellBilingualVoice(currentWord.en, currentWord.cn); };
     }
     const spellUndo = document.getElementById("spellUndo");
-    if (spellUndo) {
-        spellUndo.onclick = function () {
-            if (spellUserAnswer.length > 0) {
-                spellUserAnswer.pop();
-                renderSpellUI();
-            }
-        };
-    }
+    if (spellUndo) { spellUndo.onclick = function () { if (spellUserAnswer.length > 0) { spellUserAnswer.pop(); renderSpellUI(); } }; }
     const spellClearAll = document.getElementById("spellClearAll");
-    if (spellClearAll) {
-        spellClearAll.onclick = function () {
-            spellUserAnswer = [];
-            renderSpellUI();
-        };
-    }
+    if (spellClearAll) { spellClearAll.onclick = function () { spellUserAnswer = []; renderSpellUI(); }; }
     const spellCheckAnswer = document.getElementById("spellCheckAnswer");
     if (spellCheckAnswer) {
         spellCheckAnswer.onclick = function () {
             const userStr = spellUserAnswer.join("");
             const tipDom = document.getElementById("spellTip");
             if (userStr === spellTargetEn) {
-                if (tipDom) {
-                    tipDom.style.color = "#00aa00";
-                    tipDom.innerText = "拼寫正確！👏";
-                }
+                if (tipDom) { tipDom.style.color = "#00aa00"; tipDom.innerText = "拼寫正確！👏"; }
                 playFeedbackVoice(true);
                 setTimeout(() => initSpellGame(), 1500);
             } else {
@@ -757,68 +625,189 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (wrongCount >= 2) {
                     showAnswerModal(spellRawWord, () => { initSpellGame() });
                 } else {
-                    if (tipDom) {
-                        tipDom.style.color = "#f03030";
-                        tipDom.innerText = "拼寫錯誤，再嘗試一次";
-                    }
-                    spellUserAnswer = [];
-                    renderSpellUI();
+                    if (tipDom) { tipDom.style.color = "#f03030"; tipDom.innerText = "拼寫錯誤，再嘗試一次"; }
+                    spellUserAnswer = []; renderSpellUI();
                 }
             }
         };
     }
 });
-function nextSpellWord() {
-    initSpellGame();
+
+
+// ================== 句子重組模塊 (全新功能) ==================
+
+// 智能分詞引擎
+function tokenizeSentence(text, lang) {
+    if (window.Intl && Intl.Segmenter) {
+        const segmenter = new Intl.Segmenter(lang === 'en' ? 'en' : 'zh-HK', { granularity: 'word' });
+        return Array.from(segmenter.segment(text))
+                    .map(s => s.segment)
+                    .filter(s => s.trim().length > 0);
+    } else {
+        if (lang === 'en') {
+            return text.match(/[\w]+|[^\s\w]/g) || text.split('').filter(s => s.trim().length > 0);
+        } else {
+            return text.split('').filter(s => s.trim().length > 0);
+        }
+    }
 }
 
-// 句子認讀 (純句子功能保持不變)
 function nextSentence() {
     if (nextBtnLock) return;
     nextBtnLock = true;
     setTimeout(() => nextBtnLock = false, NEXT_COOLDOWN);
-    const total = currentSentenceCnList.length;
+    
+    // 計算中文與英文句子數量的最大值，確保每一句都有被玩到的機會
+    const total = Math.max(currentSentenceCnList.length, currentSentenceEnList.length);
+    if (total === 0) {
+        alert("本分類暫無句子！"); backMode(); return;
+    }
+
     if (sentenceUsedIndex.length >= total) {
         showFinishModal(function (again) {
             if (again) {
-                sentenceUsedIndex = [];
-                nextSentence();
-            } else {
-                showPage("page-mode");
-            }
+                sentenceUsedIndex = []; nextSentence();
+            } else { showPage("page-mode"); }
         });
         return;
     }
+    
     let randomIdx;
     do { randomIdx = Math.floor(Math.random() * total); } while (sentenceUsedIndex.includes(randomIdx));
     sentenceUsedIndex.push(randomIdx);
-
     currentSentenceIndex = randomIdx;
-    const sentenceDom = document.getElementById("showSentence");
-    if (!sentenceDom) return;
-    if (currentMode === "en") {
-        sentenceDom.innerText = currentSentenceEnList[currentSentenceIndex] || "";
+    wrongCount = 0;
+
+    // 隨機決定這題玩中文還是英文（前提是該句存在）
+    const hasCn = !!currentSentenceCnList[currentSentenceIndex];
+    const hasEn = !!currentSentenceEnList[currentSentenceIndex];
+    if (hasCn && hasEn) {
+        currentSentenceLang = Math.random() > 0.5 ? "cn" : "en";
+    } else if (hasEn) {
+        currentSentenceLang = "en";
     } else {
-        sentenceDom.innerText = currentSentenceCnList[currentSentenceIndex] || "";
+        currentSentenceLang = "cn";
     }
+
+    const rawText = currentSentenceLang === "en" ? currentSentenceEnList[currentSentenceIndex] : currentSentenceCnList[currentSentenceIndex];
+
+    // 利用分詞引擎將句子切塊並打亂
+    sentenceOriginalTokens = tokenizeSentence(rawText, currentSentenceLang);
+    sentenceShuffledTokens = shuffleArray([...sentenceOriginalTokens]);
+    sentenceUserAnswers = [];
+
+    renderSentenceUI();
 
     let progressDom = document.querySelector("#page-sentence .progress-text");
     if (!progressDom) {
-        progressDom = document.createElement("p");
-        progressDom.className = "progress-text";
-        const box = document.querySelector("#page-sentence .word-box");
-        if (box) box.prepend(progressDom);
+        progressDom = document.createElement("p"); progressDom.className = "progress-text";
+        const page = document.querySelector("#page-sentence");
+        if (page) page.prepend(progressDom);
     }
     if (progressDom) progressDom.innerText = `已學習 ${sentenceUsedIndex.length}/${total}`;
 }
+
+function renderSentenceUI() {
+    const tipDom = document.getElementById("sentenceTip");
+    if (tipDom) tipDom.innerText = "";
+    
+    const resultArea = document.getElementById("sentenceResultArea");
+    const optionArea = document.getElementById("sentenceOptionArea");
+    if (!resultArea || !optionArea) return;
+    
+    resultArea.innerHTML = ""; optionArea.innerHTML = "";
+
+    // 渲染待選詞彙
+    sentenceShuffledTokens.forEach((token, index) => {
+        const btn = document.createElement("button");
+        btn.className = "sentence-token";
+        btn.innerText = token;
+        
+        if (sentenceUserAnswers.includes(index)) {
+            btn.classList.add("used");
+        } else {
+            btn.onclick = () => {
+                sentenceUserAnswers.push(index);
+                renderSentenceUI();
+            };
+        }
+        optionArea.appendChild(btn);
+    });
+
+    // 渲染已經選上去的結果
+    sentenceUserAnswers.forEach((tokenIndex, i) => {
+        const token = sentenceShuffledTokens[tokenIndex];
+        const btn = document.createElement("button");
+        btn.className = "sentence-token";
+        btn.innerText = token;
+        // 點擊結果區的詞塊可以直接撤銷該詞彙
+        btn.onclick = () => {
+            sentenceUserAnswers.splice(i, 1);
+            renderSentenceUI();
+        };
+        resultArea.appendChild(btn);
+    });
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     const sentenceVoiceBtn = document.getElementById("sentenceVoiceBtn");
     if (sentenceVoiceBtn) {
         sentenceVoiceBtn.onclick = function () {
-            if (currentMode === "en") {
-                playEnVoice(currentSentenceEnList[currentSentenceIndex]);
+            const rawText = currentSentenceLang === "en" ? currentSentenceEnList[currentSentenceIndex] : currentSentenceCnList[currentSentenceIndex];
+            currentSentenceLang === "en" ? playEnVoice(rawText) : playCnVoice(rawText);
+        };
+    }
+
+    const sentenceUndoBtn = document.getElementById("sentenceUndoBtn");
+    if (sentenceUndoBtn) {
+        sentenceUndoBtn.onclick = () => {
+            if (sentenceUserAnswers.length > 0) {
+                sentenceUserAnswers.pop();
+                renderSentenceUI();
+            }
+        };
+    }
+
+    const sentenceClearBtn = document.getElementById("sentenceClearBtn");
+    if (sentenceClearBtn) {
+        sentenceClearBtn.onclick = () => {
+            sentenceUserAnswers = [];
+            renderSentenceUI();
+        };
+    }
+
+    const sentenceCheckBtn = document.getElementById("sentenceCheckBtn");
+    if (sentenceCheckBtn) {
+        sentenceCheckBtn.onclick = () => {
+            if (sentenceUserAnswers.length !== sentenceOriginalTokens.length) {
+                const tip = document.getElementById("sentenceTip");
+                if (tip) { tip.innerText = "請把所有詞彙都排上去喔！"; tip.style.color = "#f03030"; }
+                return;
+            }
+            
+            let isCorrect = true;
+            for (let i = 0; i < sentenceOriginalTokens.length; i++) {
+                if (sentenceShuffledTokens[sentenceUserAnswers[i]] !== sentenceOriginalTokens[i]) {
+                    isCorrect = false; break;
+                }
+            }
+
+            const tip = document.getElementById("sentenceTip");
+            if (isCorrect) {
+                if (tip) { tip.innerText = "太棒了，重組正確！👏"; tip.style.color = "#00aa00"; }
+                playFeedbackVoice(true);
+                setTimeout(() => nextSentence(), 1500);
             } else {
-                playCnVoice(currentSentenceCnList[currentSentenceIndex]);
+                wrongCount++;
+                playFeedbackVoice(false);
+                if (wrongCount >= 2) {
+                    const answerStr = currentSentenceLang === "en" 
+                        ? sentenceOriginalTokens.join(" ").replace(/\s+([.,!?])/g, "$1") 
+                        : sentenceOriginalTokens.join("");
+                    showAnswerModal(answerStr, () => { nextSentence(); });
+                } else {
+                    if (tip) { tip.innerText = "順序不對喔，再檢查一下！"; tip.style.color = "#f03030"; }
+                }
             }
         };
     }
