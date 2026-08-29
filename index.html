@@ -1,123 +1,111 @@
-<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>幼升小常見詞語學習</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>幼升小常見詞語學習</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="container">
-    <!--首頁-->
-    <div id="page-home" class="page home-page">
-        <h1>📚常見詞語學習</h1>
-        <div class="category-list" id="categoryWrap"></div>
-    </div>
-    <!--模式頁-->
-    <div id="page-mode" class="page game-page hidden">
-        <div id="currentCatName">
-            <div></div>
-            <div></div>
-        </div>
-        <div class="mode-btns">
-            <button class="mode-btn mode-order" data-mode="orderStudy">📖 學習</button>
-            <button class="mode-btn" data-mode="cn">🇨🇳 中文</button>
-            <button class="mode-btn" data-mode="en">🇬🇧 English</button>
-            <button class="mode-btn" data-mode="match">🔗 配對</button>
-            <button class="mode-btn" data-mode="spell">✏️ 拼寫</button>
-            <button class="mode-btn" data-mode="sentenceBuild">📝 句子重組</button>
-        </div>
-        <div class="operate-btns">
-            <button class="back-btn" onclick="backHome()">🏠 返回</button>
-        </div>
-    </div>
-    <!--單詞朗讀頁（中文 / English 模式複用此頁，同時支持詞 + 句子混合）-->
-    <div id="page-study" class="page game-page hidden">
-        <p class="progress-text"></p>
-        <div class="word-box">
-            <p class="word-text" id="showWord"></p>
-            <button class="voice-btn" id="voiceBtn">🔊</button>
-        </div>
-        <div class="operate-btns">
-            <button onclick="nextWord()">➡️ 下一頁</button>
-            <button class="back-btn" onclick="backMode()">🏠 返回</button>
-        </div>
-    </div>
-    <!--配對遊戲頁-->
-    <div id="page-match" class="page game-page hidden">
-        <p class="progress-text"></p>
-        <div class="q-box">
-            <p class="q-word" id="qWord"></p>
-            <button class="voice-btn" id="qVoiceBtn">🔊</button>
-        </div>
-        <div class="option-list" id="optionWrap"></div>
-        <p class="tip" id="matchTip"></p>
-        <div class="operate-btns">
-            <button class="back-btn" onclick="backMode()">🏠 返回</button>
-        </div>
-    </div>
-    <!--拼寫頁-->
-    <div id="page-spell" class="page game-page hidden">
-        <p class="progress-text"></p>
-        <div class="spell-card-box">
-            <p class="spell-cn-text" id="spellCnWord"></p>
-            <button class="voice-btn" id="spellVoiceBtn">🔊</button>
-            <div class="spell-input-line" id="spellAnswerLine">
-                <div class="spell-input-inner"></div>
-            </div>
-            <div class="spell-letter-group" id="spellLetterBox"></div>
-        </div>
-        <div class="spell-control-btns">
-            <button id="spellUndo">↩️ 撤回</button>
-            <button id="spellClearAll">🗑️ 清空</button>
-            <button id="spellCheckAnswer">✅ 確認</button>
-        </div>
-        <p class="spell-tip" id="spellTip"></p>
-        <div class="operate-btns">
-            <button class="back-btn" onclick="backMode()">🏠 返回</button>
-        </div>
-    </div>
-
-    <!-- ========== 句子重組遊戲頁（新替換舊句子頁） ========== -->
-    <div id="page-sentence-build" class="page game-page hidden">
-        <p class="progress-text"></p>
-        <p class="tip" id="sentenceBuildTip"></p>
-
-        <!--用戶組裝結果區域-->
-        <div class="sentence-result-box">
-            <div id="sentenceResultArea" class="sentence-result-area"></div>
-        </div>
-
-        <!--可點擊碎片按鈕池-->
-        <div id="sentenceOptionGroup" class="sentence-option-group"></div>
-
-        <!--操作按鈕：撤銷、清空、確認、返回-->
-        <div class="operate-btns">
-            <button id="sentenceUndo">↩️ 撤銷</button>
-            <button id="sentenceClear">🗑️ 清空</button>
-            <button id="sentenceCheck">✅ 確認</button>
-            <button class="back-btn" onclick="backMode()">🏠 返回</button>
-        </div>
-    </div>
-
-    <!--學習模式（左右卡片）-->
-    <div id="page-orderStudy" class="page game-page hidden">
-        <p class="progress-text"></p>
-        <div class="order-card-wrap">
-            <div class="order-card cn-card">
-                <p class="order-cn" id="orderCnText"></p>
-            </div>
-            <div class="order-card en-card">
-                <p class="order-en" id="orderEnText"></p>
-            </div>
-        </div>
-        <button class="voice-btn" id="orderVoiceBtn">🔊播放</button>
-        <div class="operate-btns">
-            <button onclick="prevOrderWord()">⬅️ 上一頁</button>
-            <button onclick="nextOrderWord()">➡️ 下一頁</button>
-            <button class="back-btn" onclick="backMode()">🏠 返回</button>
-        </div>
-    </div>
+<!--首頁-->
+<div id="page-home" class="page home-page">
+<h1>📚常見詞語學習</h1>
+<div class="category-list" id="categoryWrap"></div>
+</div>
+<!--模式頁-->
+<div id="page-mode" class="page game-page hidden">
+<div id="currentCatName">
+<div></div>
+<div></div>
+</div>
+<div class="mode-btns">
+<button class="mode-btn mode-order" data-mode="orderStudy">📖 學習</button>
+<button class="mode-btn" data-mode="cn">🇨🇳 中文</button>
+<button class="mode-btn" data-mode="en">🇬🇧 English</button>
+<button class="mode-btn" data-mode="match">🔗 配對</button>
+<button class="mode-btn" data-mode="spell">✏️ 拼寫</button>
+<button class="mode-btn" data-mode="sentence">📝 句子</button>
+</div>
+<div class="operate-btns">
+<button class="back-btn" onclick="backHome()">🏠 返回</button>
+</div>
+</div>
+<!--單詞朗讀頁-->
+<div id="page-study" class="page game-page hidden">
+<p class="progress-text"></p>
+<div class="word-box">
+<p class="word-text" id="showWord"></p>
+<button class="voice-btn" id="voiceBtn">🔊</button>
+</div>
+<div class="operate-btns">
+<button onclick="nextWord()">➡️ 下一頁</button>
+<button class="back-btn" onclick="backMode()">🏠 返回</button>
+</div>
+</div>
+<!--配對遊戲頁-->
+<div id="page-match" class="page game-page hidden">
+<p class="progress-text"></p>
+<div class="q-box">
+<p class="q-word" id="qWord"></p>
+<button class="voice-btn" id="qVoiceBtn">🔊</button>
+</div>
+<div class="option-list" id="optionWrap"></div>
+<p class="tip" id="matchTip"></p>
+<div class="operate-btns">
+<button class="back-btn" onclick="backMode()">🏠 返回</button>
+</div>
+</div>
+<!--拼寫頁-->
+<div id="page-spell" class="page game-page hidden">
+<p class="progress-text"></p>
+<div class="spell-card-box">
+<p class="spell-cn-text" id="spellCnWord"></p>
+<button class="voice-btn" id="spellVoiceBtn">🔊</button>
+<div class="spell-input-line" id="spellAnswerLine">
+<div class="spell-input-inner"></div>
+</div>
+<div class="spell-letter-group" id="spellLetterBox"></div>
+</div>
+<div class="spell-control-btns">
+<button id="spellUndo">↩️ 撤回</button>
+<button id="spellClearAll">🗑️ 清空</button>
+<button id="spellCheckAnswer">✅ 確認</button>
+</div>
+<p class="spell-tip" id="spellTip"></p>
+<div class="operate-btns">
+<button class="back-btn" onclick="backMode()">🏠 返回</button>
+</div>
+</div>
+<!--句子頁-->
+<div id="page-sentence" class="page game-page hidden">
+<p class="progress-text"></p>
+<div class="word-box">
+<p class="word-text" id="showSentence"></p>
+<button class="voice-btn" id="sentenceVoiceBtn">🔊</button>
+</div>
+<div class="operate-btns">
+<button onclick="nextSentence()">➡️ 下一頁</button>
+<button class="back-btn" onclick="backMode()">🏠 返回</button>
+</div>
+</div>
+<!--學習模式（左右卡片）-->
+<div id="page-orderStudy" class="page game-page hidden">
+<p class="progress-text"></p>
+<div class="order-card-wrap">
+<div class="order-card cn-card">
+<p class="order-cn" id="orderCnText"></p>
+</div>
+<div class="order-card en-card">
+<p class="order-en" id="orderEnText"></p>
+</div>
+</div>
+<button class="voice-btn" id="orderVoiceBtn">🔊播放</button>
+<div class="operate-btns">
+<button onclick="prevOrderWord()">⬅️ 上一頁</button>
+<button onclick="nextOrderWord()">➡️ 下一頁</button>
+<button class="back-btn" onclick="backMode()">🏠 返回</button>
+</div>
+</div>
 </div>
 <script src="wordlist.js"></script>
 <script src="script.js"></script>
