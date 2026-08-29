@@ -53,6 +53,29 @@ function shuffleArray(arr) {
     return copyArr;
 }
 
+// ========== 聚合所有分類資料 (修復 All 點擊無反應的 Bug) ==========
+function generateAllCategoryData() {
+    let pool = [];
+    let cnSentences = [];
+    let enSentences = [];
+    Object.keys(wordData).forEach(key => {
+        if (key !== "All" && wordData[key]) {
+            if (wordData[key].words) {
+                pool.push(...wordData[key].words);
+            }
+            if (wordData[key].sentences) {
+                if (wordData[key].sentences.cn) cnSentences.push(...wordData[key].sentences.cn);
+                if (wordData[key].sentences.en) enSentences.push(...wordData[key].sentences.en);
+            }
+        }
+    });
+    fullWordPool = shuffleArray(pool);
+    wordList = fullWordPool.slice(0, ALL_COUNT); // 限制 All 分類單詞抽取數量
+    currentSentenceCnList = cnSentences;
+    currentSentenceEnList = enSentences;
+}
+
+
 // ========== 粵語發音 ==========
 function playCnVoice(text) {
     if (!text || audioPlaying || !window.speechSynthesis) return;
@@ -135,14 +158,13 @@ function playFeedbackVoice(isRight) {
     window.speechSynthesis.speak(utter);
 }
 
-// ★ 全新：答錯第二次，宣告並讀出正確答案
+// 答錯第二次，宣告並讀出正確答案
 function playCorrectAnswerVoice(answerStr, lang, isSpell) {
     if (audioPlaying || !window.speechSynthesis) return;
     window.speechSynthesis.cancel();
     audioPlaying = true;
     document.querySelectorAll(".voice-btn").forEach(btn => btn.disabled = true);
 
-    // 第一步：先用粵語說出 "正確答案"
     const prefixUtter = new SpeechSynthesisUtterance("正確答案：");
     prefixUtter.lang = "zh-HK";
     prefixUtter.rate = 0.95;
@@ -150,11 +172,9 @@ function playCorrectAnswerVoice(answerStr, lang, isSpell) {
     if (cantoneseVoice) prefixUtter.voice = cantoneseVoice;
 
     prefixUtter.onend = () => {
-        // 第二步：讀出真實答案
         let answerUtterText = answerStr;
         let targetLang = lang === "en" ? "en-GB" : "zh-HK";
         
-        // 如果是拼寫模式，將字串打散，加入逗號強制英文逐字發音 (例如 h, a, n, d)
         if (isSpell) {
             answerUtterText = answerStr.split('').join(', ');
             targetLang = "en-GB"; 
@@ -162,7 +182,6 @@ function playCorrectAnswerVoice(answerStr, lang, isSpell) {
 
         const answerUtter = new SpeechSynthesisUtterance(answerUtterText);
         answerUtter.lang = targetLang;
-        // 拼讀字母時放慢語速讓小朋友聽清楚
         answerUtter.rate = isSpell ? 0.7 : (lang === "en" ? 0.8 : 0.95);
         
         const targetVoice = globalVoiceList.find(v => v.lang.startsWith(targetLang));
@@ -177,7 +196,6 @@ function playCorrectAnswerVoice(answerStr, lang, isSpell) {
     
     window.speechSynthesis.speak(prefixUtter);
 }
-
 
 // 本地存儲 
 function loadStorage() {
@@ -297,26 +315,35 @@ function initCategory() {
 function selectCategory(catKey) {
     currentCat = catKey;
     if (catKey === "All") {
-        fullWordPool = shuffleArray([
-            ...JSON.parse(JSON.stringify(wordData.Occupation)),
-            ...JSON.parse(JSON.stringify(wordData.Place)),
-            ...JSON.parse(JSON.stringify(wordData.Color)),
-            ...JSON.parse(JSON.stringify(wordData.Animal)),
-            ...JSON.parse(JSON.stringify(wordData.Body))
-        ]);
+        generateAllCategoryData();
         allUsedIndex = [];
-        wordList = fullWordPool.slice(0, ALL_COUNT);
     } else {
-        wordList = [...wordData[catKey].words];
+        wordList = [...(wordData[catKey].words || [])];
+        currentSentenceCnList = wordData[catKey].sentences ? [...(wordData[catKey].sentences.cn || [])] : [];
+        currentSentenceEnList = wordData[catKey].sentences ? [...(wordData[catKey].sentences.en || [])] : [];
     }
     
-    if (wordList.length === 0) {
-        alert("當前分類暫無單詞，敬請期待！");
+    if (wordList.length === 0 && currentSentenceCnList.length === 0 && currentSentenceEnList.length === 0) {
+        alert("當前分類暫無內容，敬請期待！");
         return;
     }
     
-    currentSentenceCnList = wordData[catKey].sentences ? wordData[catKey].sentences.cn : [];
-    currentSentenceEnList = wordData[catKey].sentences ? wordData[catKey].sentences.en : [];
+    // 智能判斷：如果這個分類沒有句子，就把「句子重組」按鈕變灰並禁用
+    const sentenceBtn = document.querySelector('.mode-btn[data-mode="sentence"]');
+    if (sentenceBtn) {
+        const hasSentence = currentSentenceCnList.length > 0 || currentSentenceEnList.length > 0;
+        if (!hasSentence) {
+            sentenceBtn.disabled = true;
+            sentenceBtn.style.opacity = "0.35";
+            sentenceBtn.style.cursor = "not-allowed";
+            sentenceBtn.style.filter = "grayscale(100%)";
+        } else {
+            sentenceBtn.disabled = false;
+            sentenceBtn.style.opacity = "1";
+            sentenceBtn.style.cursor = "pointer";
+            sentenceBtn.style.filter = "none";
+        }
+    }
 
     wordUsedIndex = []; matchUsedIndex = []; spellUsedIndex = []; sentenceUsedIndex = [];
     orderIndex = 0; wrongCount = 0;
@@ -372,11 +399,6 @@ document.querySelectorAll(".mode-btn").forEach(btn => {
             titleDom.innerHTML = `<div style="font-size:32px; font-weight:bold;">${cnName}</div><div style="font-size:20px; opacity:0.7;">${currentCat.toLowerCase()}</div>`;
         }
         
-        if (currentCat === "Color" && currentMode === "sentence") {
-            alert("顏色分類暫無句子內容");
-            return;
-        }
-        
         if (currentMode === "cn" || currentMode === "en") {
             nextWord(); showPage("page-study");
         } else if (currentMode === "orderStudy") {
@@ -416,10 +438,7 @@ function nextOrderWord() {
     if (orderIndex >= total - 1) {
         showFinishModal(function (again) {
             if (again) {
-                if (currentCat === "All") {
-                    fullWordPool = shuffleArray([...wordData.Occupation.words, ...wordData.Place.words, ...wordData.Color.words, ...wordData.Animal.words, ...wordData.Body.words]);
-                    wordList = fullWordPool.slice(0, ALL_COUNT);
-                }
+                if (currentCat === "All") generateAllCategoryData();
                 orderIndex = 0; renderOrderWord();
             } else { showPage("page-mode"); }
         });
@@ -453,11 +472,16 @@ function nextWord() {
     if (wordUsedIndex.length >= total) {
         showFinishModal(function (again) {
             if (again) {
-                if (currentCat === "All") {
-                    fullWordPool = shuffleArray([...wordData.Occupation.words, ...wordData.Place.words, ...wordData.Color.words, ...wordData.Animal.words, ...wordData.Body.words]);
-                    wordList = fullWordPool.slice(0, ALL_COUNT);
-                    studyPool = [...wordList];
+                if (currentCat === "All") generateAllCategoryData();
+                
+                // 重新建立混合題庫
+                studyPool = [...wordList]; 
+                if (currentMode === "cn") {
+                    currentSentenceCnList.forEach(cnStr => { if (cnStr) studyPool.push({ cn: cnStr, en: "" }); });
+                } else if (currentMode === "en") {
+                    currentSentenceEnList.forEach(enStr => { if (enStr) studyPool.push({ cn: "", en: enStr }); });
                 }
+
                 wordUsedIndex = []; nextWord();
             } else { showPage("page-mode"); }
         });
@@ -506,10 +530,7 @@ function createMatchQ() {
     if (matchUsedIndex.length >= total) {
         showFinishModal(function (again) {
             if (again) {
-                if (currentCat === "All") {
-                    fullWordPool = shuffleArray([...wordData.Occupation.words, ...wordData.Place.words, ...wordData.Color.words, ...wordData.Animal.words, ...wordData.Body.words]);
-                    wordList = fullWordPool.slice(0, ALL_COUNT);
-                }
+                if (currentCat === "All") generateAllCategoryData();
                 matchUsedIndex = []; createMatchQ();
             } else { showPage("page-mode"); }
         });
@@ -564,7 +585,6 @@ function matchCheckAnswer(select, right, tipDom) {
         setTimeout(() => { createMatchQ(); }, 1300);
     } else {
         wrongCount += 1;
-        // ★ 核心優化：答錯兩次讀答案，不再讀「再試一次」
         if (wrongCount >= 2) {
             const ansLang = matchType === "cn2en" ? "en" : "cn";
             playCorrectAnswerVoice(right, ansLang, false);
@@ -596,10 +616,7 @@ function initSpellGame() {
     if (spellUsedIndex.length >= total) {
         showFinishModal(function (again) {
             if (again) {
-                if (currentCat === "All") {
-                    fullWordPool = shuffleArray([...wordData.Occupation.words, ...wordData.Place.words, ...wordData.Color.words, ...wordData.Animal.words, ...wordData.Body.words]);
-                    wordList = fullWordPool.slice(0, ALL_COUNT);
-                }
+                if (currentCat === "All") generateAllCategoryData();
                 spellUsedIndex = []; initSpellGame();
             } else { showPage("page-mode"); }
         });
@@ -683,7 +700,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 setTimeout(() => initSpellGame(), 1500);
             } else {
                 wrongCount += 1;
-                // ★ 核心優化：答錯兩次讀答案，拼寫模式自動逐字母拼讀
                 if (wrongCount >= 2) {
                     playCorrectAnswerVoice(spellTargetEn, "en", true);
                     showAnswerModal(spellRawWord, () => { initSpellGame() });
@@ -732,6 +748,12 @@ function nextSentence() {
     if (sentenceUsedIndex.length >= total) {
         showFinishModal(function (again) {
             if (again) {
+                if (currentCat === "All") generateAllCategoryData();
+                // 重建句庫
+                sentencePool = [];
+                currentSentenceCnList.forEach(text => { if (text) sentencePool.push({ lang: "cn", text: text }); });
+                currentSentenceEnList.forEach(text => { if (text) sentencePool.push({ lang: "en", text: text }); });
+
                 sentenceUsedIndex = []; nextSentence();
             } else { showPage("page-mode"); }
         });
@@ -855,7 +877,6 @@ document.addEventListener("DOMContentLoaded", function () {
             } else {
                 wrongCount++;
                 
-                // ★ 核心優化：答錯兩次讀出正確原句
                 if (wrongCount >= 2) {
                     const answerStr = currentSentenceLang === "en" 
                         ? sentenceOriginalTokens.join(" ").replace(/\s+([.,!?])/g, "$1").replace(/\|/g, "") 
@@ -865,7 +886,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     showAnswerModal(answerStr, () => { nextSentence(); });
                 } else {
                     playFeedbackVoice(false);
-                    // 第一次答錯清空陣列並重繪畫面
                     sentenceUserAnswers = [];
                     renderSentenceUI();
                     
