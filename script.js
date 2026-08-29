@@ -4,8 +4,9 @@ let currentSentenceEnList = [];
 let currentCat = "";
 let currentMode = "";
 let wordList = [];
-let fullWordPool = []; //All 模式全部詞庫
-let studyPool = []; // 專門給「中文/English」模式使用的混合詞庫
+let fullWordPool = []; 
+let studyPool = []; 
+let sentencePool = []; // ★ 新增：專門給「句子重組」用的題庫，將中英文句子完全打平合併
 let currentWord = null;
 
 // 拼寫相關變數
@@ -15,11 +16,11 @@ let spellUserAnswer = [];
 let spellShuffleLetters = []; 
 let originalLetters = []; 
 
-// 句子重組相關變數 (全新)
-let currentSentenceLang = "cn"; // 紀錄目前這題是中文還是英文
-let sentenceOriginalTokens = []; // 正確順序的分詞
-let sentenceShuffledTokens = []; // 打亂順序的分詞
-let sentenceUserAnswers = [];    // 玩家點擊的索引順序
+// 句子重組相關變數
+let currentSentenceLang = "cn"; 
+let sentenceOriginalTokens = []; 
+let sentenceShuffledTokens = []; 
+let sentenceUserAnswers = [];    
 let currentSentenceIndex = 0;
 
 let audioPlaying = false;
@@ -307,10 +308,20 @@ document.querySelectorAll(".mode-btn").forEach(btn => {
                 });
             }
         } 
+        // ★ 確保進入句子模式時，合併所有句子建立全新的 sentencePool
+        else if (currentMode === "sentence") {
+            sentenceUsedIndex = [];
+            sentencePool = [];
+            currentSentenceCnList.forEach(text => {
+                if (text) sentencePool.push({ lang: "cn", text: text });
+            });
+            currentSentenceEnList.forEach(text => {
+                if (text) sentencePool.push({ lang: "en", text: text });
+            });
+        }
         else if (currentMode === "orderStudy") orderIndex = 0;
         else if (currentMode === "match") matchUsedIndex = [];
         else if (currentMode === "spell") spellUsedIndex = [];
-        else if (currentMode === "sentence") sentenceUsedIndex = [];
 
         const cnName = catNameMap[currentCat];
         const titleDom = document.getElementById("currentCatName");
@@ -342,8 +353,7 @@ function renderOrderWord() {
     const total = wordList.length;
     let progressDom = document.querySelector("#page-orderStudy .progress-text");
     if (!progressDom) {
-        progressDom = document.createElement("p");
-        progressDom.className = "progress-text";
+        progressDom = document.createElement("p"); progressDom.className = "progress-text";
         const box = document.querySelector("#page-orderStudy .word-box");
         if (box) box.prepend(progressDom);
     }
@@ -368,9 +378,7 @@ function nextOrderWord() {
                     wordList = fullWordPool.slice(0, ALL_COUNT);
                 }
                 orderIndex = 0; renderOrderWord();
-            } else {
-                showPage("page-mode");
-            }
+            } else { showPage("page-mode"); }
         });
         return;
     }
@@ -408,9 +416,7 @@ function nextWord() {
                     studyPool = [...wordList];
                 }
                 wordUsedIndex = []; nextWord();
-            } else {
-                showPage("page-mode");
-            }
+            } else { showPage("page-mode"); }
         });
         return;
     }
@@ -420,12 +426,16 @@ function nextWord() {
 
     currentWord = studyPool[randomIdx]; 
     const wordDom = document.getElementById("showWord");
-    if (wordDom) wordDom.innerText = currentMode === "cn" ? currentWord.cn : currentWord.en;
+    
+    // 清理可能存在的自定義分詞符號 "|"
+    let displayStr = currentMode === "cn" ? currentWord.cn : currentWord.en;
+    if(displayStr) displayStr = displayStr.replace(/\|/g, "");
+    
+    if (wordDom) wordDom.innerText = displayStr;
 
     let progressDom = document.querySelector("#page-study .progress-text");
     if (!progressDom) {
-        progressDom = document.createElement("p");
-        progressDom.className = "progress-text";
+        progressDom = document.createElement("p"); progressDom.className = "progress-text";
         const box = document.querySelector("#page-study .word-box");
         if (box) box.prepend(progressDom);
     }
@@ -436,7 +446,10 @@ document.addEventListener("DOMContentLoaded", function () {
     if (voiceBtn) {
         voiceBtn.onclick = function () {
             if (!currentWord) return;
-            currentMode === "cn" ? playCnVoice(currentWord.cn) : playEnVoice(currentWord.en);
+            // 播放時也要清除 "|" 符號
+            const cleanCn = currentWord.cn ? currentWord.cn.replace(/\|/g, "") : "";
+            const cleanEn = currentWord.en ? currentWord.en.replace(/\|/g, "") : "";
+            currentMode === "cn" ? playCnVoice(cleanCn) : playEnVoice(cleanEn);
         };
     }
 });
@@ -452,10 +465,12 @@ function createMatchQ() {
     if (matchUsedIndex.length >= total) {
         showFinishModal(function (again) {
             if (again) {
+                if (currentCat === "All") {
+                    fullWordPool = shuffleArray([...wordData.Occupation.words, ...wordData.Place.words, ...wordData.Color.words, ...wordData.Animal.words, ...wordData.Body.words]);
+                    wordList = fullWordPool.slice(0, ALL_COUNT);
+                }
                 matchUsedIndex = []; createMatchQ();
-            } else {
-                showPage("page-mode");
-            }
+            } else { showPage("page-mode"); }
         });
         return;
     }
@@ -479,8 +494,7 @@ function createMatchQ() {
 
     let progressDom = document.querySelector("#page-match .progress-text");
     if (!progressDom) {
-        progressDom = document.createElement("p");
-        progressDom.className = "progress-text";
+        progressDom = document.createElement("p"); progressDom.className = "progress-text";
         const qBox = document.querySelector("#page-match .q-box");
         if (qBox) qBox.prepend(progressDom);
     }
@@ -634,10 +648,16 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
-// ================== 句子重組模塊 (全新功能) ==================
+// ================== 句子重組模塊 ==================
 
-// 智能分詞引擎
+// ★ 核心修復：支援手動輸入自定義符號 "|" 進行強制分段
 function tokenizeSentence(text, lang) {
+    // 如果句子中包含 "|" 符號，就強制聽使用者的，依照 "|" 拆開
+    if (text.includes("|")) {
+        return text.split("|").filter(s => s.trim().length > 0);
+    }
+    
+    // 如果沒有 "|" 則使用 AI 自動分詞
     if (window.Intl && Intl.Segmenter) {
         const segmenter = new Intl.Segmenter(lang === 'en' ? 'en' : 'zh-HK', { granularity: 'word' });
         return Array.from(segmenter.segment(text))
@@ -657,8 +677,8 @@ function nextSentence() {
     nextBtnLock = true;
     setTimeout(() => nextBtnLock = false, NEXT_COOLDOWN);
     
-    // 計算中文與英文句子數量的最大值，確保每一句都有被玩到的機會
-    const total = Math.max(currentSentenceCnList.length, currentSentenceEnList.length);
+    // ★ 核心修復：使用 sentencePool 計算總數量 (已經將中英句子合併了)
+    const total = sentencePool.length;
     if (total === 0) {
         alert("本分類暫無句子！"); backMode(); return;
     }
@@ -675,23 +695,14 @@ function nextSentence() {
     let randomIdx;
     do { randomIdx = Math.floor(Math.random() * total); } while (sentenceUsedIndex.includes(randomIdx));
     sentenceUsedIndex.push(randomIdx);
+    
     currentSentenceIndex = randomIdx;
     wrongCount = 0;
 
-    // 隨機決定這題玩中文還是英文（前提是該句存在）
-    const hasCn = !!currentSentenceCnList[currentSentenceIndex];
-    const hasEn = !!currentSentenceEnList[currentSentenceIndex];
-    if (hasCn && hasEn) {
-        currentSentenceLang = Math.random() > 0.5 ? "cn" : "en";
-    } else if (hasEn) {
-        currentSentenceLang = "en";
-    } else {
-        currentSentenceLang = "cn";
-    }
+    const currentItem = sentencePool[currentSentenceIndex];
+    currentSentenceLang = currentItem.lang;
+    const rawText = currentItem.text;
 
-    const rawText = currentSentenceLang === "en" ? currentSentenceEnList[currentSentenceIndex] : currentSentenceCnList[currentSentenceIndex];
-
-    // 利用分詞引擎將句子切塊並打亂
     sentenceOriginalTokens = tokenizeSentence(rawText, currentSentenceLang);
     sentenceShuffledTokens = shuffleArray([...sentenceOriginalTokens]);
     sentenceUserAnswers = [];
@@ -753,8 +764,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const sentenceVoiceBtn = document.getElementById("sentenceVoiceBtn");
     if (sentenceVoiceBtn) {
         sentenceVoiceBtn.onclick = function () {
-            const rawText = currentSentenceLang === "en" ? currentSentenceEnList[currentSentenceIndex] : currentSentenceCnList[currentSentenceIndex];
-            currentSentenceLang === "en" ? playEnVoice(rawText) : playCnVoice(rawText);
+            // 發音時要清除 "|" 符號
+            let speakText = sentencePool[currentSentenceIndex].text;
+            speakText = speakText.replace(/\|/g, "");
+            currentSentenceLang === "en" ? playEnVoice(speakText) : playCnVoice(speakText);
         };
     }
 
@@ -801,9 +814,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 wrongCount++;
                 playFeedbackVoice(false);
                 if (wrongCount >= 2) {
+                    // 如果答錯兩次，給出標準答案 (顯示時清除 |)
                     const answerStr = currentSentenceLang === "en" 
-                        ? sentenceOriginalTokens.join(" ").replace(/\s+([.,!?])/g, "$1") 
-                        : sentenceOriginalTokens.join("");
+                        ? sentenceOriginalTokens.join(" ").replace(/\s+([.,!?])/g, "$1").replace(/\|/g, "") 
+                        : sentenceOriginalTokens.join("").replace(/\|/g, "");
                     showAnswerModal(answerStr, () => { nextSentence(); });
                 } else {
                     if (tip) { tip.innerText = "順序不對喔，再檢查一下！"; tip.style.color = "#f03030"; }
