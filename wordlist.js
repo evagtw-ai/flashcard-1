@@ -157,9 +157,9 @@ const wordData = {
     { cn: "遊艇", en: "yacht" },
     { cn: "摩托車", en: "motorbike" },
     { cn: "地鐵", en: "subway" },
-{ cn: "港鐵", en: "MTR" },
+    { cn: "港鐵", en: "MTR" },
     { cn: "熱氣球", en: "hot air balloon" }
-  ]],
+  ],
   Stationary: [],
   Fruit: [],
   People: [],
@@ -328,38 +328,37 @@ const sentenceGroup = {
       "Alex has big blue eyes."
     ]
   },
-  Transport: {
-  cn: [
-    "我坐私家車上學。",
-    "巴士站要排隊等巴士。",
-    "放假時,我和家人坐火車去旅行。",
-    "直升飛機可以用來救火。",
-    "飛機在天上飛行。",
-    "渡海小輪行駛在海上。",
-    "單車適合在公園騎行。",
-    "的士可以帶我們回家。",
-    "小船慢慢漂在海面。",
-    "摩托車在路上向前走。",
-    "爸爸每天坐地鐵從九龍到香港島工作。",
-    "我們乘坐山頂纜車上山。",
-    "宇航員乘坐火箭飛向太空。"
-  ],
-  en: [
-    "I go to school by car.",
-    "We queue for the bus at the bus stop.",
-    "I travel with my family by train on holidays.",
-    "The helicopter can put out fires.",
-    "The plane flies in the sky.",
-    "The ferry sails across the sea.",
-    "We ride bikes in the park.",
-    "The taxi brings us home.",
-    "The small boat floats on the sea.",
-    "The motorbike moves along the road.",
-    "Dad takes the MTR from Kowloon to Hong Kong Island for work every day.",
-    "We take the Peak Tram up the hill.",
-    "Astronauts fly to space by rocket."
-  ]
-},
-
+  Transportation: {
+    cn: [
+      "我坐私家車上學。",
+      "巴士站要排隊等巴士。",
+      "放假時,我和家人坐火車去旅行。",
+      "直升飛機可以用來救火。",
+      "飛機在天上飛行。",
+      "渡海小輪行駛在海上。",
+      "單車適合在公園騎行。",
+      "的士可以帶我們回家。",
+      "小船慢慢漂在海面。",
+      "摩托車在路上向前走。",
+      "爸爸每天坐地鐵從九龍到香港島工作。",
+      "我們乘坐山頂纜車上山。",
+      "宇航員乘坐火箭飛向太空。"
+    ],
+    en: [
+      "I go to school by car.",
+      "We queue for the bus at the bus stop.",
+      "I travel with my family by train on holidays.",
+      "The helicopter can put out fires.",
+      "The plane flies in the sky.",
+      "The ferry sails across the sea.",
+      "We ride bikes in the park.",
+      "The taxi brings us home.",
+      "The small boat floats on the sea.",
+      "The motorbike moves along the road.",
+      "Dad takes the MTR from Kowloon to Hong Kong Island for work every day.",
+      "We take the Peak Tram up the hill.",
+      "Astronauts fly to space by rocket."
+    ]
+  },
   All: { cn: [], en: [] }
 };
