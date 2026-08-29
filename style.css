@@ -100,6 +100,17 @@ color: white;
 background: #86e3a7;
 color: white;
 }
+/* 4. 大自然 Nature */
+.category-list button:nth-child(4) {
+    background: #ffaa5b;
+    color: white;
+}
+
+/* 10. 文具 Stationary */
+.category-list button:nth-child(10) {
+    background: #c586ff;
+    color: white;
+}
 /* 8. 動物 Animal */
 .category-list button:nth-child(8) {
 background: #a87bff;
