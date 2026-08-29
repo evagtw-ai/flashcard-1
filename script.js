@@ -6,7 +6,7 @@ let currentMode = "";
 let wordList = [];
 let fullWordPool = []; 
 let studyPool = []; 
-let sentencePool = []; // ★ 新增：專門給「句子重組」用的題庫，將中英文句子完全打平合併
+let sentencePool = []; // 專門給「句子重組」用的題庫
 let currentWord = null;
 
 // 拼寫相關變數
@@ -116,7 +116,7 @@ function playSpellBilingualVoice(enText, cnText) {
     window.speechSynthesis.speak(engUtter);
 }
 
-// 答題反饋語音
+// 答錯第一次反饋語音 / 答對語音
 function playFeedbackVoice(isRight) {
     if (audioPlaying || !window.speechSynthesis) return;
     window.speechSynthesis.cancel();
@@ -134,6 +134,50 @@ function playFeedbackVoice(isRight) {
     };
     window.speechSynthesis.speak(utter);
 }
+
+// ★ 全新：答錯第二次，宣告並讀出正確答案
+function playCorrectAnswerVoice(answerStr, lang, isSpell) {
+    if (audioPlaying || !window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    audioPlaying = true;
+    document.querySelectorAll(".voice-btn").forEach(btn => btn.disabled = true);
+
+    // 第一步：先用粵語說出 "正確答案"
+    const prefixUtter = new SpeechSynthesisUtterance("正確答案：");
+    prefixUtter.lang = "zh-HK";
+    prefixUtter.rate = 0.95;
+    const cantoneseVoice = globalVoiceList.find(v => v.lang.startsWith("zh-HK"));
+    if (cantoneseVoice) prefixUtter.voice = cantoneseVoice;
+
+    prefixUtter.onend = () => {
+        // 第二步：讀出真實答案
+        let answerUtterText = answerStr;
+        let targetLang = lang === "en" ? "en-GB" : "zh-HK";
+        
+        // 如果是拼寫模式，將字串打散，加入逗號強制英文逐字發音 (例如 h, a, n, d)
+        if (isSpell) {
+            answerUtterText = answerStr.split('').join(', ');
+            targetLang = "en-GB"; 
+        }
+
+        const answerUtter = new SpeechSynthesisUtterance(answerUtterText);
+        answerUtter.lang = targetLang;
+        // 拼讀字母時放慢語速讓小朋友聽清楚
+        answerUtter.rate = isSpell ? 0.7 : (lang === "en" ? 0.8 : 0.95);
+        
+        const targetVoice = globalVoiceList.find(v => v.lang.startsWith(targetLang));
+        if (targetVoice) answerUtter.voice = targetVoice;
+
+        answerUtter.onend = () => {
+            audioPlaying = false;
+            document.querySelectorAll(".voice-btn").forEach(btn => btn.disabled = false);
+        };
+        window.speechSynthesis.speak(answerUtter);
+    };
+    
+    window.speechSynthesis.speak(prefixUtter);
+}
+
 
 // 本地存儲 
 function loadStorage() {
@@ -308,7 +352,6 @@ document.querySelectorAll(".mode-btn").forEach(btn => {
                 });
             }
         } 
-        // ★ 確保進入句子模式時，合併所有句子建立全新的 sentencePool
         else if (currentMode === "sentence") {
             sentenceUsedIndex = [];
             sentencePool = [];
@@ -427,7 +470,6 @@ function nextWord() {
     currentWord = studyPool[randomIdx]; 
     const wordDom = document.getElementById("showWord");
     
-    // 清理可能存在的自定義分詞符號 "|"
     let displayStr = currentMode === "cn" ? currentWord.cn : currentWord.en;
     if(displayStr) displayStr = displayStr.replace(/\|/g, "");
     
@@ -446,7 +488,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if (voiceBtn) {
         voiceBtn.onclick = function () {
             if (!currentWord) return;
-            // 播放時也要清除 "|" 符號
             const cleanCn = currentWord.cn ? currentWord.cn.replace(/\|/g, "") : "";
             const cleanEn = currentWord.en ? currentWord.en.replace(/\|/g, "") : "";
             currentMode === "cn" ? playCnVoice(cleanCn) : playEnVoice(cleanEn);
@@ -523,10 +564,13 @@ function matchCheckAnswer(select, right, tipDom) {
         setTimeout(() => { createMatchQ(); }, 1300);
     } else {
         wrongCount += 1;
-        playFeedbackVoice(false);
+        // ★ 核心優化：答錯兩次讀答案，不再讀「再試一次」
         if (wrongCount >= 2) {
+            const ansLang = matchType === "cn2en" ? "en" : "cn";
+            playCorrectAnswerVoice(right, ansLang, false);
             showAnswerModal(right, () => { createMatchQ(); });
         } else {
+            playFeedbackVoice(false);
             if (tipDom) { tipDom.style.color = "#f03030"; tipDom.innerText = "答錯咯，再試一次！"; }
         }
     }
@@ -552,6 +596,10 @@ function initSpellGame() {
     if (spellUsedIndex.length >= total) {
         showFinishModal(function (again) {
             if (again) {
+                if (currentCat === "All") {
+                    fullWordPool = shuffleArray([...wordData.Occupation.words, ...wordData.Place.words, ...wordData.Color.words, ...wordData.Animal.words, ...wordData.Body.words]);
+                    wordList = fullWordPool.slice(0, ALL_COUNT);
+                }
                 spellUsedIndex = []; initSpellGame();
             } else { showPage("page-mode"); }
         });
@@ -635,10 +683,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 setTimeout(() => initSpellGame(), 1500);
             } else {
                 wrongCount += 1;
-                playFeedbackVoice(false);
+                // ★ 核心優化：答錯兩次讀答案，拼寫模式自動逐字母拼讀
                 if (wrongCount >= 2) {
+                    playCorrectAnswerVoice(spellTargetEn, "en", true);
                     showAnswerModal(spellRawWord, () => { initSpellGame() });
                 } else {
+                    playFeedbackVoice(false);
                     if (tipDom) { tipDom.style.color = "#f03030"; tipDom.innerText = "拼寫錯誤，再嘗試一次"; }
                     spellUserAnswer = []; renderSpellUI();
                 }
@@ -650,14 +700,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // ================== 句子重組模塊 ==================
 
-// ★ 核心修復：支援手動輸入自定義符號 "|" 進行強制分段
 function tokenizeSentence(text, lang) {
-    // 如果句子中包含 "|" 符號，就強制聽使用者的，依照 "|" 拆開
     if (text.includes("|")) {
         return text.split("|").filter(s => s.trim().length > 0);
     }
     
-    // 如果沒有 "|" 則使用 AI 自動分詞
     if (window.Intl && Intl.Segmenter) {
         const segmenter = new Intl.Segmenter(lang === 'en' ? 'en' : 'zh-HK', { granularity: 'word' });
         return Array.from(segmenter.segment(text))
@@ -677,7 +724,6 @@ function nextSentence() {
     nextBtnLock = true;
     setTimeout(() => nextBtnLock = false, NEXT_COOLDOWN);
     
-    // ★ 核心修復：使用 sentencePool 計算總數量 (已經將中英句子合併了)
     const total = sentencePool.length;
     if (total === 0) {
         alert("本分類暫無句子！"); backMode(); return;
@@ -728,7 +774,6 @@ function renderSentenceUI() {
     
     resultArea.innerHTML = ""; optionArea.innerHTML = "";
 
-    // 渲染待選詞彙
     sentenceShuffledTokens.forEach((token, index) => {
         const btn = document.createElement("button");
         btn.className = "sentence-token";
@@ -745,13 +790,11 @@ function renderSentenceUI() {
         optionArea.appendChild(btn);
     });
 
-    // 渲染已經選上去的結果
     sentenceUserAnswers.forEach((tokenIndex, i) => {
         const token = sentenceShuffledTokens[tokenIndex];
         const btn = document.createElement("button");
         btn.className = "sentence-token";
         btn.innerText = token;
-        // 點擊結果區的詞塊可以直接撤銷該詞彙
         btn.onclick = () => {
             sentenceUserAnswers.splice(i, 1);
             renderSentenceUI();
@@ -764,7 +807,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const sentenceVoiceBtn = document.getElementById("sentenceVoiceBtn");
     if (sentenceVoiceBtn) {
         sentenceVoiceBtn.onclick = function () {
-            // 發音時要清除 "|" 符號
             let speakText = sentencePool[currentSentenceIndex].text;
             speakText = speakText.replace(/\|/g, "");
             currentSentenceLang === "en" ? playEnVoice(speakText) : playCnVoice(speakText);
@@ -805,22 +847,33 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             }
 
-            const tip = document.getElementById("sentenceTip");
             if (isCorrect) {
+                const tip = document.getElementById("sentenceTip");
                 if (tip) { tip.innerText = "太棒了，重組正確！👏"; tip.style.color = "#00aa00"; }
                 playFeedbackVoice(true);
                 setTimeout(() => nextSentence(), 1500);
             } else {
                 wrongCount++;
-                playFeedbackVoice(false);
+                
+                // ★ 核心優化：答錯兩次讀出正確原句
                 if (wrongCount >= 2) {
-                    // 如果答錯兩次，給出標準答案 (顯示時清除 |)
                     const answerStr = currentSentenceLang === "en" 
                         ? sentenceOriginalTokens.join(" ").replace(/\s+([.,!?])/g, "$1").replace(/\|/g, "") 
                         : sentenceOriginalTokens.join("").replace(/\|/g, "");
+                    
+                    playCorrectAnswerVoice(answerStr, currentSentenceLang, false);
                     showAnswerModal(answerStr, () => { nextSentence(); });
                 } else {
-                    if (tip) { tip.innerText = "順序不對喔，再檢查一下！"; tip.style.color = "#f03030"; }
+                    playFeedbackVoice(false);
+                    // 第一次答錯清空陣列並重繪畫面
+                    sentenceUserAnswers = [];
+                    renderSentenceUI();
+                    
+                    const tip = document.getElementById("sentenceTip");
+                    if (tip) { 
+                        tip.innerText = "順序不對喔，請再重新排一次！"; 
+                        tip.style.color = "#f03030"; 
+                    }
                 }
             }
         };
