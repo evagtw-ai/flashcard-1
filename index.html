@@ -24,7 +24,7 @@
 <button class="mode-btn" data-mode="en">🇬🇧 English</button>
 <button class="mode-btn" data-mode="match">🔗 配對</button>
 <button class="mode-btn" data-mode="spell">✏️ 拼寫</button>
-<button class="mode-btn" data-mode="sentence">📝 句子</button>
+<button class="mode-btn" data-mode="sentence">📝 重組句子</button>
 </div>
 <div class="operate-btns">
 <button class="back-btn" onclick="backHome()">🏠 返回</button>
@@ -76,17 +76,34 @@
 <button class="back-btn" onclick="backMode()">🏠 返回</button>
 </div>
 </div>
-<!--句子頁-->
+<!--句子重組頁-->
 <div id="page-sentence" class="page game-page hidden">
-<p class="progress-text"></p>
-<div class="word-box">
-<p class="word-text" id="showSentence"></p>
-<button class="voice-btn" id="sentenceVoiceBtn">🔊</button>
-</div>
-<div class="operate-btns">
-<button onclick="nextSentence()">➡️ 下一頁</button>
-<button class="back-btn" onclick="backMode()">🏠 返回</button>
-</div>
+    <p class="progress-text"></p>
+    
+    <div style="display:flex; justify-content:center; width:100%;">
+        <button class="voice-btn" id="sentenceVoiceBtn" style="font-size: 32px; background:#fff; border-radius:50px; padding:10px 30px; box-shadow:0 3px 10px #e9e3df;">🔊 聽原句</button>
+    </div>
+
+    <!-- 句子重組遊戲區 -->
+    <div class="sentence-build-box">
+        <!-- 拼湊結果區 -->
+        <div class="sentence-result-area" id="sentenceResultArea"></div>
+        <!-- 被打亂的選項區 -->
+        <div class="sentence-option-area" id="sentenceOptionArea"></div>
+    </div>
+
+    <p class="spell-tip" id="sentenceTip"></p>
+
+    <!-- 操作按鈕 -->
+    <div class="spell-control-btns">
+        <button id="sentenceUndoBtn" style="background:#ffb344; min-width:96px; height:46px; border:none; border-radius:14px; color:white; font-size:18px; font-weight:bold; cursor:pointer;">↩️ 撤銷</button>
+        <button id="sentenceClearBtn" style="background:#ff7777; min-width:96px; height:46px; border:none; border-radius:14px; color:white; font-size:18px; font-weight:bold; cursor:pointer;">🗑️ 清空</button>
+        <button id="sentenceCheckBtn" style="background:#62d474; min-width:96px; height:46px; border:none; border-radius:14px; color:white; font-size:18px; font-weight:bold; cursor:pointer;">✅ 確定</button>
+    </div>
+    
+    <div class="operate-btns">
+        <button class="back-btn" onclick="backMode()">🏠 返回</button>
+    </div>
 </div>
 <!--學習模式（左右卡片）-->
 <div id="page-orderStudy" class="page game-page hidden">
