@@ -59,6 +59,7 @@ function renderCategoryList() {
         const btn = document.createElement("button");
         btn.className = "cat-btn";
         btn.textContent = catName;
+        btn.innerHTML = `${catName}<br><span class="cat-en">${key}</span>`;
         btn.dataset.cat = key;
         btn.addEventListener("click", ()=>{
             currentCat = key;
