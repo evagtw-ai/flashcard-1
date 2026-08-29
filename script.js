@@ -29,7 +29,6 @@ function switchPage(pageId){
 
 // ====================返回上一級：模式頁返回首頁====================
 function backMode(){
-    //離開時清空本輪所有狀態，下次進入重新開始一輪學習
     orderIndex = 0;
     wrongCount = 0;
     spellUserAnswer = [];
@@ -48,7 +47,7 @@ function renderCategoryList() {
     }
     wrap.innerHTML = "";
     const keys = Object.keys(wordData);
-    console.log("讀取分類keys：", keys);
+    
     if(keys.length === 0){
         wrap.innerHTML = "<div>wordlist.js 讀取不到分類數據</div>";
         return;
@@ -58,7 +57,6 @@ function renderCategoryList() {
         const catName = catNameMap[key] || key;
         const btn = document.createElement("button");
         btn.className = "cat-btn";
-        btn.textContent = catName;
         btn.innerHTML = `${catName}<br><span class="cat-en">${key}</span>`;
         btn.dataset.cat = key;
         btn.addEventListener("click", ()=>{
@@ -83,8 +81,7 @@ function enterMode(mode) {
     wordList = [...(wordData[currentCat]?.words || [])];
     //防空判斷，空詞庫直接返回
     if(wordList.length === 0 && mode !== "sentenceBuild"){
-        alert("本分類尚無單詞資料");
-        backMode();
+        alert("本分類尚無單詞資料，請選擇其他分類！");
         return;
     }
 
@@ -153,41 +150,63 @@ function speakWord(enText, cnText){
     window.speechSynthesis.speak(u1);
 }
 
-// ====================各模式渲染函數 示例骨架====================
+// ====================【修復】各模式實際渲染邏輯 ====================
+
 function renderOrderWord(item){
     if(!item){
-        alert("本輪全部學習完成");
+        alert("本輪全部學習完成！");
+        backMode();
         return;
     }
+    // 把文字渲染到畫面上的 HTML 標籤裡
+    document.getElementById("orderCnText").textContent = item.cn;
+    document.getElementById("orderEnText").textContent = item.en;
+    
+    // 綁定語音按鈕
+    const voiceBtn = document.getElementById("orderVoiceBtn");
+    if(voiceBtn) voiceBtn.onclick = () => speakWord(item.en, item.cn);
+
     speakWord(item.en, item.cn);
-    // 你的頁面DOM渲染邏輯
 }
 
 function renderCnWord(item){
     if(!item){
-        alert("本輪全部學習完成");
+        alert("本輪全部學習完成！");
+        backMode();
         return;
     }
+    // 只顯示中文
+    document.getElementById("showWord").textContent = item.cn;
+    
+    const voiceBtn = document.getElementById("voiceBtn");
+    if(voiceBtn) voiceBtn.onclick = () => speakWord(item.en, item.cn);
+
     speakWord(item.en, item.cn);
-    // 你的頁面DOM渲染邏輯
 }
 
 function renderEnWord(item){
     if(!item){
-        alert("本輪全部學習完成");
+        alert("本輪全部學習完成！");
+        backMode();
         return;
     }
+    // 只顯示英文
+    document.getElementById("showWord").textContent = item.en;
+    
+    const voiceBtn = document.getElementById("voiceBtn");
+    if(voiceBtn) voiceBtn.onclick = () => speakWord(item.en, item.cn);
+
     speakWord(item.en, item.cn);
-    // 你的頁面DOM渲染邏輯
 }
 
+// 配對與拼寫功能框架（需要你後續自己補齊遊戲邏輯）
 function renderPairQuestion(item){
     if(!item){
         alert("本輪全部學習完成");
         return;
     }
+    document.getElementById("qWord").textContent = item.cn; // 簡單展示
     speakWord(item.en, item.cn);
-    //配對遊戲渲染，橫線CSS已經居中
 }
 
 function renderSpellWord(item){
@@ -200,8 +219,9 @@ function renderSpellWord(item){
     originalLetters = spellRawWord.split("");
     spellShuffleLetters = shuffleArray(originalLetters);
     spellUserAnswer = [];
+    
+    document.getElementById("spellCnWord").textContent = item.cn; // 簡單展示
     speakWord(item.en, item.cn);
-    //拼寫遊戲DOM渲染
 }
 
 function renderSentenceBuild(cn, en){
@@ -209,10 +229,13 @@ function renderSentenceBuild(cn, en){
         alert("本輪句子練習完成");
         return;
     }
-    //句子模塊渲染
+    document.getElementById("sentenceBuildTip").textContent = cn;
 }
 
-//下一題
+
+// ====================【修復】上下頁按鈕對應的函數 ====================
+
+// 統一下一頁邏輯
 function goNext(){
     if(nextBtnLock) return;
     nextBtnLock = true;
@@ -220,11 +243,13 @@ function goNext(){
     spellUserAnswer = [];
     spellShuffleLetters = [];
     const item = wordList[orderIndex];
+    
     if(!item){
-        alert("本輪全部學習完成");
+        alert("已經是最後一個單詞了，本輪學習完成！");
         nextBtnLock = false;
         return;
     }
+    
     switch(currentMode){
         case "orderStudy": renderOrderWord(item); break;
         case "cn": renderCnWord(item); break;
@@ -235,7 +260,26 @@ function goNext(){
     setTimeout(()=>{nextBtnLock = false;},NEXT_COOLDOWN);
 }
 
-//再學一次，**本輪重新開始，不讀歷史狀態**
+// HTML 中調用的下一頁按鈕
+function nextWord() {
+    goNext();
+}
+function nextOrderWord() {
+    goNext();
+}
+
+// HTML 中調用的上一頁按鈕 (僅 orderStudy 模式有)
+function prevOrderWord() {
+    if(nextBtnLock) return;
+    if(orderIndex > 0) {
+        orderIndex--;
+        const item = wordList[orderIndex];
+        renderOrderWord(item);
+    } else {
+        alert("這已經是第一個單詞了！");
+    }
+}
+
 function restartRound(){
     orderIndex = 0;
     wrongCount = 0;
@@ -254,10 +298,8 @@ function restartRound(){
 
 // ====================頁面初始化與事件綁定====================
 function initApp() {
-    // 1. 渲染首頁分類按鈕
     renderCategoryList();
 
-    // 2. 綁定「模式頁」所有按鈕的點擊事件
     const modeBtns = document.querySelectorAll(".mode-btn");
     modeBtns.forEach(btn => {
         btn.addEventListener("click", (e) => {
@@ -269,9 +311,8 @@ function initApp() {
     });
 }
 
-// 3. 更穩健的加載檢測：確保無論腳本何時加載，都能正確初始化
 if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", initApp);
 } else {
-    initApp(); // 如果 DOM 已經加載完畢，直接執行
+    initApp();
 }
