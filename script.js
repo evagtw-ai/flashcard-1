@@ -27,10 +27,13 @@ let audioPlaying = false;
 const NEXT_COOLDOWN = 300;
 let nextBtnLock = false;
 let orderIndex = 0;
-const ALL_COUNT = 20; 
+
+// ★ 專門針對「全部 (All)」分類的設定
+const ALL_COUNT = 30; // 每次在「全部」中抽取的最大數量
+let allLearnedWords = [];     // 記錄「全部」中已經學過的單詞
+let allLearnedSentences = []; // 記錄「全部」中已經學過的句子
 
 // 進度計數
-let allUsedIndex = [];
 let wrongCount = 0;
 let wordUsedIndex = [];
 let matchUsedIndex = [];
@@ -53,28 +56,52 @@ function shuffleArray(arr) {
     return copyArr;
 }
 
-// ========== 聚合所有分類資料 (修復 All 點擊無反應的 Bug) ==========
+// ========== 聚合「全部」分類資料 (包含 30 題隨機不重複邏輯) ==========
 function generateAllCategoryData() {
     let pool = [];
     let cnSentences = [];
     let enSentences = [];
+    
+    // 抓取所有分類資料
     Object.keys(wordData).forEach(key => {
         if (key !== "All" && wordData[key]) {
-            if (wordData[key].words) {
-                pool.push(...wordData[key].words);
-            }
+            if (wordData[key].words) pool.push(...wordData[key].words);
             if (wordData[key].sentences) {
                 if (wordData[key].sentences.cn) cnSentences.push(...wordData[key].sentences.cn);
                 if (wordData[key].sentences.en) enSentences.push(...wordData[key].sentences.en);
             }
         }
     });
-    fullWordPool = shuffleArray(pool);
-    wordList = fullWordPool.slice(0, ALL_COUNT); // 限制 All 分類單詞抽取數量
-    currentSentenceCnList = cnSentences;
-    currentSentenceEnList = enSentences;
-}
 
+    // 1. 單詞抽取邏輯 (排除已學過的)
+    let availableWords = pool.filter(w => !allLearnedWords.includes(w.en));
+    if (availableWords.length === 0 && pool.length > 0) {
+        alert("🎉 恭喜！【全部】分類的單詞已學完一輪，為你重新洗牌！");
+        allLearnedWords = []; // 清空記憶
+        availableWords = [...pool];
+    }
+    wordList = shuffleArray(availableWords).slice(0, ALL_COUNT);
+    allLearnedWords.push(...wordList.map(w => w.en));
+
+    // 2. 中文句子抽取邏輯 (排除已學過的)
+    let availableCn = cnSentences.filter(s => !allLearnedSentences.includes(s));
+    if (availableCn.length === 0 && cnSentences.length > 0) {
+        allLearnedSentences = []; // 清空句子記憶
+        availableCn = [...cnSentences];
+    }
+    currentSentenceCnList = shuffleArray(availableCn).slice(0, ALL_COUNT);
+    allLearnedSentences.push(...currentSentenceCnList);
+
+    // 3. 英文句子抽取邏輯 (排除已學過的)
+    let availableEn = enSentences.filter(s => !allLearnedSentences.includes(s));
+    if (availableEn.length === 0 && enSentences.length > 0) {
+        availableEn = [...enSentences];
+    }
+    currentSentenceEnList = shuffleArray(availableEn).slice(0, ALL_COUNT);
+    allLearnedSentences.push(...currentSentenceEnList);
+
+    saveStorage(); // 儲存進度
+}
 
 // ========== 粵語發音 ==========
 function playCnVoice(text) {
@@ -197,9 +224,19 @@ function playCorrectAnswerVoice(answerStr, lang, isSpell) {
     window.speechSynthesis.speak(prefixUtter);
 }
 
-// 本地存儲 
+// 本地存儲 (僅記錄 All 分類的進度)
 function loadStorage() {
-    wordUsedIndex = []; matchUsedIndex = []; spellUsedIndex = []; sentenceUsedIndex = []; allUsedIndex = [];
+    const sw = localStorage.getItem("kidAllLearnedWords");
+    const ss = localStorage.getItem("kidAllLearnedSentences");
+    if (sw) allLearnedWords = JSON.parse(sw);
+    if (ss) allLearnedSentences = JSON.parse(ss);
+
+    wordUsedIndex = []; matchUsedIndex = []; spellUsedIndex = []; sentenceUsedIndex = [];
+}
+
+function saveStorage() {
+    localStorage.setItem("kidAllLearnedWords", JSON.stringify(allLearnedWords));
+    localStorage.setItem("kidAllLearnedSentences", JSON.stringify(allLearnedSentences));
 }
 
 // 完成彈窗
@@ -223,7 +260,7 @@ function showFinishModal(resetCallback) {
 
     const btnAgain = document.createElement("button");
     btnAgain.className = "modal-again";
-    btnAgain.innerText = "再學一次";
+    btnAgain.innerText = "再玩一次";
     btnAgain.onclick = () => {
         document.body.removeChild(modal);
         resetCallback(true);
@@ -314,10 +351,12 @@ function initCategory() {
 
 function selectCategory(catKey) {
     currentCat = catKey;
+    
     if (catKey === "All") {
+        // 「全部」分類：自動抽 30 題、不重複、存進度
         generateAllCategoryData();
-        allUsedIndex = [];
     } else {
+        // 單一分類：載入全部內容，無數量限制，不存進度
         wordList = [...(wordData[catKey].words || [])];
         currentSentenceCnList = wordData[catKey].sentences ? [...(wordData[catKey].sentences.cn || [])] : [];
         currentSentenceEnList = wordData[catKey].sentences ? [...(wordData[catKey].sentences.en || [])] : [];
@@ -472,16 +511,16 @@ function nextWord() {
     if (wordUsedIndex.length >= total) {
         showFinishModal(function (again) {
             if (again) {
-                if (currentCat === "All") generateAllCategoryData();
-                
-                // 重新建立混合題庫
-                studyPool = [...wordList]; 
-                if (currentMode === "cn") {
-                    currentSentenceCnList.forEach(cnStr => { if (cnStr) studyPool.push({ cn: cnStr, en: "" }); });
-                } else if (currentMode === "en") {
-                    currentSentenceEnList.forEach(enStr => { if (enStr) studyPool.push({ cn: "", en: enStr }); });
+                if (currentCat === "All") {
+                    generateAllCategoryData();
+                    // All 分類重置後，需要重組混合題庫
+                    studyPool = [...wordList]; 
+                    if (currentMode === "cn") {
+                        currentSentenceCnList.forEach(cnStr => { if (cnStr) studyPool.push({ cn: cnStr, en: "" }); });
+                    } else if (currentMode === "en") {
+                        currentSentenceEnList.forEach(enStr => { if (enStr) studyPool.push({ cn: "", en: enStr }); });
+                    }
                 }
-
                 wordUsedIndex = []; nextWord();
             } else { showPage("page-mode"); }
         });
@@ -748,12 +787,12 @@ function nextSentence() {
     if (sentenceUsedIndex.length >= total) {
         showFinishModal(function (again) {
             if (again) {
-                if (currentCat === "All") generateAllCategoryData();
-                // 重建句庫
-                sentencePool = [];
-                currentSentenceCnList.forEach(text => { if (text) sentencePool.push({ lang: "cn", text: text }); });
-                currentSentenceEnList.forEach(text => { if (text) sentencePool.push({ lang: "en", text: text }); });
-
+                if (currentCat === "All") {
+                    generateAllCategoryData();
+                    sentencePool = [];
+                    currentSentenceCnList.forEach(text => { if (text) sentencePool.push({ lang: "cn", text: text }); });
+                    currentSentenceEnList.forEach(text => { if (text) sentencePool.push({ lang: "en", text: text }); });
+                }
                 sentenceUsedIndex = []; nextSentence();
             } else { showPage("page-mode"); }
         });
