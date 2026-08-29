@@ -167,8 +167,9 @@ const wordData = {
     ],
     sentences: { cn: [], en: [] }
   },
-  Nature: { words: [
-         { cn: "春天", en: "spring" },
+Nature: {
+    words: [
+      { cn: "春天", en: "spring" },
       { cn: "夏天", en: "summer" },
       { cn: "秋天", en: "autumn" },
       { cn: "冬天", en: "winter" },
@@ -183,15 +184,39 @@ const wordData = {
       { cn: "海", en: "sea" },
       { cn: "湖", en: "lake" },
       { cn: "河", en: "river" },
+      { cn: "火", en: "fire" },
       { cn: "水", en: "water" },
       { cn: "風", en: "wind" },
       { cn: "沙", en: "sand" },
-      { cn: "閃電", en: "flash" },
-      { cn: "打雷", en: "thunder" },
+      { cn: "雷", en: "thunder" },
       { cn: "天空", en: "sky" },
-      { cn: "田地", en: "filed" },
+      { cn: "田地", en: "field" }, // 已修正
+      { cn: "地球", en: "earth" },
+      { cn: "土", en: "soil" }, // 已修正
+      { cn: "森林", en: "forest" },
       { cn: "地面", en: "ground" }
-  ], sentences: { cn: [], en: [] } },
+    ],
+    sentences: {
+      cn: [
+        "地球|是|圓|的|。",
+        "老虎|住|在|森林裡|。",
+        "我們|用火|來|燒烤|。",
+        "下雨天|，|我們|要|穿|雨衣|。",
+        "夏天|天氣|炎熱|，|我們|要|多|喝水|。",
+        "冬天|穿|毛衣|來|保暖|。",
+        "秋天|到|，|樹葉|變成|黃色|。",
+        "春天|來了|，|花園裡|開滿了|五顏六色的|鮮花|。", // 修正了原句的"花園了"
+        "太陽|出來了|，|天上|出現|美麗的|彩虹|。"
+      ],
+      en: [
+        "The sun is yellow.",
+        "I can see a beautiful rainbow in the sky.",
+        "We play with sand at the beach.",
+        "The tree has many green leaves.",
+        "Fish live in the river."
+      ]
+    }
+  },
   Clothing: { words: [], sentences: { cn: [], en: [] } },
   Object: { words: [], sentences: { cn: [], en: [] } },
   Vegetable: { words: [], sentences: { cn: [], en: [] } },
@@ -317,7 +342,7 @@ const wordData = {
         "飛機在天上飛行。",
         "渡海小輪|行駛|在|海上|。",
         "公園裡|,|小朋友們|在|踩單車|。",
-        "的士|可以|帶|我們|回家|。",
+        "我|看見|一輛|紅色的|的士。",
         "摩托車在路上向前走。",
         "爸爸|每天|坐地鐵|從|九龍|到|香港島|工作|。",
         "我們|乘坐|山頂纜車|上山|。",
@@ -349,7 +374,49 @@ const wordData = {
       { cn: "剪刀", en: "scissors" },
       { cn: "紙張", en: "paper" }
   ], sentences: { cn: [], en: [] } },
-  Fruit: { words: [], sentences: { cn: [], en: [] } },
+Fruit: {
+    words: [
+      { cn: "蘋果", en: "apple" },
+      { cn: "檸檬", en: "lemon" },
+      { cn: "櫻桃", en: "cherry" },
+      { cn: "橙", en: "orange" },
+      { cn: "榴蓮", en: "durian" },
+      { cn: "菠蘿", en: "pineapple" },
+      { cn: "西瓜", en: "watermelon" },
+      { cn: "梨", en: "pear" },
+      { cn: "椰子", en: "coconut" },
+      { cn: "桃", en: "peach" },
+      { cn: "草莓", en: "strawberry" },
+      { cn: "藍莓", en: "blueberry" },
+      { cn: "火龍果", en: "dragon fruit" },
+      { cn: "木瓜", en: "papaya" },
+      { cn: "荔枝", en: "lychee" },
+      { cn: "楊桃", en: "starfruit" },
+      { cn: "芒果", en: "mango" },
+      { cn: "葡萄", en: "grapes" },
+      { cn: "水果", en: "fruit" },
+      { cn: "西柚", en: "grapefruit" },
+      { cn: "奇異果", en: "kiwi" },
+      { cn: "香蕉", en: "banana" },
+      { cn: "梅", en: "plum" },
+      { cn: "青檸", en: "lime" },
+      { cn: "熱情果", en: "passion fruit" }
+    ],
+    sentences: {
+      cn: [
+        "多|吃|藍莓|對|眼睛|有益|。",
+        "菠蘿|、|木瓜|和|火龍果|都是|熱帶水果|。",
+        "小明|在|超級市場|買|蘋果|。",
+        "桃子|是|粉紅色|的|。",
+        "我|最愛|吃|的|水果|是|草莓|。"
+      ],
+      en: [
+        "Apples are red and sweet.",
+        "The watermelon is very heavy.",
+        "Monkeys love to eat yellow bananas."
+      ]
+    }
+  },
   People: { words: [], sentences: { cn: [], en: [] } },
   Body: {
     words: [
