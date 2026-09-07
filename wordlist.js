@@ -551,7 +551,7 @@ Time: {
       ] 
     } 
   },
-Fruit: {
+Food: {
     words: [
       { cn: "蘋果", en: "apple" },
       { cn: "檸檬", en: "lemon" },
