@@ -178,7 +178,37 @@ const BANNED_SPELL_WORDS = [
      { cn: "爬", en: "climb" },
        { cn: "坐", en: "sit" },
      { cn: "穿", en: "wear" },
-     { cn: "拿", en: "take" }
+     { cn: "拿", en: "take" },
+   
+       { cn: "洋蔥", en: "onion" },
+       { cn: "青瓜", en: "cucumber" },
+       { cn: "紅蘿蔔", en: "carrot" },
+      
+       { cn: "粟米", en: "corn" },
+       { cn: "番茄", en: "tomato" },
+       { cn: "薯仔", en: "potato" },
+       { cn: "食物", en: "food" },
+       { cn: "大米", en: "rice" },
+       { cn: "麵包", en: "bread" },
+       { cn: "水", en: "water" },
+       { cn: "牛奶", en: "milk" },
+       { cn: "晚飯", en: "dinner" },
+       { cn: "魚", en: "fish" },
+       { cn: "早餐", en: "breakfast" },
+       { cn: "蛋糕", en: "cake" },
+       { cn: "午餐", en: "lunch" },
+       { cn: "雞肉", en: "chicken" },
+       { cn: "牛肉", en: "beef" },
+       { cn: "豬肉", en: "pork" },
+       { cn: "糖果", en: "candy" },
+       { cn: "雪糕", en: "ice cream" },
+       { cn: "巧克力", en: "chocolate" },
+       { cn: "披薩", en: "pizza" },
+       { cn: "香腸", en: "sausage" },
+      { cn: "漢堡包", en: "hamburger" },
+       { cn: "雞蛋", en: "egg" }, 
+      { cn: "麵條", en: "noodle" },
+      { cn: "薯條", en: "chips" }
     // ⬇️ 可以在下面繼續貼上其他不想拼寫的單詞
     
 ];
