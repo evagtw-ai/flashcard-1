@@ -76,7 +76,6 @@ border: none;
 border-radius: 20px;
 font-size: clamp(14px,2.5vw,22px);
 font-weight: bold;
-color: white;
 box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 transition: 0.2s;
 background-color: #ddd;
@@ -155,7 +154,6 @@ color: white;
 background: #ff9f43;
 color: white;
 }
-
 /* hover 點擊效果 */
 .category-list button:hover:not(:disabled) {
 transform: translateY(-4px);
