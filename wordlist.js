@@ -275,6 +275,7 @@ Nature: {
       { cn: "地毯", en: "mat" },
       { cn: "燈", en: "lamp" },
       { cn: "沙發", en: "sofa" },
+      { cn: "氣球", en: "balloon" },
       { cn: "扶手椅", en: "armchair" },
       { cn: "電腦", en: "computer" },
       { cn: "鼠標", en: "mouse" },
@@ -636,7 +637,39 @@ Food: {
       ]
     }
   },
-  People: { words: [], sentences: { cn: [], en: [] } },
+  People: { words: [
+     { cn: "外星人", en: "alien" },
+      { cn: "怪獸", en: "monster" },
+     { cn: "嬰兒", en: "baby" },
+      { cn: "孩子們", en: "children" },
+     { cn: "男孩子", en: "boy" },
+      { cn: "女孩子", en: "girl" },
+     { cn: "女人", en: "woman" },
+      { cn: "男人", en: "man" },
+     { cn: "人", en: "people" },
+      { cn: "一個人", en: "person" },
+     { cn: "機器人", en: "robot" },
+     { cn: "爸爸", en: "dad" },
+     { cn: "媽媽", en: "mum" },
+     { cn: "爺爺", en: "grandpa" },
+     { cn: "奶奶", en: "grandma" },
+     { cn: "姐妹", en: "sister" },
+     { cn: "兄弟", en: "brother" },
+    { cn: "外甥", en: "cousin" },
+    { cn: "家庭", en: "family" },
+    { cn: "孩子", en: "child" },
+    { cn: "兒童", en: "kid" },
+    { cn: "朋友", en: "friend" },
+    { cn: "同學", en: "classmate" },   
+  ], sentences: { cn: [
+     "我有|一個|可愛的|小妹妹|。",
+        "我的|好朋友|是|短頭髮|。",
+       "放學後｜，｜我｜喜歡|和|同學|一起｜玩耍|。"
+  ], en: [
+   "Dad and mum love our family.",
+    "Robots can help people work.",
+    "Grandpa and grandma live with us."
+  ] } },
   Body: {
     words: [
       { cn: "臉", en: "face" },
