@@ -345,12 +345,12 @@ Nature: {
      { cn: "學習", en: "study" },
      { cn: "生長", en: "grow" },
      { cn: "爬", en: "climb" },
-     { cn: "喊", en: "shout" }，
-       { cn: "坐", en: "sit" }，
-     { cn: "站", en: "stand" }，
-     { cn: "穿", en: "wear" }，
-     { cn: "拿", en: "take" }，
-     { cn: "抓", en: "hold" }，
+     { cn: "喊", en: "shout" },
+       { cn: "坐", en: "sit" },
+     { cn: "站", en: "stand" },
+     { cn: "穿", en: "wear" },
+     { cn: "拿", en: "take" },
+     { cn: "抓", en: "hold" },
      { cn: "告訴", en: "tell" }
   ], sentences: { cn: [
     "同學們|在|學校|學習|寫字｜。",
@@ -578,9 +578,9 @@ Fruit: {
       { cn: "梅", en: "plum" },
       { cn: "青檸", en: "lime" },
       { cn: "熱情果", en: "passion fruit" },
-      { cn: "薑", en: "" },
-       { cn: "洋蔥", en: " ginger" },
-       { cn: "紅椒", en: "onion" },
+      { cn: "薑", en: "ginger" },
+       { cn: "洋蔥", en: "onion" },
+       { cn: "紅椒", en: "pepper" },
        { cn: "青瓜", en: "cucumber" },
        { cn: "紅蘿蔔", en: "carrot" },
        { cn: "蘑菇", en: "mushroom" },
@@ -625,13 +625,13 @@ Fruit: {
         "菠蘿|、|木瓜|和|火龍果|都是|熱帶水果|。",
         "小明|在|超級市場|買|蘋果|。",
         "桃子|是|粉紅色|的|。",
-        "我|最愛|吃|的|水果|是|草莓|。"
+        "我|最愛|吃|的|水果|是|草莓|。",
         "早餐時|,|我|吃了|牛奶|和|雞蛋|。"
       ],
       en: [
         "Apples are red and sweet.",
         "The watermelon is very heavy.",
-        "Monkeys love to eat yellow bananas."
+        "Monkeys love to eat yellow bananas.",
         "These candies are sweet."
       ]
     }
