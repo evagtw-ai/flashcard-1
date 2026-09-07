@@ -286,7 +286,7 @@ Nature: {
       { cn: "羽毛球", en: "badminton" },
     { cn: "乒乓球", en: "table tennis" },
       { cn: "貝殼", en: "shell" },
-    { cn: "風箏", en: "kite" }，
+    { cn: "風箏", en: "kite" },
       { cn: "鉛筆", en: "pencil" },
       { cn: "膠水", en: "glue" },
       { cn: "尺子", en: "ruler" },
@@ -683,5 +683,5 @@ const catNameMap = {
   Place: "地點",
   People: "人物",
     Verb: "動詞",
-  All: "全部詞彙"
+  All: "全部"
 };
