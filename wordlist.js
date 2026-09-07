@@ -217,9 +217,154 @@ Nature: {
       ]
     }
   },
-  Clothing: { words: [], sentences: { cn: [], en: [] } },
-  Object: { words: [], sentences: { cn: [], en: [] } },
-  Vegetable: { words: [], sentences: { cn: [], en: [] } },
+  Clothing: { words: [
+     { cn: "連衣裙", en: "dress" },
+     { cn: "襪", en: "sock" },
+     { cn: "短裙", en: "skirt" },
+     { cn: "鞋", en: "shoes" },
+     { cn: "皮帶", en: "belt" },
+     { cn: "外套", en: "jacket" },
+     { cn: "短褲", en: "shorts" },
+     { cn: "褲", en: "pants" },
+     { cn: "牛仔褲", en: "jeans" },
+         { cn: "背心", en: "vest" },
+      { cn: "圍巾", en: "scarf" },
+      { cn: "手錶", en: "watch" },
+      { cn: "長褲", en: "trousers" },
+      { cn: "領帶", en: "tie" },
+      { cn: "襯衫", en: "shirt" },
+      { cn: "制服", en: "uniform" },
+      { cn: "帽子", en: "hat" },
+    { cn: "衣服", en: "clothes" },
+    { cn: "手提包", en: "handbag" },
+    { cn: "眼鏡", en: "glasses" },
+    { cn: "包", en: "bag" }
+  ], sentences: { cn: [
+            "我｜喜歡｜這件｜漂亮的｜衣服。",
+                "冬天｜我們｜會｜戴圍巾｜和｜帽子｜。",
+                "我｜會｜穿褲子｜，｜褲子｜有｜長短｜。",
+                "我｜會｜穿鞋子｜，｜鞋子｜有｜左右｜。",
+    "我｜把｜校服｜放進｜洗衣機｜裏｜。" 
+  ], en: [
+            "I like this pretty dress.",
+    "We wear scarves and hats in winter."    
+  ] } },
+  Object: { words: [
+     { cn: "窗", en: "window" },
+      { cn: "椅子", en: "chair" },
+      { cn: "桌子", en: "table" },
+      { cn: "門", en: "door" },
+      { cn: "籃子", en: "basket" },
+      { cn: "書桌", en: "desk" },
+      { cn: "鏡子", en: "mirror" },
+      { cn: "枕頭", en: "pillow" },
+      { cn: "梳子", en: "comb" },
+      { cn: "電視", en: "television" },
+      { cn: "花瓶", en: "vase" },
+      { cn: "床", en: "bed" },
+      { cn: "洗衣機", en: "washing machine" },
+      { cn: "手機", en: "phone" },
+      { cn: "櫃", en: "cupboard" },
+      { cn: "電話", en: "mobile phone" },
+      { cn: "風扇", en: "fan" },
+      { cn: "匙", en: "spoon" },
+      { cn: "鐘錶", en: "clock" },
+      { cn: "收音機", en: "radio" },
+      { cn: "盒子", en: "box" },
+      { cn: "書架", en: "bookcase" },
+      { cn: "地毯", en: "mat" },
+      { cn: "燈", en: "lamp" },
+      { cn: "沙發", en: "sofa" },
+      { cn: "扶手椅", en: "armchair" },
+      { cn: "電腦", en: "computer" },
+      { cn: "鼠標", en: "mouse" },
+      { cn: "籃球", en: "basketball" },
+      { cn: "足球", en: "football" },
+    { cn: "曲棍球", en: "hockey" },
+      { cn: "網球", en: "tennis" },
+    { cn: "棒球", en: "baseball" },
+      { cn: "羽毛球", en: "badminton" },
+    { cn: "乒乓球", en: "table tennis" },
+      { cn: "貝殼", en: "shell" },
+    { cn: "風箏", en: "kite" }，
+      { cn: "鉛筆", en: "pencil" },
+      { cn: "膠水", en: "glue" },
+      { cn: "尺子", en: "ruler" },
+      { cn: "筆", en: "pen" },
+      { cn: "橡皮擦", en: "eraser" },
+      { cn: "蠟筆", en: "crayon" },
+      { cn: "訂書機", en: "stapler" },
+      { cn: "剪刀", en: "scissors" },
+      { cn: "紙張", en: "paper" }
+  ], sentences: {      cn: [
+        "我用鉛筆在紙上寫字。",
+    "哥哥用洗衣機洗球衣。",
+       "哥哥｜最｜喜歡的｜運動｜是｜打籃球。",
+        "使用剪刀要注意安全。"
+      ], 
+      en: [
+        "I use glue to stick the paper.",
+         "I put my toys inside the box.",
+        "There is a mirror on the wall.",
+        "My eraser is pink and small."
+      ] } },
+  Verb: { words: [
+      { cn: "聽", en: " listen" },
+     { cn: "說", en: "speak" },
+     { cn: "讀", en: "read" },
+     { cn: "寫", en: "write" },
+     { cn: "看", en: "look" },
+     { cn: "講", en: "talk" },
+     { cn: "畫", en: "draw" },
+     { cn: "想", en: "think" },
+     { cn: "跑", en: "run" },
+     { cn: "跳", en: "jump" },
+     { cn: "游", en: "swim" },
+     { cn: "切", en: "cut" },
+     { cn: "走", en: "walk" },
+     { cn: "愛", en: "love" },
+     { cn: "喜歡", en: "like" },
+     { cn: "走", en: "go" },
+     { cn: "推", en: "push" },
+     { cn: "拉", en: "pull" },
+     { cn: "玩", en: "play" },
+     { cn: "踢", en: "kick" },
+     { cn: "抓", en: "catch" },
+     { cn: "開 ", en: "open" },
+     { cn: "關", en: "close" },
+     { cn: "喝", en: "drink" },
+     { cn: "吃", en: "eat" },
+     { cn: "洗", en: "wash" },
+     { cn: "拿", en: "take" },
+     { cn: "騎", en: "ride" },
+     { cn: "打", en: "hit" },
+     { cn: "唱", en: "sing" },
+     { cn: "扔", en: "throw" },
+     { cn: "睡 ", en: "sleep" },
+     { cn: "學", en: "learn" },
+     { cn: "學習", en: "study" },
+     { cn: "生長", en: "grow" },
+     { cn: "爬", en: "climb" },
+     { cn: "喊", en: "shout" }，
+       { cn: "坐", en: "sit" }，
+     { cn: "站", en: "stand" }，
+     { cn: "穿", en: "wear" }，
+     { cn: "拿", en: "take" }，
+     { cn: "抓", en: "hold" }，
+     { cn: "告訴", en: "tell" }
+  ], sentences: { cn: [
+    "同學們|在|學校|學習|寫字｜。",
+     "姊姊｜在｜練習｜跳舞｜。",
+     "我｜想｜和｜小貓｜玩皮球｜。",
+     "我們｜一起｜去｜郊外｜放風箏｜。",
+        "秋天來了｜，｜我們｜一起｜騎單車｜。",
+     "我｜愛｜聽｜老師｜講故事｜。"
+  ], en: [
+    "The Children are riding bikes.",
+    "The cat is drinking water.",
+     "I like listeng music",
+    "The library opens at 9 o'clock every day."
+  ] } },
   Animal: {
     words: [
       { cn: "青蛙", en: "frog" },
@@ -363,26 +508,46 @@ Nature: {
       ]
     }
   },
-Stationery: { 
+Time: { 
     words: [
-      { cn: "鉛筆", en: "pencil" },
-      { cn: "膠水", en: "glue" },
-      { cn: "尺子", en: "ruler" },
-      { cn: "筆", en: "pen" },
-      { cn: "橡皮擦", en: "eraser" },
-      { cn: "蠟筆", en: "crayon" },
-      { cn: "訂書機", en: "stapler" },
-      { cn: "剪刀", en: "scissors" },
-      { cn: "紙張", en: "paper" }
+      { cn: "早上", en: "morning" },
+      { cn: "中午", en: "noon" },
+      { cn: "下午", en: "afternoon" },
+      { cn: "晚上", en: "evening" },
+      { cn: "夜晚", en: "night" },
+      { cn: "放學後", en: "after school" },
+      { cn: "星期一", en: "Mondy" },
+      { cn: "星期二", en: "Tuesday" },
+       { cn: "星期四", en: "Thursday" },
+      { cn: "星期五", en: "Friday" },
+       { cn: "星期六", en: "Saturday" },
+      { cn: "星期日", en: "Sunday" },
+       { cn: "假期", en: "holiday" },
+      { cn: "新年", en: "New Year" },
+       { cn: "節日", en: "festival" },
+      { cn: "中秋節", en: "Mid-autumn festival" },
+       { cn: "聖誕節", en: "Christmas" },
+      { cn: "年", en: "year" },
+         { cn: "月", en: "month" },
+         { cn: "日", en: "day" },
+         { cn: "生日", en: "birthday" },
+      { cn: "日期", en: "date" },
+      { cn: "時間", en: "time" },
+        { cn: "今天", en: "today" },
+      { cn: "昨天", en: "yesterday" },
+      { cn: "明天", en: "tomorrow" },
+      { cn: "星期三", en: "Wednesday" }
     ], 
     sentences: { 
       cn: [
-        "我用鉛筆在紙上寫字。",
-        "使用剪刀要注意安全。"
+        "星期一｜，｜爸爸｜去｜公司｜上班。",
+         "中秋節｜有｜好看的｜花燈。",
+        "明天｜，｜我們｜去｜郊外｜旅行｜。"
       ], 
       en: [
-        "I use glue to stick the paper.",
-        "My eraser is pink and small."
+        "We read books at home in the evening.",
+         "After lunch，I go to playground with my friends.",
+        "I go to school happily in the morning."
       ] 
     } 
   },
@@ -412,7 +577,47 @@ Fruit: {
       { cn: "香蕉", en: "banana" },
       { cn: "梅", en: "plum" },
       { cn: "青檸", en: "lime" },
-      { cn: "熱情果", en: "passion fruit" }
+      { cn: "熱情果", en: "passion fruit" },
+      { cn: "薑", en: "" },
+       { cn: "洋蔥", en: " ginger" },
+       { cn: "紅椒", en: "onion" },
+       { cn: "青瓜", en: "cucumber" },
+       { cn: "紅蘿蔔", en: "carrot" },
+       { cn: "蘑菇", en: "mushroom" },
+       { cn: "生菜", en: "lettuce" },
+       { cn: "西蘭花", en: "broccoli" },
+       { cn: "豆", en: "bean" },
+       { cn: "白菜", en: "cabbage" },
+       { cn: "蒜", en: " garlic" },
+       { cn: "南瓜", en: "pumpkin" },
+       { cn: "茄子", en: "eggplant" },
+       { cn: "粟米", en: "corn" },
+       { cn: "番茄", en: "tomato" },
+       { cn: "薯仔", en: "potato" },
+       { cn: "食物", en: "food" },
+       { cn: "大米", en: "rice" },
+       { cn: "麵包", en: "bread" },
+       { cn: "水", en: "water" },
+       { cn: "牛奶", en: "milk" },
+       { cn: "晚飯", en: "dinner" },
+       { cn: "魚", en: "fish" },
+       { cn: "早餐", en: "breakfast" },
+       { cn: "蛋糕", en: "cake" },
+       { cn: "午餐", en: "lunch" },
+       { cn: "雞肉", en: "chicken" },
+       { cn: "牛肉", en: "beef" },
+       { cn: "豬肉", en: "pork" },
+       { cn: "糖果", en: "candy" },
+       { cn: "雪糕", en: "ice cream" },
+       { cn: "巧克力", en: "chocolate" },
+       { cn: "披薩", en: "pizza" },
+       { cn: "香腸", en: "sausage" },
+      { cn: "漢堡包", en: "hamburger" },
+       { cn: "雞蛋", en: "egg" }, 
+      { cn: "麵條", en: "noodle" },
+      { cn: "芝士", en: "cheese" },
+      { cn: "蔬菜", en: "vegetable" },
+      { cn: "薯條", en: "chips" }
     ],
     sentences: {
       cn: [
@@ -421,11 +626,13 @@ Fruit: {
         "小明|在|超級市場|買|蘋果|。",
         "桃子|是|粉紅色|的|。",
         "我|最愛|吃|的|水果|是|草莓|。"
+        "早餐時|,|我|吃了|牛奶|和|雞蛋|。"
       ],
       en: [
         "Apples are red and sweet.",
         "The watermelon is very heavy.",
         "Monkeys love to eat yellow bananas."
+        "These candies are sweet."
       ]
     }
   },
@@ -467,14 +674,14 @@ const catNameMap = {
   Nature: "大自然",
   Clothing: "衣服",
   Object: "物件",
-  Vegetable: "蔬菜",
-  Place: "地點",
+ Body: "身體",
+  Food: "食物",
   Occupation: "職業",
   Animal: "動物",
   Transportation: "交通",
-  Stationery: "文具",
-  Fruit: "水果",
+  Time: "時間",
+  Place: "地點",
   People: "人物",
-  Body: "身體",
+    Verb: "動詞",
   All: "全部詞彙"
 };
